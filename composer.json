@@ -1,0 +1,21 @@
+{
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "App"
+        },
+        "files": [
+            "App/Support/functions.php"
+        ]
+    },
+    "require": {
+        "php-di/slim-bridge": "^3.4",
+        "phpmailer/phpmailer": "^7.0",
+        "slim/php-view": "^3.4",
+        "slim/psr7": "^1.7",
+        "slim/slim": "4.*"
+    }
+}
