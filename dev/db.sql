@@ -8,7 +8,7 @@ CREATE TABLE book_salons (
   timezone VARCHAR(50) DEFAULT 'UTC',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+ 
 CREATE TABLE book_categories (
   id INT PRIMARY KEY AUTO_INCREMENT,
   salon_id INT NOT NULL,
