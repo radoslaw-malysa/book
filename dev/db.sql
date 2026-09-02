@@ -89,6 +89,7 @@ CREATE TABLE book_appointments (
   id INT PRIMARY KEY AUTO_INCREMENT,
   customer_id INT NOT NULL,
   provider_id INT NOT NULL,
+  service_id INT NOT NULL,
   salon_id INT NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME NOT NULL, -- Calculated as start_time + total duration
@@ -98,6 +99,7 @@ CREATE TABLE book_appointments (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (customer_id) REFERENCES book_customers(id),
   FOREIGN KEY (provider_id) REFERENCES book_providers(id),
+  FOREIGN KEY (service_id) REFERENCES book_services(id),
   FOREIGN KEY (salon_id) REFERENCES book_salons(id),
   INDEX (start_time, end_time), -- For fast availability queries
   INDEX (provider_id, start_time)

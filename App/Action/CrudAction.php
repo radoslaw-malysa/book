@@ -52,7 +52,6 @@ class CrudAction
 
     $rows = $this->$table->getRows($query_params);
 
-
     $payload = [
       'items' => $rows->getResults(),
       'total_items' => $rows->getTotalItems(),

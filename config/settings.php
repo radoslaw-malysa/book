@@ -14,11 +14,11 @@ return static function(string $appEnv) {
             'db_driver' => 'mysql',
             'db_host' => 'localhost',
             'db_username' => 'root', 
-            'db_database' => 'routetrade', 
+            'db_database' => 'booking', 
             'db_password' => '', 
             'db_charset' => 'utf8mb4',
             'db_collation' => 'utf8mb4_polish_ci',
-            'db_prefix' => 'rt_',
+            'db_prefix' => 'book_',
             'upl' => 'img/',
             'thumbs' => 'thumbs/'
         ];

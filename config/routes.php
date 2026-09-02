@@ -2,15 +2,7 @@
 declare(strict_types=1);
 
 use App\Action\CrudAction;
-use App\Action\CurrentAction; // dashboard
-use App\Action\ShipmentAction; // Shipment crud
 use App\Action\AuthAction;
-use App\Action\ChatAction;
-use App\Action\BiddingAction;
-use App\Action\PackagesAction;
-use App\Action\FvAction;
-use App\Action\DocumentsAction;
-use App\Action\ContactAction;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -19,8 +11,6 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\App;
 
 return function (App $app) {
-
-    $app->post('/post-contact', ContactAction::class); // webpage contact form
 
     $app->any('/login', AuthAction::class);
     $app->any('/logged-out', AuthAction::class . ":loggedOut");
@@ -33,27 +23,6 @@ return function (App $app) {
         $app->get('/search/{table}', CrudAction::class . ":searchTable"); // combobox
         $app->get('/find/{table}', CrudAction::class . ":findTable"); // find one
 
-        $app->get('/shipments/{id}', ShipmentAction::class); // view shipment
-        $app->get('/shipments-edit[/{id}]', ShipmentAction::class . ":editShipment"); // edit shipment
-        $app->any('/route-stops', ShipmentAction::class . ":saveRouteStops"); // save shipment route stops
-        $app->any('/packages', PackagesAction::class . ":savePackages"); // save FV
-        $app->any('/fv', FvAction::class . ":saveFv"); // save FV
-        $app->post('/forwarder', ShipmentAction::class . ":saveForwarder"); // save forwarder
-        $app->post('/docs', DocumentsAction::class . ":uploadDocument"); // upload document
-        $app->get('/docs/{id_shipment}', DocumentsAction::class . ":getDocuments"); // upload document
-        $app->any('/bidding-edit', BiddingAction::class . ":startBidding");
-        $app->any('/bidding-cancel', BiddingAction::class . ":cancelBidding");
-        // $app->any('/bidding-edit', ShipmentAction::class . ":editBidding");
-        
-        $app->get('/bidding/test', BiddingAction::class . ':test');
-        $app->post('/bidding/cancel', BiddingAction::class . ':cancelBid'); 
-        $app->post('/bidding/accept', BiddingAction::class . ':acceptBid'); 
-        $app->post('/bidding/reject', BiddingAction::class . ':rejectBid'); 
-        $app->get('/bidding/{id_shipment}', BiddingAction::class); // get bids
-        $app->any('/bidding', BiddingAction::class . ':postBid'); // post bids
-
-        $app->get('/chat/{id_shipment}', ChatAction::class); // get chat
-        $app->any('/chat', ChatAction::class . ':postMessage'); // post chat
         
         $app->get('/{table}/{id}', CrudAction::class . ":getRow");
         $app->get('/{table}', CrudAction::class . ":getTable");

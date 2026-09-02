@@ -5,18 +5,9 @@ namespace App\Model\Repositories;
  */
 final class Tables
 {
-    public $companies = 'companies';
     public $users = 'users';
-    public $shipments = 'shipments';
-    public $shipments_packages = 'shipments_packages';
-    public $shipments_fv = 'shipments_fv';
-    public $route_stops = 'route_stops';
-    public $locations = 'locations';
-    public $orderer_supplier = 'orderer_supplier';
-    public $bids = 'bids';
-    public $countries = 'countries';
-    public $log = 'log';
-    public $documents = 'documents';
+    public $appointments = 'appointments';
+    public $services = 'services';
 
     public function __construct($prefix=null)
     {
