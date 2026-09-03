@@ -7,12 +7,8 @@ namespace App\Action;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-use \App\Model\Repositories\ShipmentsRepository;
+use \App\Model\Repositories\AppointmentsRepository;
 use \App\Model\Repositories\UsersRepository;
-use \App\Model\Repositories\CompaniesRepository;
-use \App\Model\Repositories\LocationsRepository;
-use \App\Model\Repositories\CountriesRepository;
-use \App\Model\Repositories\OrdererSupplierRepository;
 
 // use Slim\Views\PhpRenderer;
 use \App\Support\JsonRenderer;
@@ -23,21 +19,13 @@ class CrudAction
   
   public function __construct(
     JsonRenderer $json, 
-    ShipmentsRepository $shipments,
-    UsersRepository $users,
-    CompaniesRepository $companies,
-    LocationsRepository $locations,
-    CountriesRepository $countries,
-    OrdererSupplierRepository $orderer_supplier
+    AppointmentsRepository $appointments,
+    UsersRepository $users
     )
   {
     $this->json = $json;
-    $this->shipments = $shipments;
+    $this->appointments = $appointments;
     $this->users = $users;
-    $this->companies = $companies;
-    $this->locations = $locations;
-    $this->countries = $countries;
-    $this->orderer_supplier = $orderer_supplier;
   }
 
   public function __invoke(Request $request, Response $response, $args) {

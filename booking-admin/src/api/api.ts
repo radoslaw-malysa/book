@@ -1,1 +1,0 @@
-export const apiUrl = (window.location.hostname == 'localhost') ? 'http://book.test' : '/cms';

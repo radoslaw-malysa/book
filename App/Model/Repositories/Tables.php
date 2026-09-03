@@ -8,6 +8,8 @@ final class Tables
     public $users = 'users';
     public $appointments = 'appointments';
     public $services = 'services';
+    public $customers = 'customers';
+    public $salons = 'salons';
 
     public function __construct($prefix=null)
     {
