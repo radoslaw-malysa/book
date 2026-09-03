@@ -4,7 +4,7 @@ import { UserRound } from 'lucide-react'
 
 const AdminLayout = () => {
   return <>
-    <header className="h-16 flex justify-between items-center px-2">
+    <header className="h-16 flex justify-between items-center">
       <div className="flex items-center gap-8">
         <img src="/images/logo.svg" alt="logo" />
         <nav>
