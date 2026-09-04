@@ -1,14 +1,7 @@
 import { RouterProvider } from "react-router"
 import { router } from "./routes"
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 10,
-    },
-  },
-})
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClient } from "./lib/query-client"
 
 const  App = () => {
   return (
