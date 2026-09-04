@@ -9,8 +9,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getUsers } from "@/api/users";
+import UserEditDialog from "@/features/users/UserEditDialog";
+import { useState } from "react";
 
-const usersQuery = () =>
+export const usersQuery = () =>
   queryOptions({
     queryKey: ["users"],
     queryFn: getUsers,
@@ -25,6 +27,7 @@ export const loader =
 
 const Users = () => {
   const { data: users } = useSuspenseQuery(usersQuery());
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
   return (
     <section className="space-y-4">
@@ -45,7 +48,11 @@ const Users = () => {
           </TableHeader>
           <TableBody>
             {users.map((user) => (
-              <TableRow key={user.id}>
+              <TableRow
+                key={user.id}
+                className="cursor-pointer"
+                onClick={() => setSelectedUserId(user.id)}
+              >
                 <TableCell className="font-medium">{user.name}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
@@ -56,6 +63,7 @@ const Users = () => {
           </TableBody>
         </Table>
       </div>
+      <UserEditDialog userId={selectedUserId} onClose={() => setSelectedUserId(null)} />
     </section>
   );
 };
