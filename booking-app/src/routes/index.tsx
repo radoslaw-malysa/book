@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import AdminLayout from "../layouts/AdminLayout";
 import Appointments from "../pages/Appointments";
-import Users, { loader as usersLoader } from "./Users";
+import Users, { loader as usersLoader } from "../pages/Users";
 import { queryClient } from "../lib/query-client";
 
 export const router = createBrowserRouter([
