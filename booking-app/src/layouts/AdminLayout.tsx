@@ -10,7 +10,7 @@ const AdminLayout = () => {
         <nav>
           <ul className="flex gap-4 xl:gap-6">
             <li>
-              <a href="">Rezerwacje</a>
+              <Link to="/booking">Rezerwacje</Link>
             </li>
             <li>
               <a href="">Oferta</a>

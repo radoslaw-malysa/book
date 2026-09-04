@@ -1,5 +1,5 @@
 import { queryOptions, useSuspenseQuery, type QueryClient } from "@tanstack/react-query";
-import { useLoaderData, type LoaderFunctionArgs } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
 import { getAppointments } from "../api/appointments";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, ChevronDownIcon, ListIcon, Plus, SearchIcon, XIcon } from "lucide-react";
@@ -13,23 +13,22 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const appointmetsListQuery = (q?: string) => queryOptions({
-  queryKey: ['contacts', 'list', q ?? 'all'],
-  queryFn: () => getAppointments(q)
-})
 
-export const loader = (queryClient: QueryClient) => async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url)
-  //const q = url.searchParams.get('q') ?? ''
-  const q = url.search;
+const appointmentsQuery = () =>
+  queryOptions({
+    queryKey: ["users"],
+    queryFn: getAppointments,
+  });
 
-  await queryClient.ensureQueryData(appointmetsListQuery(q))
-  return { q }
-}
+export const loader =
+  (client: QueryClient) =>
+  async (_args: LoaderFunctionArgs) => {
+    await client.ensureQueryData(appointmentsQuery());
+    return null;
+  };
 
 const Appointments = () => {
-  const { q } = useLoaderData as Awaited<ReturnType<typeof loader>>
-  const { data } = useSuspenseQuery(appointmetsListQuery(''))
+  const { data: items } = useSuspenseQuery(appointmentsQuery());
   const [date, setDate] = useState<Date | undefined>(new Date())
   
   return <div className="flex gap-6 h-full">
@@ -85,6 +84,11 @@ const Appointments = () => {
       </CardHeader>
       <CardContent>
         <ViewCalendar />
+        {items.map((item) => (
+            <div key={item.id}>
+              {item.name}
+            </div>
+          ))}
       </CardContent>
     </Card>
   </div>
