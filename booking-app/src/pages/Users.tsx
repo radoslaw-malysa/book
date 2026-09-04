@@ -1,5 +1,5 @@
 import { queryOptions, useSuspenseQuery, type QueryClient } from "@tanstack/react-query";
-import { useNavigate, useSearchParams, type LoaderFunctionArgs } from "react-router";
+import { useLoaderData, useNavigate, useSearchParams, type LoaderFunctionArgs } from "react-router";
 import {
   Table,
   TableBody,
@@ -25,13 +25,17 @@ export const loader =
   (client: QueryClient) =>
   async ({ request }: LoaderFunctionArgs) => {
     const searchParams = new URL(request.url).searchParams;
+    const username = searchParams.get("username") ?? undefined;
+    const email = searchParams.get("email") ?? undefined;
+
     const filters: UserFilters = {
-      username: searchParams.get("username") ?? undefined,
-      email: searchParams.get("email") ?? undefined,
+      username: username,
+      email: email,
     };
 
     await client.ensureQueryData(usersQuery(filters));
-    return null;
+    console.log(filters)
+    return { filters };
   };
 
 const Users = () => {
@@ -41,7 +45,10 @@ const Users = () => {
     username: searchParams.get("username") ?? "",
     email: searchParams.get("email") ?? "",
   });
-  const { data: users } = useSuspenseQuery(usersQuery(filters));
+  const { filters: loaderFilters } = useLoaderData() as Awaited<
+    ReturnType<ReturnType<typeof loader>>
+  >
+  const { data: users } = useSuspenseQuery(usersQuery(loaderFilters));
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
   useEffect(() => {
