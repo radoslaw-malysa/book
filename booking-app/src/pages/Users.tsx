@@ -42,7 +42,7 @@ const Users = () => {
               <Input name="username" placeholder="Szukaj w nazwie użytkownika" />
             </Field>
             <Field>
-              <Input name="company_name" placeholder="Szukaj w nazwie firmy" />
+              <Input name="email" placeholder="Szukaj w adresie e-mail" />
             </Field>
           </FieldGroup>
         </form>
