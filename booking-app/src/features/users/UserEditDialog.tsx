@@ -1,6 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { getUser, updateUser, type User } from "@/api/users";
 
@@ -10,7 +18,6 @@ interface UserEditDialogProps {
 }
 
 const UserEditDialog = ({ userId, onClose }: UserEditDialogProps) => {
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const queryClient = useQueryClient();
   const [form, setForm] = useState<User | null>(null);
   const userQuery = useQuery({
@@ -30,16 +37,6 @@ const UserEditDialog = ({ userId, onClose }: UserEditDialogProps) => {
   });
 
   useEffect(() => {
-    if (userId !== null) {
-      if (!dialogRef.current?.open) {
-        dialogRef.current?.showModal();
-      }
-    } else {
-      dialogRef.current?.close();
-    }
-  }, [userId]);
-
-  useEffect(() => {
     if (userQuery.data) {
       setForm(userQuery.data);
     }
@@ -56,16 +53,19 @@ const UserEditDialog = ({ userId, onClose }: UserEditDialogProps) => {
   };
 
   return (
-    <dialog
-      ref={dialogRef}
-      onCancel={handleClose}
-      className="w-full max-w-lg rounded-lg border bg-background p-0 text-foreground shadow-lg backdrop:bg-black/50"
+    <Dialog
+      open={userId !== null}
+      onOpenChange={(open) => {
+        if (!open) {
+          handleClose();
+        }
+      }}
     >
-      <div className="p-6">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold">Edytuj użytkownika</h2>
-          <p className="text-sm text-muted-foreground">Zaktualizuj dane użytkownika.</p>
-        </div>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Edytuj użytkownika</DialogTitle>
+          <DialogDescription>Zaktualizuj dane użytkownika.</DialogDescription>
+        </DialogHeader>
         {userQuery.isPending && <p className="text-sm text-muted-foreground">Ładowanie danych...</p>}
         {userQuery.isError && <p className="text-sm text-destructive">{userQuery.error.message}</p>}
         {form && (
@@ -95,18 +95,18 @@ const UserEditDialog = ({ userId, onClose }: UserEditDialogProps) => {
             {updateMutation.isError && (
               <p className="text-sm text-destructive">{updateMutation.error.message}</p>
             )}
-            <div className="flex justify-end gap-2 pt-2">
+            <DialogFooter>
               <Button type="button" variant="outline" onClick={handleClose}>
                 Anuluj
               </Button>
               <Button type="submit" disabled={updateMutation.isPending}>
                 {updateMutation.isPending ? "Zapisywanie..." : "Zapisz"}
               </Button>
-            </div>
+            </DialogFooter>
           </form>
         )}
-      </div>
-    </dialog>
+      </DialogContent>
+    </Dialog>
   );
 };
 
