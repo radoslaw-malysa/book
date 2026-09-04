@@ -11,6 +11,9 @@ import {
 import { getUsers } from "@/api/users";
 import UserEditDialog from "@/features/users/UserEditDialog";
 import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Field, FieldGroup } from "@/components/ui/field";
 
 export const usersQuery = () =>
   queryOptions({
@@ -30,12 +33,21 @@ const Users = () => {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
   return (
-    <section className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold">Użytkownicy</h1>
-        <p className="text-muted-foreground">Lista użytkowników systemu.</p>
-      </div>
-      <div className="rounded-md border">
+    <Card className="w-full h-full shadow-none ring-0">
+      <CardHeader>
+        <CardTitle>Użytkownicy</CardTitle>
+        <form>
+          <FieldGroup className="grid grid-cols-2 gap-2">
+            <Field>
+              <Input name="username" placeholder="Szukaj w nazwie użytkownika" />
+            </Field>
+            <Field>
+              <Input name="company_name" placeholder="Szukaj w nazwie firmy" />
+            </Field>
+          </FieldGroup>
+        </form>
+      </CardHeader>
+      <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
@@ -62,9 +74,9 @@ const Users = () => {
             ))}
           </TableBody>
         </Table>
-      </div>
+      </CardContent>
       <UserEditDialog userId={selectedUserId} onClose={() => setSelectedUserId(null)} />
-    </section>
+    </Card>
   );
 };
 
