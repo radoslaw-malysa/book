@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Link, Outlet } from "react-router";
 import { Button } from "../components/ui/button";
 import { UserRound } from 'lucide-react'
 
@@ -19,7 +19,7 @@ const AdminLayout = () => {
               <a href="">Raporty</a>
             </li>
             <li>
-              <a href="">Użytkownicy</a>
+              <Link to="/booking/users">Użytkownicy</Link>
             </li>
             <li>
               <a href="">Historia</a>
