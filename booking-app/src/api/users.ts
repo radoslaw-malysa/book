@@ -12,6 +12,11 @@ export interface User {
 
 const usersUrl = "https://jsonplaceholder.typicode.com/users";
 
+export interface UserFilters {
+  username?: string;
+  email?: string;
+}
+
 const getUserResponse = async (response: Response): Promise<User> => {
   if (!response.ok) {
     throw new Error(`Unable to load user: ${response.status}`);
@@ -20,8 +25,18 @@ const getUserResponse = async (response: Response): Promise<User> => {
   return response.json() as Promise<User>;
 };
 
-export const getUsers = async (): Promise<User[]> => {
-  const response = await fetch(usersUrl);
+export const getUsers = async (filters: UserFilters = {}): Promise<User[]> => {
+  const params = new URLSearchParams();
+
+  if (filters.username) {
+    params.set("username", filters.username);
+  }
+  if (filters.email) {
+    params.set("email", filters.email);
+  }
+
+  const query = params.toString();
+  const response = await fetch(query ? `${usersUrl}?${query}` : usersUrl);
 
   if (!response.ok) {
     throw new Error(`Unable to load users: ${response.status}`);
