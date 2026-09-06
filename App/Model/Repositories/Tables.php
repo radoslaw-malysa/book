@@ -9,6 +9,7 @@ final class Tables
     public $appointments = 'appointments';
     public $services = 'services';
     public $customers = 'customers';
+    public $categories = 'categories';
     public $salons = 'salons';
 
     public function __construct($prefix=null)

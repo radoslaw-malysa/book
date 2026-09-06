@@ -8,8 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getUsers, type UserFilters } from "@/api/users";
-import UserEditDialog from "@/features/users/UserEditDialog";
+import { getServices, type ServiceFilters } from "@/api/services";
 import { useEffect, useState, type FC } from "react";
 import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,11 +16,12 @@ import { Plus, SearchIcon, XIcon } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Paginate } from "@/components/Paginate";
+import ServiceEditDialog from "@/features/services/ServiceEditDalog";
 
-export const usersQuery = (filters: UserFilters = {}) =>
+export const servicesQuery = (filters: ServiceFilters = {}) =>
   queryOptions({
-    queryKey: ["users", filters.q ?? "", filters.page ?? ""],
-    queryFn: () => getUsers(filters),
+    queryKey: ["services", filters.q ?? "", filters.page ?? ""],
+    queryFn: () => getServices(filters),
   });
 
 export const loader =
@@ -31,12 +31,12 @@ export const loader =
     const q = searchParams.get("q") ?? undefined;
     const page = searchParams.get("page") ?? undefined;
 
-    const filters: UserFilters = {
+    const filters: ServiceFilters = {
       q: q,
       page: page,
     };
 
-    await client.ensureQueryData(usersQuery(filters));
+    await client.ensureQueryData(servicesQuery(filters));
     
     return { filters };
   };
@@ -54,10 +54,10 @@ const StateIndicator: FC<IndicatorProps> = ({state}) => {
 
 const GroupNames = ['', 'Admin', 'Redaktor']
 
-const Users = () => {
+const Services = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [filters, setFilters] = useState<UserFilters>({
+  const [filters, setFilters] = useState<ServiceFilters>({
     q: searchParams.get("q") ?? "",
     page: searchParams.get("page") ?? "",
   });
@@ -66,29 +66,19 @@ const Users = () => {
   const { filters: loaderFilters } = useLoaderData() as Awaited<
     ReturnType<ReturnType<typeof loader>>
   >
-  const { data } = useSuspenseQuery(usersQuery(loaderFilters));
+  const { data } = useSuspenseQuery(servicesQuery(loaderFilters));
   
   // debounced q
   const [q, setQ] = useState(searchParams.get("q") ?? ""); // debounced filter
   const debouncedQ = useDebounce(q, 300)
   
   // edit record
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null); 
+  const [selectedId, setSelectedId] = useState<number | null>(null); 
 
   // paginacja
   const pageChangeHandler = (p: string) => {
     setFilters((current) => ({ ...current, page: p }))
   }
-  
-
-  // zmiany w pasku adresu
-  /*useEffect(() => {
-    setFilters({
-      q: searchParams.get("q") ?? "",
-      page: searchParams.get("page") ?? "",
-    });
-    console.log('useEffect searchParams')
-  }, [searchParams]);*/
 
   useEffect(() => {
     setFilters((current) => ({ ...current, q: debouncedQ, page: "" }))
@@ -113,7 +103,7 @@ const Users = () => {
   return (
     <Card className="w-full h-full shadow-none ring-0">
       <CardHeader>
-        <CardTitle>Użytkownicy</CardTitle>
+        <CardTitle>Warsztaty</CardTitle>
         <CardAction>
           <div className="flex gap-2 items-center">
             <InputGroup>
@@ -132,8 +122,8 @@ const Users = () => {
             </InputGroup>
             <Button 
               className="cursor-pointer" 
-              onClick={() => setSelectedUserId(0)}
-            ><Plus /> Dodaj użytkownika</Button>
+              onClick={() => setSelectedId(0)}
+            ><Plus /> Dodaj warsztaty</Button>
           </div>
         </CardAction>
       </CardHeader>
@@ -141,23 +131,23 @@ const Users = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>E-mail</TableHead>
               <TableHead>Nazwa</TableHead>
-              <TableHead>Grupa</TableHead>
+              <TableHead>Nazwa</TableHead>
+              <TableHead>Cena</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.items.map((user) => (
+            {data.items.map((item) => (
               <TableRow
-                key={user.id}
+                key={item.id}
                 className="cursor-pointer"
-                onClick={() => setSelectedUserId(user.id)}
+                onClick={() => setSelectedId(item.id)}
               >
-                <TableCell className="font-medium">{user.email}</TableCell>
-                <TableCell>{user.title}</TableCell>
-                <TableCell>{GroupNames[user.id_group]}</TableCell>
-                <TableCell><StateIndicator state={user.state} /></TableCell>
+                <TableCell className="font-medium">{item.name}</TableCell>
+                <TableCell>{item.name}</TableCell>
+                <TableCell></TableCell>
+                <TableCell><StateIndicator state={item.state} /></TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -167,9 +157,9 @@ const Users = () => {
       {data.total_pages > 1 && <CardFooter>
         <Paginate page={filters.page} totalPages={data.total_pages} onChange={pageChangeHandler} />
       </CardFooter>}
-      <UserEditDialog userId={selectedUserId} onClose={() => setSelectedUserId(null)} />
+      <ServiceEditDialog itemId={selectedId} onClose={() => setSelectedId(null)} />
     </Card>
   );
 };
 
-export default Users;
+export default Services;

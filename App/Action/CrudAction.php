@@ -9,6 +9,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 use \App\Model\Repositories\AppointmentsRepository;
 use \App\Model\Repositories\UsersRepository;
+use \App\Model\Repositories\ServicesRepository;
+use \App\Model\Repositories\CategoriesRepository;
 
 // use Slim\Views\PhpRenderer;
 use \App\Support\JsonRenderer;
@@ -20,12 +22,16 @@ class CrudAction
   public function __construct(
     JsonRenderer $json, 
     AppointmentsRepository $appointments,
-    UsersRepository $users
+    UsersRepository $users,
+    ServicesRepository $services,
+    CategoriesRepository $categories
     )
   {
     $this->json = $json;
     $this->appointments = $appointments;
     $this->users = $users;
+    $this->services = $services;
+    $this->categories = $categories;
   }
 
   public function __invoke(Request $request, Response $response, $args) {
@@ -43,14 +49,16 @@ class CrudAction
     $payload = [
       'items' => $rows->getResults(),
       'total_items' => $rows->getTotalItems(),
-      'total_pages' => $rows->getNumPages(),
+      'total_pages' => $rows->getNumPages()
+    ];
+
+    /*,
       'session_user' => [
         'id' => $_SESSION['id_user'] ?? 0,
         'id_company' => $_SESSION['id_company'] ?? 0,
         'company_type' => $_SESSION['company_type'] ?? 0,
         'company_name' => $_SESSION['company_name'] ?? ''
-      ]
-    ];
+      ]*/
 
     return $this->json->render($response, $payload);
   }
@@ -71,15 +79,7 @@ class CrudAction
     $data = $request->getParsedBody();
 
     if (is_array($data)) {
-      $row = $this->$table->postRow($data);
-    }
-
-    if ($row && isset($row['error'])) {
-      $payload = ['error' => $row['error'], 'message' => $row['message'] ?? 'err.net'];
-    } elseif ($row) {
-      $payload = ['success' => 1];
-    } else {
-      $payload = ['error' => 1, 'message' => 'err.net'];
+      $payload = $this->$table->postRow($data);
     }
     
     return $this->json->render($response, $payload);

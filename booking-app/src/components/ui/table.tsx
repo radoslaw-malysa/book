@@ -25,11 +25,11 @@ const TableRow = ({ className, ...props }: React.ComponentProps<"tr">) => (
 );
 
 const TableHead = ({ className, ...props }: React.ComponentProps<"th">) => (
-  <th className={cn("text-muted-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0", className)} {...props} />
+  <th className={cn("text-muted-foreground h-10 px-2 pb-4 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0", className)} {...props} />
 );
 
 const TableCell = ({ className, ...props }: React.ComponentProps<"td">) => (
-  <td className={cn("p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0", className)} {...props} />
+  <td className={cn("px-2 py-4 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0", className)} {...props} />
 );
 
 const TableCaption = ({ className, ...props }: React.ComponentProps<"caption">) => (

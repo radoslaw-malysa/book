@@ -1,20 +1,30 @@
+import { apiUrl, toFormData, type ErrorMessage } from "./api";
+
 export interface User {
   id: number;
-  name: string;
-  username: string;
   email: string;
-  phone: string;
-  website: string;
-  company: {
-    name: string;
-  };
+  password: string;
+  title: string;
+  id_group: string | undefined | number;
+  state: string | undefined | number;
+  create_time: string;
+  create_ip: string;
+  update_time: string;
+  update_ip: string;
 }
 
-const usersUrl = "https://jsonplaceholder.typicode.com/users";
+// const usersUrl = "https://jsonplaceholder.typicode.com/users";
+const usersUrl = apiUrl + "/users";
 
 export interface UserFilters {
-  username?: string;
-  email?: string;
+  q?: string;
+  page?: string | number;
+}
+
+interface ApiItemsData {
+  items: User[];
+  total_items: number;
+  total_pages: number;
 }
 
 const getUserResponse = async (response: Response): Promise<User> => {
@@ -25,14 +35,14 @@ const getUserResponse = async (response: Response): Promise<User> => {
   return response.json() as Promise<User>;
 };
 
-export const getUsers = async (filters: UserFilters = {}): Promise<User[]> => {
+export const getUsers = async (filters: UserFilters = {}): Promise<ApiItemsData> => {
   const params = new URLSearchParams();
 
-  if (filters.username) {
-    params.set("username", filters.username);
+  if (filters.q) {
+    params.set("q", filters.q);
   }
-  if (filters.email) {
-    params.set("email", filters.email);
+  if (filters.page) {
+    params.set("page", filters.page);
   }
 
   const query = params.toString();
@@ -42,19 +52,16 @@ export const getUsers = async (filters: UserFilters = {}): Promise<User[]> => {
     throw new Error(`Unable to load users: ${response.status}`);
   }
 
-  return response.json() as Promise<User[]>;
+  return response.json() as Promise<ApiItemsData>;
 };
 
 export const getUser = async (id: number): Promise<User> =>
   getUserResponse(await fetch(`${usersUrl}/${id}`));
 
-export const updateUser = async (user: User): Promise<User> =>
+export const updateUser = async (user: User): Promise<User | ErrorMessage> =>
   getUserResponse(
     await fetch(`${usersUrl}/${user.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
+      method: "POST",
+      body: toFormData(user),
     }),
   );

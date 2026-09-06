@@ -14,3 +14,4 @@ Give me structure and key building blocks for frontend React + React Router Appl
 
 Dont generate any code, just givem e the key building block and structure.
 
+https://www.youtube.com/watch?v=ZxGEJMSrmdE

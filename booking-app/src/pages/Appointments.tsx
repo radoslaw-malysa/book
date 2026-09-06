@@ -1,97 +1,163 @@
 import { queryOptions, useSuspenseQuery, type QueryClient } from "@tanstack/react-query";
-import type { LoaderFunctionArgs } from "react-router";
-import { getAppointments } from "../api/appointments";
+import { useLoaderData, useNavigate, useSearchParams, type LoaderFunctionArgs } from "react-router";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useEffect, useState, type FC } from "react";
+import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, ChevronDownIcon, ListIcon, Plus, SearchIcon, XIcon } from "lucide-react";
-import ViewCalendar from "@/features/appointments/ViewCalendar";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ButtonGroup } from "@/components/ui/button-group";
+import { Plus, SearchIcon, XIcon } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
-import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useDebounce } from "@/hooks/useDebounce";
+import { Paginate } from "@/components/Paginate";
+import { getAppointments, type AppointmentFilters } from "@/api/appointments";
+import AppointmentEdit from "@/features/appointments/AppointmentsEdit";
 
-
-const appointmentsQuery = () =>
+export const appointmentsQuery = (filters: AppointmentFilters = {}) =>
   queryOptions({
-    queryKey: ["users"],
-    queryFn: getAppointments,
+    queryKey: ["appointments", filters.q ?? "", filters.page ?? ""],
+    queryFn: () => getAppointments(filters),
   });
 
 export const loader =
   (client: QueryClient) =>
-  async (_args: LoaderFunctionArgs) => {
-    await client.ensureQueryData(appointmentsQuery());
-    return null;
+  async ({ request }: LoaderFunctionArgs) => {
+    const searchParams = new URL(request.url).searchParams;
+    const q = searchParams.get("q") ?? undefined;
+    const page = searchParams.get("page") ?? undefined;
+
+    const filters: AppointmentFilters = {
+      q: q,
+      page: page,
+    };
+
+    await client.ensureQueryData(appointmentsQuery(filters));
+    
+    return { filters };
   };
 
+interface IndicatorProps {
+  state: string
+}
+
+const StateIndicator: FC<IndicatorProps> = ({state}) => {
+  const states = ['', 'Aktywny', 'Zablokowany', 'Nieaktywny'];
+  const colors = ['bg-red-500', 'bg-green-500', 'bg-red-500', 'bg-red-500'];
+
+  return (<div className="flex items-center gap-2"><span className={`size-1.5 rounded-full ${colors[state]}`}></span><span className="text-muted-foreground">{states[state]}</span></div>)
+}
+
 const Appointments = () => {
-  const { data: items } = useSuspenseQuery(appointmentsQuery());
-  const [date, setDate] = useState<Date | undefined>(new Date())
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [filters, setFilters] = useState<AppointmentFilters>({
+    q: searchParams.get("q") ?? "",
+    page: searchParams.get("page") ?? "",
+  });
   
-  return <div className="flex gap-6 h-full">
-    <div>
-      <div className="py-4">
-        <Button size="lg" className="cursor-pointer w-full"><Plus /> Utwórz rezerwację</Button>
-      </div>
-      <div className="flex flex-col gap-4">
-        <Calendar mode="single" selected={date} onSelect={setDate} captionLayout="dropdown" className="bg-muted p-0" />
-        <Collapsible open={true}>
-          <CollapsibleTrigger render={<Button variant="ghost" className="w-full">Sale<ChevronDownIcon className="ml-auto group-data-panel-open/button:rotate-180" /></Button>} />
-          <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0">
-            <FieldSet className="w-full pt-2">
-              <FieldGroup className="gap-3">
-                <Field orientation="horizontal">
-                  <Checkbox name="ch1" id="ch1" defaultChecked />
-                  <FieldLabel htmlFor="ch1" className="font-normal">Sala edukacyjna</FieldLabel>
-                </Field>
-                <Field orientation="horizontal">
-                  <Checkbox name="ch2" id="ch2" defaultChecked />
-                  <FieldLabel htmlFor="ch2" className="font-normal">Sala wystawowa A</FieldLabel>
-                </Field>
-                <Field orientation="horizontal">
-                  <Checkbox name="ch3" id="ch3" defaultChecked />
-                  <FieldLabel htmlFor="ch3" className="font-normal">Kino</FieldLabel>
-                </Field>
-              </FieldGroup>
-            </FieldSet>
-          </CollapsibleContent>
-        </Collapsible>
-      </div>
-    </div>
+  // loader (reat router + react query)
+  const { filters: loaderFilters } = useLoaderData() as Awaited<
+    ReturnType<ReturnType<typeof loader>>
+  >
+  const { data } = useSuspenseQuery(appointmentsQuery(loaderFilters));
+  
+  // debounced q
+  const [q, setQ] = useState(searchParams.get("q") ?? ""); // debounced filter
+  const debouncedQ = useDebounce(q, 300)
+  
+  // edit record
+  const [selectedId, setSelectedId] = useState<number | null>(null); 
+
+  // paginacja
+  const pageChangeHandler = (p: string) => {
+    setFilters((current) => ({ ...current, page: p }))
+  }
+
+  useEffect(() => {
+    setFilters((current) => ({ ...current, q: debouncedQ, page: "" }))
+  }, [debouncedQ])
+
+  // zmiany w filtrach
+  useEffect(() => {
+    const nextSearchParams = new URLSearchParams();
+    
+    if (filters.q) {
+      nextSearchParams.set("q", filters.q);
+    }
+    if (filters.page) {
+      nextSearchParams.set("page", filters.page);
+    }
+
+    if (nextSearchParams.toString() !== searchParams.toString()) {
+      navigate({ search: nextSearchParams.toString() }, { replace: true });
+    }
+  }, [filters, navigate, searchParams])
+
+  return (
     <Card className="w-full h-full shadow-none ring-0">
       <CardHeader>
-        <CardTitle>Rezerwacje</CardTitle>
+        <CardTitle>Warsztaty</CardTitle>
         <CardAction>
           <div className="flex gap-2 items-center">
             <InputGroup>
-              <InputGroupInput placeholder="Szukaj..." className="focus:min-w-sm " />
+              <InputGroupInput 
+                name="q"
+                placeholder="Szukaj..." 
+                value={q} 
+                onChange={(event) => setQ(event.target.value)}
+                className="focus:min-w-sm " />
               <InputGroupAddon><SearchIcon /></InputGroupAddon>
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton aria-label="Wyczyść" title="Wyczyść" size="icon-xs">
+              {q && <InputGroupAddon align="inline-end">
+                <InputGroupButton aria-label="Wyczyść" title="Wyczyść" size="icon-xs" onClick={() => setQ('')}>
                   <XIcon />
                 </InputGroupButton>
-              </InputGroupAddon>
+              </InputGroupAddon>}
             </InputGroup>
-            <ButtonGroup>
-              <Button className="cursor-pointer"><CalendarDays />Kalendarz</Button>
-              <Button className="cursor-pointer" variant="secondary"><ListIcon />Lista</Button>
-            </ButtonGroup>
+            <Button 
+              className="cursor-pointer" 
+              onClick={() => setSelectedId(0)}
+            ><Plus /> Dodaj warsztaty</Button>
           </div>
         </CardAction>
       </CardHeader>
       <CardContent>
-        <ViewCalendar />
-        {items.map((item) => (
-            <div key={item.id}>
-              {item.name}
-            </div>
-          ))}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Nazwa</TableHead>
+              <TableHead>Cena</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.items.map((item) => (
+              <TableRow
+                key={item.id}
+                className="cursor-pointer"
+                onClick={() => setSelectedId(item.id)}
+              >
+                <TableCell>{item.id}</TableCell>
+                <TableCell>{item.name}</TableCell>
+                <TableCell></TableCell>
+                <TableCell><StateIndicator state={item.state} /></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        
       </CardContent>
+      {data.total_pages > 1 && <CardFooter>
+        <Paginate page={filters.page} totalPages={data.total_pages} onChange={pageChangeHandler} />
+      </CardFooter>}
+      <AppointmentEdit itemId={selectedId} onClose={() => setSelectedId(null)} />
     </Card>
-  </div>
-}
+  );
+};
 
 export default Appointments;

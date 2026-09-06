@@ -9,23 +9,13 @@ use App\Model\Repositories\Repository;
 /**
  * Repository.
  */
-class UsersRepository extends Repository
+class ServicesRepository extends Repository
 {
   public function __construct(PDO $connection, Tables $tables)
   {
     $this->connection = $connection;
-    $this->model = $tables->users;
+    $this->model = $tables->services;
     $this->tables = $tables;
-  }
-
-  // get all users of all partners (start bidding)
-  public function getPartnersUsers($id_company)
-  {
-    $query = "select u.id, u.email 
-    from " . $this->model . " u left join " . $this->tables->orderer_supplier . " os on u.id_company = os.id_supplier 
-    left join " . $this->tables->companies . " c on c.id = u.id_company 
-    where u.state='1' and c.state='1' and os.id_orderer = '" . $id_company . "'";
-    return $this->query($query)->fetchAll();
   }
 
   public function getRows($params = []) 
@@ -34,24 +24,24 @@ class UsersRepository extends Repository
     $per_page = 5; //pagination
 
     if (isset($params['q']) && $params['q']) {
-      $filters[] = "(us.email like :email or us.title like :title) ";
+      $filters[] = "(se.name like :name or se.description like :description) ";
       $q_param = '%'.$params['q'].'%';
     }
 
     // deleted state
     if (!isset($params['state']) || !$params['state']) {
-      $filters[] = "us.state != '3' ";
+      $filters[] = "se.state != '3' ";
     }
 
     // count all records
     $query = "select count(*) 
-    from " . $this->model . " us ";
+    from " . $this->model . " se ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
     $st = $this->connection->prepare($query);
     
     if (isset($params['q']) && $params['q']) {
-      $st->bindParam(':email', $q_param, PDO::PARAM_STR);
-      $st->bindParam(':title', $q_param, PDO::PARAM_STR);
+      $st->bindParam(':name', $q_param, PDO::PARAM_STR);
+      $st->bindParam(':description', $q_param, PDO::PARAM_STR);
     }
 
     $st->execute();
@@ -62,24 +52,22 @@ class UsersRepository extends Repository
     $offset = $paginator->getCurrentPageFirstItem();
 
     // actual query
-    $query = "select us.* 
-    from " . $this->model . " us ";
+    $query = "select se.* 
+    from " . $this->model . " se ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
-    $query .= " order by us.id desc ";
+    $query .= " order by se.id desc ";
     $query .= ($offset) ? (" limit " . $offset . ", " . $per_page) : '';
     $st = $this->connection->prepare($query);
     
     if (isset($params['q']) && $params['q']) {
-      $st->bindParam(':email', $q_param, PDO::PARAM_STR);
-      $st->bindParam(':title', $q_param, PDO::PARAM_STR);
+      $st->bindParam(':name', $q_param, PDO::PARAM_STR);
+      $st->bindParam(':description', $q_param, PDO::PARAM_STR);
     }
 
     $st->execute();
     $items = $st->fetchAll();
 
-
     $paginator->setResults($items);
-    //print_r($params); exit;
 
     return $paginator;
   }
@@ -93,10 +81,8 @@ class UsersRepository extends Repository
     return $this->where($this->model.'.id', (int)$params['id'])
       ->first([
         $this->model.'.id', 
-        $this->model.'.email', 
-        "'' as password",
-        $this->model.'.title', 
-        $this->model.'.id_group',
+        $this->model.'.name', 
+        $this->model.'.description', 
         $this->model.'.state', 
         $this->model.'.update_time', 
         $this->model.'.update_ip'
@@ -105,29 +91,20 @@ class UsersRepository extends Repository
 
   public function postRow($params=[])
   {
-    if (!isset($params['email']) || !$params['email']) { return ['error' => 2, 'message' => 'Wypełnij e-mail']; }
-    if (!isset($params['id_group']) || !$params['id_group'] || $params['id_group'] === '0') { return ['error' => 2, 'message' => 'Wybierz grupę uprawnień']; }
+    if (!isset($params['name']) || !$params['name']) { return ['error' => 2, 'message' => 'Wypełnij nazwę warsztatów']; }
     if (!isset($params['state']) || !$params['state'] || $params['state'] === '0') { return ['error' => 2, 'message' => 'Ustaw status']; }
 
     $data = [
-      'email' => $params['email'] ?? '',
-      'title' => $params['title'] ?? '',
-      'id_group' => (int)$params['id_group'],
+      'name' => $params['name'] ?? '',
+      'description' => $params['description'] ?? '',
       'state' => (int)$params['state'],
       'update_ip' => $_SERVER['REMOTE_ADDR']
     ];
-
-    if (isset($params['password']) && $params['password']) {
-      $data['password'] = password_hash($params['password'], PASSWORD_DEFAULT);
-    }
     
     if (isset($params['id']) && $params['id']) {
       $status = $this->where('id', (int)$params['id'])->update($data);
     } else {
       $data['create_ip'] = $_SERVER['REMOTE_ADDR'];
-      if (!isset($params['password']) || !$params['password']) {
-        $data['password'] = password_hash(uniqid(), PASSWORD_DEFAULT);
-      }
 
       $status = $this->insert($data);
     }
@@ -139,10 +116,8 @@ class UsersRepository extends Repository
   {
     $new_row = [
       'id' => 0,
-      'email' => '',
-      'password' => '',
-      'title' => '',
-      'id_group' => 2,
+      'name' => '',
+      'description' => '',
       'state' => 1,
       'create_time' => '',
       'create_ip' => '',

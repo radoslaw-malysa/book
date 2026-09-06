@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router";
+import { Link, NavLink, Outlet } from "react-router";
 import { Button } from "../components/ui/button";
 import { UserRound } from 'lucide-react'
 
@@ -10,16 +10,19 @@ const AdminLayout = () => {
         <nav>
           <ul className="flex gap-4 xl:gap-6">
             <li>
-              <Link to="/booking">Rezerwacje</Link>
+              <NavLink to="/booking" end className={({ isActive }) => isActive ? "font-bold" : ""}>Kalendarz</NavLink>
             </li>
             <li>
-              <a href="">Oferta</a>
+              <NavLink to="/booking/appointments" className={({ isActive }) => isActive ? "font-bold" : ""}>Rezerwacje</NavLink>
             </li>
             <li>
-              <a href="">Raporty</a>
+              <NavLink to="/booking/services" className={({ isActive }) => isActive ? "font-bold" : ""}>Warsztaty</NavLink>
             </li>
             <li>
-              <Link to="/booking/users">Użytkownicy</Link>
+              <NavLink to="/booking/categories" className={({ isActive }) => isActive ? "font-bold" : ""}>Kategorie</NavLink>
+            </li>
+            <li>
+              <NavLink to="/booking/users" className={({ isActive }) => isActive ? "font-bold" : ""}>Użytkownicy</NavLink>
             </li>
             <li>
               <a href="">Historia</a>
