@@ -6,19 +6,27 @@ import { queryClient } from "../lib/query-client";
 import Services, { loader as servicesLoader } from "@/pages/Services";
 import AppointmentsCalendar from "@/pages/AppointmentsCalendar";
 import Categories, { loader as categoriesLoader } from "@/pages/Categories";
+import CalendarWeek, { loader as weekLoader } from "@/features/appointments/CalendarWeek";
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to='/admin' replace />
+    element: <Navigate to='/booking/calendar' replace />
   },
   {
     path: "booking",
     Component: AdminLayout,
     children: [
       {
-        index: true,
-        Component: AppointmentsCalendar
+        path: "calendar",
+        Component: AppointmentsCalendar,
+        children: [
+          { 
+            path: "week", 
+            Component: CalendarWeek,
+            loader: weekLoader(queryClient)
+          }
+        ],
       },
       {
         path: "appointments",

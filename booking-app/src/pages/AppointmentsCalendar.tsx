@@ -1,9 +1,6 @@
-import { queryOptions, useSuspenseQuery, type QueryClient } from "@tanstack/react-query";
-import type { LoaderFunctionArgs } from "react-router";
-import { getAppointments } from "../api/appointments";
+import { Outlet } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Calendar1, CalendarDays, ChevronDownIcon, Plus, SearchIcon, XIcon } from "lucide-react";
-import ViewCalendar from "@/features/appointments/ViewCalendar";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
@@ -13,23 +10,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 
-
-const appointmentsQuery = () =>
-  queryOptions({
-    queryKey: ["users"],
-    queryFn: getAppointments,
-  });
-
-export const loader =
-  (client: QueryClient) =>
-  async (_args: LoaderFunctionArgs) => {
-    await client.ensureQueryData(appointmentsQuery());
-    return null;
-  };
-
 const AppointmentsCalendar = () => {
-  const { data } = useSuspenseQuery(appointmentsQuery());
-  const [date, setDate] = useState<Date | undefined>(new Date())
+
+  const [date, setDate] = useState<Date | undefined>(new Date());
   
   return <div className="flex gap-6 h-full">
     <div>
@@ -82,8 +65,8 @@ const AppointmentsCalendar = () => {
         </CardAction>
       </CardHeader>
       <CardContent>
-        <ViewCalendar />
-        
+        <Outlet />
+        xx
       </CardContent>
     </Card>
   </div>

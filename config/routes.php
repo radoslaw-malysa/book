@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use App\Action\CrudAction;
 use App\Action\AuthAction;
+use App\Action\CalendarAction;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -23,6 +24,8 @@ return function (App $app) {
         $app->get('/search/{table}', CrudAction::class . ":searchTable"); // combobox
         $app->get('/find/{table}', CrudAction::class . ":findTable"); // find one
 
+        $app->get('/calendar/week', CalendarAction::class); // combobox
+        $app->get('/calendar/day', CalendarAction::class . ":day"); // combobox
         
         $app->get('/{table}/{id}', CrudAction::class . ":getRow");
         $app->get('/{table}', CrudAction::class . ":getTable");
