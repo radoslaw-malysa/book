@@ -11,6 +11,7 @@ use \App\Model\Repositories\AppointmentsRepository;
 use \App\Model\Repositories\UsersRepository;
 use \App\Model\Repositories\ServicesRepository;
 use \App\Model\Repositories\CategoriesRepository;
+use \App\Model\Repositories\ProvidersRepository;
 
 // use Slim\Views\PhpRenderer;
 use \App\Support\JsonRenderer;
@@ -24,7 +25,8 @@ class CrudAction
     AppointmentsRepository $appointments,
     UsersRepository $users,
     ServicesRepository $services,
-    CategoriesRepository $categories
+    CategoriesRepository $categories,
+    ProvidersRepository $providers
     )
   {
     $this->json = $json;
@@ -32,6 +34,7 @@ class CrudAction
     $this->users = $users;
     $this->services = $services;
     $this->categories = $categories;
+    $this->providers = $providers;
   }
 
   public function __invoke(Request $request, Response $response, $args) {

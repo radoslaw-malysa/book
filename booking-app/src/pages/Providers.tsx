@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getProviders, type ProviderFilters } from "@/api/providers";
 import { useEffect, useState, type FC } from "react";
 import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,13 +16,12 @@ import { Plus, SearchIcon, XIcon } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Paginate } from "@/components/Paginate";
-import { getCategories, type CategoryFilters } from "@/api/categories";
-import CategoryEditDialog from "@/features/categories/CategoryEditDialog";
+import ProviderEditDialog from "@/features/providers/ProviderEditDialog";
 
-export const categoriesQuery = (filters: CategoryFilters = {}) =>
+export const providersQuery = (filters: ProviderFilters = {}) =>
   queryOptions({
-    queryKey: ["categories", filters.q ?? "", filters.page ?? ""],
-    queryFn: () => getCategories(filters),
+    queryKey: ["providers", filters.q ?? "", filters.page ?? ""],
+    queryFn: () => getProviders(filters),
   });
 
 export const loader =
@@ -31,12 +31,12 @@ export const loader =
     const q = searchParams.get("q") ?? undefined;
     const page = searchParams.get("page") ?? undefined;
 
-    const filters: CategoryFilters = {
+    const filters: ProviderFilters = {
       q: q,
       page: page,
     };
 
-    await client.ensureQueryData(categoriesQuery(filters));
+    await client.ensureQueryData(providersQuery(filters));
     
     return { filters };
   };
@@ -52,10 +52,10 @@ const StateIndicator: FC<IndicatorProps> = ({state}) => {
   return (<div className="flex items-center gap-2"><span className={`size-1.5 rounded-full ${colors[state]}`}></span><span className="text-muted-foreground">{states[state]}</span></div>)
 }
 
-const Categories = () => {
+const Providers = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [filters, setFilters] = useState<CategoryFilters>({
+  const [filters, setFilters] = useState<ProviderFilters>({
     q: searchParams.get("q") ?? "",
     page: searchParams.get("page") ?? "",
   });
@@ -64,7 +64,7 @@ const Categories = () => {
   const { filters: loaderFilters } = useLoaderData() as Awaited<
     ReturnType<ReturnType<typeof loader>>
   >
-  const { data } = useSuspenseQuery(categoriesQuery(loaderFilters));
+  const { data } = useSuspenseQuery(providersQuery(loaderFilters));
   
   // debounced q
   const [q, setQ] = useState(searchParams.get("q") ?? ""); // debounced filter
@@ -101,7 +101,7 @@ const Categories = () => {
   return (
     <Card className="w-full h-full shadow-none ring-0">
       <CardHeader>
-        <CardTitle>Kategorie warsztatów</CardTitle>
+        <CardTitle>Sale</CardTitle>
         <CardAction>
           <div className="flex gap-2 items-center">
             <InputGroup>
@@ -121,7 +121,7 @@ const Categories = () => {
             <Button 
               className="cursor-pointer" 
               onClick={() => setSelectedId(0)}
-            ><Plus /> Dodaj warsztaty</Button>
+            ><Plus /> Dodaj salę</Button>
           </div>
         </CardAction>
       </CardHeader>
@@ -131,7 +131,7 @@ const Categories = () => {
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Nazwa</TableHead>
-              <TableHead>Cena</TableHead>
+              <TableHead>Opis</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
@@ -144,7 +144,7 @@ const Categories = () => {
               >
                 <TableCell>{item.id}</TableCell>
                 <TableCell>{item.name}</TableCell>
-                <TableCell></TableCell>
+                <TableCell>{item.description}</TableCell>
                 <TableCell><StateIndicator state={item.state} /></TableCell>
               </TableRow>
             ))}
@@ -155,9 +155,9 @@ const Categories = () => {
       {data.total_pages > 1 && <CardFooter>
         <Paginate page={filters.page} totalPages={data.total_pages} onChange={pageChangeHandler} />
       </CardFooter>}
-      <CategoryEditDialog itemId={selectedId} onClose={() => setSelectedId(null)} />
+      <ProviderEditDialog itemId={selectedId} onClose={() => setSelectedId(null)} />
     </Card>
   );
 };
 
-export default Categories;
+export default Providers;

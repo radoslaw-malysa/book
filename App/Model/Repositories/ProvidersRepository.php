@@ -9,12 +9,12 @@ use App\Model\Repositories\Repository;
 /**
  * Repository.
  */
-class CategoriesRepository extends Repository
+class ProvidersRepository extends Repository
 {
   public function __construct(PDO $connection, Tables $tables)
   {
     $this->connection = $connection;
-    $this->model = $tables->categories;
+    $this->model = $tables->providers;
     $this->tables = $tables;
   }
 
@@ -24,18 +24,18 @@ class CategoriesRepository extends Repository
     $per_page = 5; //pagination
 
     if (isset($params['q']) && $params['q']) {
-      $filters[] = "(se.name like :name or se.description like :description) ";
+      $filters[] = "(pr.name like :name or pr.description like :description) ";
       $q_param = '%'.$params['q'].'%';
     }
 
     // deleted state
     if (!isset($params['state']) || !$params['state']) {
-      $filters[] = "se.state != '3' ";
+      $filters[] = "pr.state != '3' ";
     }
 
     // count all records
     $query = "select count(*) 
-    from " . $this->model . " se ";
+    from " . $this->model . " pr ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
     $st = $this->connection->prepare($query);
     
@@ -52,10 +52,10 @@ class CategoriesRepository extends Repository
     $offset = $paginator->getCurrentPageFirstItem();
 
     // actual query
-    $query = "select se.* 
-    from " . $this->model . " se ";
+    $query = "select pr.* 
+    from " . $this->model . " pr ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
-    $query .= " order by se.id desc ";
+    $query .= " order by pr.id desc ";
     $query .= ($offset) ? (" limit " . $offset . ", " . $per_page) : '';
     $st = $this->connection->prepare($query);
     
@@ -89,7 +89,7 @@ class CategoriesRepository extends Repository
 
   public function postRow($params=[])
   {
-    if (!isset($params['name']) || !$params['name']) { return ['error' => 2, 'message' => 'Wypełnij nazwę warsztatów']; }
+    if (!isset($params['name']) || !$params['name']) { return ['error' => 2, 'message' => 'Wypełnij nazwę']; }
     if (!isset($params['state']) || !$params['state'] || $params['state'] === '0') { return ['error' => 2, 'message' => 'Ustaw status']; }
 
     $data = [
@@ -101,7 +101,7 @@ class CategoriesRepository extends Repository
     if (isset($params['id']) && $params['id']) {
       $status = $this->where('id', (int)$params['id'])->update($data);
     } else {
-      $data['create_ip'] = $_SERVER['REMOTE_ADDR'];
+      // $data['create_ip'] = $_SERVER['REMOTE_ADDR'];
 
       $status = $this->insert($data);
     }

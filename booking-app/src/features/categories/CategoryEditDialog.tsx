@@ -10,28 +10,29 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { getService, updateService, type Service } from "@/api/services";
+import { getCategory, updateCategory, type Category } from "@/api/categories";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ItemEditDialogProps {
   itemId: number | null;
   onClose: () => void;
 }
 
-const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
+const CategoryEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState<Service | null>(null);
+  const [form, setForm] = useState<Category | null>(null);
 
   const userQuery = useQuery({
-    queryKey: ["users", itemId],
-    queryFn: () => getService(itemId as number),
+    queryKey: ["categories", itemId],
+    queryFn: () => getCategory(itemId as number),
     enabled: itemId !== null,
   });
   
   const updateMutation = useMutation({
-    mutationFn: updateService,
+    mutationFn: updateCategory,
     onSuccess: (resp) => {
       console.log(resp)
       if (resp.message) {
@@ -41,7 +42,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
           description: resp.message
         })
       } else {
-        queryClient.invalidateQueries({ queryKey: ["services"] });
+        queryClient.invalidateQueries({ queryKey: ["categories"] });
         onClose();
       }
     },
@@ -65,9 +66,9 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
 
   const states = [
     { label: 'Wybierz status', value: null },
-    { label: 'Aktywny', value: 1 },
-    { label: 'Zablokowany', value: 2 },
-    { label: 'Usunięty', value: 3 }
+    { label: 'Aktywna', value: 1 },
+    { label: 'Zablokowana', value: 2 },
+    { label: 'Usunięta', value: 3 }
   ];
 
   return (
@@ -81,8 +82,8 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
     >
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Edycja warsztatów</DialogTitle>
-          <DialogDescription>Zaktualizuj dane warsztatów.</DialogDescription>
+          <DialogTitle>Edycja kategorii</DialogTitle>
+          <DialogDescription>Opis kategorii warsztatów</DialogDescription>
         </DialogHeader>
         {userQuery.isPending && <p className="text-sm text-muted-foreground">Ładowanie danych...</p>}
         {userQuery.isError && <p className="text-sm text-destructive">{userQuery.error.message}</p>}
@@ -93,7 +94,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
           }}>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="name">Nazwa warsztatów</FieldLabel>
+                <FieldLabel htmlFor="name">Nazwa kategorii</FieldLabel>
                 <Input 
                   id="name"
                   value={form.name}
@@ -103,7 +104,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
               </Field>
               <Field>
                 <FieldLabel htmlFor="description">Opis</FieldLabel>
-                <Input 
+                <Textarea 
                   id="description"
                   value={form.description}
                   onChange={(event) => updateField('description', event.target.value)}
@@ -148,4 +149,4 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
   );
 };
 
-export default ServiceEditDialog;
+export default CategoryEditDialog;

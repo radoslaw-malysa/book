@@ -22,10 +22,10 @@ const AdminLayout = () => {
               <NavLink to="/booking/categories" className={({ isActive }) => isActive ? "font-bold" : ""}>Kategorie</NavLink>
             </li>
             <li>
-              <NavLink to="/booking/users" className={({ isActive }) => isActive ? "font-bold" : ""}>Użytkownicy</NavLink>
+              <NavLink to="/booking/providers" className={({ isActive }) => isActive ? "font-bold" : ""}>Sale</NavLink>
             </li>
             <li>
-              <a href="">Historia</a>
+              <NavLink to="/booking/users" className={({ isActive }) => isActive ? "font-bold" : ""}>Użytkownicy</NavLink>
             </li>
           </ul>
         </nav>

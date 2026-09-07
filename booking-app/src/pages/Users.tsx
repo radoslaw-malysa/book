@@ -141,6 +141,7 @@ const Users = () => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>ID</TableHead>
               <TableHead>E-mail</TableHead>
               <TableHead>Nazwa</TableHead>
               <TableHead>Grupa</TableHead>
@@ -154,7 +155,8 @@ const Users = () => {
                 className="cursor-pointer"
                 onClick={() => setSelectedUserId(user.id)}
               >
-                <TableCell className="font-medium">{user.email}</TableCell>
+                <TableCell>{user.id}</TableCell>
+                <TableCell>{user.email}</TableCell>
                 <TableCell>{user.title}</TableCell>
                 <TableCell>{GroupNames[user.id_group]}</TableCell>
                 <TableCell><StateIndicator state={user.state} /></TableCell>

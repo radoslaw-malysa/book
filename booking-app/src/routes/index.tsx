@@ -7,6 +7,7 @@ import Services, { loader as servicesLoader } from "@/pages/Services";
 import AppointmentsCalendar from "@/pages/AppointmentsCalendar";
 import Categories, { loader as categoriesLoader } from "@/pages/Categories";
 import CalendarWeek, { loader as weekLoader } from "@/features/appointments/CalendarWeek";
+import Providers, { loader as providersLoader } from "@/pages/Providers";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,11 @@ export const router = createBrowserRouter([
         path: "categories",
         Component: Categories,
         loader: categoriesLoader(queryClient)
+      },
+      {
+        path: "providers",
+        Component: Providers,
+        loader: providersLoader(queryClient)
       },
       {
         path: "users",

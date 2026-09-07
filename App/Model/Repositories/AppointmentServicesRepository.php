@@ -21,17 +21,21 @@ class AppointmentServicesRepository extends Repository
   public function getRange($params = [])
   {
     $filters = [];
-
-    // deleted state
     if (!isset($params['state']) || !$params['state']) {
       $filters[] = "ap.state != '3' ";
+    }
+    if (isset($params['start_time']) && isset($params['end_time'])) {
+      $filters[] = "(
+        (a.start_time >= '{$params['start_time']}' and a.start_time < '{$params['end_time']}') or 
+        (a.end_time > '{$params['start_time']}' and a.end_time <= '{$params['end_time']}') or 
+        (a.start_time < '{$params['start_time']}' and a.end_time > '{$params['end_time']}')
+      )";
     }
 
     $query = "select a.*, ap.state 
     from " . $this->model . " a left join " . $this->tables->appointments . " ap on a.appointment_id = ap.id ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
     $st = $this->connection->prepare($query);
-
 
     $st->execute();
     return $st->fetchAll();
