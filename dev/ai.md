@@ -16,6 +16,8 @@ Dont generate any code, just givem e the key building block and structure.
 
 https://www.youtube.com/watch?v=ZxGEJMSrmdE
 
+https://www.shadcn.io/blocks/calendar-weekly-planner
+
 
 public function get_table_custom(Request $request, Response $response, $args)
         {

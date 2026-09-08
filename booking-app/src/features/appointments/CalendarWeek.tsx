@@ -27,9 +27,9 @@ export const loader =
   };
 
 const AppointmentTip = ({ appointment }) => {
-  return (<div className={`absolute p-1 left-1 right-1 rounded-md bg-blue-300/80`} style={{ top: appointment.offset + 'px', height: appointment.duration + 'px' }}>
-    <div className="font-medium">{appointment.hours}</div>
-    <div className="text-xs leading-[1.125]">{appointment.service_name}</div>
+  return (<div className={`absolute top-0.5 left-0.5 right-0.5 z-10 ${(appointment.cut_start !== undefined) ? 'rounded-t-none' : 'rounded-t' } ${(appointment.cut_end !== undefined) ? 'rounded-b-none' : 'rounded-b' } border-l-2 px-1.5 py-1 border-l-blue-500 bg-blue-500/5`} style={{ top: appointment.offset + 'px', height: appointment.duration + 'px' }}>
+    <div className="line-clamp-2 font-medium text-xs text-blue-600 dark:text-blue-400">{appointment.service_name}</div>
+    <div className="truncate text-muted-foreground text-xs">{appointment.hours}</div>
   </div>)
 }
 
@@ -59,12 +59,12 @@ const CalendarWeek =  () => {
 
   return (<div>
     <div className="flex flex-wrap border-b">
-      <div className="border-r w-16"></div>
+      <div className="border-r w-12"></div>
       <div className="flex-grow flex">
       {data.days.map((item) => (
-        <div className="basis-sm flex flex-col justify-center items-center not-last:border-r">
-          <div>{item.week_day}</div>
-          <div className="font-medium">{item.date}</div>
+        <div key={item.week_day} className="basis-sm not-last:border-r flex flex-col items-center py-2 text-center transition-colors hover:bg-muted/50 ">
+          <div className="text-muted-foreground text-xs">{item.week_day}</div>
+          <div className="mt-0.5 font-medium text-sm">{item.date}</div>
         </div>
       ))}
       </div>
@@ -74,9 +74,9 @@ const CalendarWeek =  () => {
     {data.providers.map((prov) => (<div key={prov.id} className="w-full">
       <div className="border-b flex justify-center pt-4 pb-2 text-base font-semibold">{prov.name}</div>
       <div className="flex flex-wrap">
-        <div className="border-r w-16 flex flex-col">
+        <div className="border-r w-12 flex flex-col text-muted-foreground text-xs">
           {data.hours.map((h) => (
-            <div key={h} className="c-h">{h}</div>
+            <div key={h} className="c-h flex items-start justify-end pr-2 pt-1">{h}</div>
           ))}
         </div>
         <div className="flex-grow flex">

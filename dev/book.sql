@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 06, 2026 at 08:21 PM
+-- Generation Time: Sep 08, 2026 at 07:00 PM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.30
 
@@ -47,7 +47,8 @@ CREATE TABLE `book_appointments` (
 --
 
 INSERT INTO `book_appointments` (`id`, `customer_id`, `salon_id`, `status`, `total_price`, `notes`, `state`, `created_at`, `create_time`, `create_ip`, `update_time`, `update_ip`) VALUES
-(1, 1, 1, 'confirmed', 100.00, NULL, 1, '2026-09-06 17:55:00', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '');
+(1, 1, 1, 'confirmed', 100.00, NULL, 1, '2026-09-06 17:55:00', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', ''),
+(2, 1, 1, 'confirmed', 100.00, NULL, 1, '2026-09-06 17:55:00', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '');
 
 -- --------------------------------------------------------
 
@@ -61,9 +62,16 @@ CREATE TABLE `book_appointment_services` (
   `provider_id` int UNSIGNED NOT NULL DEFAULT '0',
   `start_time` datetime DEFAULT NULL,
   `end_time` datetime DEFAULT NULL,
-  `price_at_booking` decimal(10,2) NOT NULL,
-  `duration_at_booking` int NOT NULL
+  `price_at_booking` decimal(10,2) NOT NULL DEFAULT '0.00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
+
+--
+-- Dumping data for table `book_appointment_services`
+--
+
+INSERT INTO `book_appointment_services` (`appointment_id`, `service_id`, `provider_id`, `start_time`, `end_time`, `price_at_booking`) VALUES
+(1, 1, 1, '2026-09-08 09:00:00', '2026-09-10 11:00:00', 0.00),
+(2, 1, 2, '2026-09-09 10:00:00', '2026-09-09 12:00:00', 0.00);
 
 -- --------------------------------------------------------
 
@@ -75,6 +83,7 @@ CREATE TABLE `book_categories` (
   `id` int NOT NULL,
   `salon_id` int NOT NULL,
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_polish_ci NOT NULL,
   `state` tinyint UNSIGNED NOT NULL DEFAULT '1',
   `ord` smallint UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
@@ -83,13 +92,13 @@ CREATE TABLE `book_categories` (
 -- Dumping data for table `book_categories`
 --
 
-INSERT INTO `book_categories` (`id`, `salon_id`, `name`, `state`, `ord`) VALUES
-(1, 1, 'Przedszkola oraz klasy I–III szkół podstawowych', 1, 6),
-(2, 1, 'Klasy IV–VIII szkół podstawowych', 1, 5),
-(3, 1, 'Uczniowie szkół ponadpodstawowych', 1, 4),
-(4, 1, 'Dorośli i seniorzy', 1, 3),
-(5, 1, 'Rodziny', 1, 2),
-(6, 1, 'Osoby z niepełnosprawnościami', 1, 1);
+INSERT INTO `book_categories` (`id`, `salon_id`, `name`, `description`, `state`, `ord`) VALUES
+(1, 1, 'Przedszkola oraz klasy I–III szkół podstawowych', '', 1, 6),
+(2, 1, 'Klasy IV–VIII szkół podstawowych', '', 1, 5),
+(3, 1, 'Uczniowie szkół ponadpodstawowych', '', 1, 4),
+(4, 1, 'Dorośli i seniorzy', '', 1, 3),
+(5, 1, 'Rodziny', '', 1, 2),
+(6, 1, 'Osoby z niepełnosprawnościami', '', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -125,8 +134,17 @@ CREATE TABLE `book_providers` (
   `salon_id` int NOT NULL,
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
   `last_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
-  `is_active` tinyint(1) DEFAULT '1'
+  `description` varchar(128) COLLATE utf8mb4_polish_ci NOT NULL,
+  `state` tinyint(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
+
+--
+-- Dumping data for table `book_providers`
+--
+
+INSERT INTO `book_providers` (`id`, `salon_id`, `name`, `last_name`, `description`, `state`) VALUES
+(1, 1, 'Sala edukacyjna 1', '', '', 1),
+(2, 1, 'Sala wystawowa', '', '', 1);
 
 -- --------------------------------------------------------
 
@@ -173,7 +191,7 @@ CREATE TABLE `book_services` (
   `id` int NOT NULL,
   `category_id` int NOT NULL,
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci,
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci DEFAULT NULL,
   `base_price` decimal(10,2) DEFAULT NULL,
   `base_duration` int DEFAULT NULL,
   `state` tinyint UNSIGNED NOT NULL DEFAULT '0',
@@ -341,7 +359,7 @@ ALTER TABLE `book_working_hours`
 -- AUTO_INCREMENT for table `book_appointments`
 --
 ALTER TABLE `book_appointments`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `book_categories`
@@ -359,7 +377,7 @@ ALTER TABLE `book_customers`
 -- AUTO_INCREMENT for table `book_providers`
 --
 ALTER TABLE `book_providers`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `book_salons`
