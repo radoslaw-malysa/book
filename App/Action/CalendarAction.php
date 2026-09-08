@@ -66,13 +66,7 @@ class CalendarAction
       $range_end
     );
 
-    // hours
-    $hour_open = \DateTime::createFromFormat('H:i:s', RESERVATION_TIME_START);
-    $hour_period = new \DatePeriod(
-      $hour_open,
-      new \DateInterval('PT1H'),
-      \DateTime::createFromFormat('H:i:s', RESERVATION_TIME_END) 
-    );
+    $day_names = ['','Pon','Wt','Śr','Czw','Pt','Sob','Niedz'];
 
     // get rows
     $items = [];
@@ -110,20 +104,35 @@ class CalendarAction
           $row['cut_end'] = 1;
         }
 
-        $items[$d_index][$row['provider_id']] = $row;
+        $row['hours'] = substr($row['start_time'], 11, 5) . ' - ' . substr($row['end_time'], 11, 5);
+
+        $items[$d_index][$row['provider_id']][] = $row;
       }
 
       // labels
       $days[] = [
         'date' => $d_index,
-        'week_day' => date('N', strtotime($d_index))
+        'week_day' => $day_names[(int)date('N', strtotime($d_index))]
       ];
+    }
+
+    // hours
+    $hour_open = \DateTime::createFromFormat('H:i:s', RESERVATION_TIME_START);
+    $hour_period = new \DatePeriod(
+      $hour_open,
+      new \DateInterval('PT1H'),
+      \DateTime::createFromFormat('H:i:s', RESERVATION_TIME_END) 
+    );
+
+    foreach ($hour_period as $h) {
+      $hours[] = $h->format('H:i');
     }
 
     $payload = [
       'items' => $items,
       'days' => $days,
-      'providers' => $this->providers->where('state', 1)->getIndexed(['id', 'name'])
+      'hours' => $hours,
+      'providers' => $this->providers->where('state', 1)->get(['id', 'name'])
     ];
 
     // echo '<pre>'; print_r($payload); exit;

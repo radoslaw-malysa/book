@@ -8,17 +8,24 @@ export interface AppointmentService {
   end_time: string;
 }
 
+interface ApiDay {
+  date: string;
+  week_day: string;
+}
+
 const calendarWeekUrl = apiUrl + "/calendar/week";
 
 export interface CalendarFilters {
   q?: string;
   page?: string | number;
+  date: string;
 }
 
 interface ApiItemsData {
   items: AppointmentService[];
-  total_items: number;
-  total_pages: number;
+  days: ApiDay[];
+  hours: [];
+  providers: [];
 }
 
 export const getCalendarWeek = async (filters: CalendarFilters = {}): Promise<ApiItemsData> => {

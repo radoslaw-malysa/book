@@ -32,8 +32,9 @@ class AppointmentServicesRepository extends Repository
       )";
     }
 
-    $query = "select a.*, ap.state 
-    from " . $this->model . " a left join " . $this->tables->appointments . " ap on a.appointment_id = ap.id ";
+    $query = "select a.*, ap.state, se.name as service_name 
+    from " . $this->model . " a left join " . $this->tables->appointments . " ap on a.appointment_id = ap.id 
+    left join {$this->tables->services} se on a.service_id = se.id ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
     $st = $this->connection->prepare($query);
 

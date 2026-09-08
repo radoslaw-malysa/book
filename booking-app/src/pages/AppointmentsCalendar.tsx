@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
+import '@/features/appointments/calendar.css';
 
 const AppointmentsCalendar = () => {
 
@@ -66,7 +67,6 @@ const AppointmentsCalendar = () => {
       </CardHeader>
       <CardContent>
         <Outlet />
-        xx
       </CardContent>
     </Card>
   </div>

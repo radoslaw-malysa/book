@@ -1,0 +1,11 @@
+.c-h {
+  height: 60px;
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+}
+.c-height {
+  height: calc(100svh - 240px);
+}
+.c-prov {
+  writing-mode: vertical-lr;
+}
