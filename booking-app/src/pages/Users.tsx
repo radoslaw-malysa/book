@@ -157,7 +157,7 @@ const Users = () => {
               >
                 <TableCell>{user.id}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.title}</TableCell>
+                <TableCell className="font-medium">{user.title}</TableCell>
                 <TableCell>{GroupNames[user.id_group]}</TableCell>
                 <TableCell><StateIndicator state={user.state} /></TableCell>
               </TableRow>

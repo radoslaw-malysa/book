@@ -88,6 +88,26 @@ class CrudAction
     return $this->json->render($response, $payload);
   }
 
+  public function fakePostRow($request, $response, $args) 
+  {
+    $table = $args['table'];
+    $data = $request->getParsedBody();
+
+    $data = [
+      'id' => 0,
+      'name' => 'Spacer po wystawie i warsztaty plastyczne',
+      'description' => 's',
+      'state' => 1,
+      'create_time' => null
+    ];
+
+    if (is_array($data)) {
+      $payload = $this->$table->postRow($data);
+    }
+    
+    return $this->json->render($response, $payload);
+  }
+
   public function searchTable($request, $response, $args) 
   {
     $table = $args['table'];

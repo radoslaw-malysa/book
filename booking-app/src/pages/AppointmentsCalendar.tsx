@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet, useNavigate, useSearchParams } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Calendar1, CalendarDays, ChevronDownIcon, Plus, SearchIcon, XIcon } from "lucide-react";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,8 +10,15 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import '@/features/appointments/calendar.css';
+import type { CalendarFilters } from "@/api/calendar";
 
 const AppointmentsCalendar = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [filters, setFilters] = useState<CalendarFilters>({
+    date: searchParams.get("date") ?? "",
+    page: searchParams.get("page") ?? "",
+  });
 
   const [date, setDate] = useState<Date | undefined>(new Date());
   
@@ -42,7 +49,7 @@ const AppointmentsCalendar = () => {
         </Collapsible>
       </div>
     </div>
-    <Card className="w-full h-full shadow-none ring-0">
+    <Card className="w-full h-full shadow-none ring-0 gap-4">
       <CardHeader>
         <CardTitle>
           <ButtonGroup>

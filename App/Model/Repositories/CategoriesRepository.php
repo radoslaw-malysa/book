@@ -21,7 +21,7 @@ class CategoriesRepository extends Repository
   public function getRows($params = []) 
   {
     $filters = [];
-    $per_page = 5; //pagination
+    $per_page = 50; //pagination
 
     if (isset($params['q']) && $params['q']) {
       $filters[] = "(se.name like :name or se.description like :description) ";
@@ -56,7 +56,7 @@ class CategoriesRepository extends Repository
     from " . $this->model . " se ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
     $query .= " order by se.id desc ";
-    $query .= ($offset) ? (" limit " . $offset . ", " . $per_page) : '';
+    $query .= ($per_page) ? (" limit " . $offset . ", " . $per_page) : '';
     $st = $this->connection->prepare($query);
     
     if (isset($params['q']) && $params['q']) {

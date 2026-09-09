@@ -143,7 +143,7 @@ const Providers = () => {
                 onClick={() => setSelectedId(item.id)}
               >
                 <TableCell>{item.id}</TableCell>
-                <TableCell>{item.name}</TableCell>
+                <TableCell className="font-medium">{item.name}</TableCell>
                 <TableCell>{item.description}</TableCell>
                 <TableCell><StateIndicator state={item.state} /></TableCell>
               </TableRow>

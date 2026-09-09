@@ -131,7 +131,7 @@ const Services = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nazwa</TableHead>
+              <TableHead>ID</TableHead>
               <TableHead>Nazwa</TableHead>
               <TableHead>Cena</TableHead>
               <TableHead>Status</TableHead>
@@ -144,8 +144,8 @@ const Services = () => {
                 className="cursor-pointer"
                 onClick={() => setSelectedId(item.id)}
               >
-                <TableCell className="font-medium">{item.name}</TableCell>
-                <TableCell>{item.name}</TableCell>
+                <TableCell>{item.id}</TableCell>
+                <TableCell><div  className="font-medium">{item.name}</div>{item.description && <div className="text-muted-foreground text-xs">{item.description}</div>}</TableCell>
                 <TableCell></TableCell>
                 <TableCell><StateIndicator state={item.state} /></TableCell>
               </TableRow>

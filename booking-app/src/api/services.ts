@@ -2,7 +2,6 @@ import { apiUrl, toFormData, type ErrorMessage } from "./api";
 
 export interface Service {
   id: number;
-  category_id: number;
   name: string;
   description: string;
   base_price: string;

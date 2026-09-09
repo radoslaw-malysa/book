@@ -56,7 +56,7 @@ class ProvidersRepository extends Repository
     from " . $this->model . " pr ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
     $query .= " order by pr.id desc ";
-    $query .= ($offset) ? (" limit " . $offset . ", " . $per_page) : '';
+    $query .= ($per_page) ? (" limit " . $offset . ", " . $per_page) : '';
     $st = $this->connection->prepare($query);
     
     if (isset($params['q']) && $params['q']) {

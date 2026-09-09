@@ -66,7 +66,7 @@ class UsersRepository extends Repository
     from " . $this->model . " us ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
     $query .= " order by us.id desc ";
-    $query .= ($offset) ? (" limit " . $offset . ", " . $per_page) : '';
+    $query .= ($per_page) ? (" limit " . $offset . ", " . $per_page) : '';
     $st = $this->connection->prepare($query);
     
     if (isset($params['q']) && $params['q']) {

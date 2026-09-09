@@ -22,7 +22,7 @@ class AppointmentServicesRepository extends Repository
   {
     $filters = [];
     if (!isset($params['state']) || !$params['state']) {
-      $filters[] = "ap.state != '3' ";
+      $filters[] = "ap.state != 'cancelled' ";
     }
     if (isset($params['start_time']) && isset($params['end_time'])) {
       $filters[] = "(
