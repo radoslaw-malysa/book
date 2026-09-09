@@ -10,7 +10,7 @@ const AdminLayout = () => {
         <nav>
           <ul className="flex gap-4 xl:gap-6">
             <li>
-              <NavLink to="/booking/calendar/week" end className={({ isActive }) => isActive ? "font-bold" : ""}>Kalendarz</NavLink>
+              <NavLink to="/booking/calendar" end className={({ isActive }) => isActive ? "font-bold" : ""}>Kalendarz</NavLink>
             </li>
             <li>
               <NavLink to="/booking/appointments" className={({ isActive }) => isActive ? "font-bold" : ""}>Rezerwacje</NavLink>

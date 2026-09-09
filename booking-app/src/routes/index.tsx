@@ -4,10 +4,11 @@ import Appointments, { loader as appointmentsLoader }  from "../pages/Appointmen
 import Users, { loader as usersLoader } from "../pages/Users";
 import { queryClient } from "../lib/query-client";
 import Services, { loader as servicesLoader } from "@/pages/Services";
-import AppointmentsCalendar from "@/pages/AppointmentsCalendar";
+//import AppointmentsCalendar from "@/pages/AppointmentsCalendar";
 import Categories, { loader as categoriesLoader } from "@/pages/Categories";
-import CalendarWeek, { loader as weekLoader } from "@/features/appointments/CalendarWeek";
+//import CalendarWeek, { loader as weekLoader } from "@/features/appointments/CalendarWeek";
 import Providers, { loader as providersLoader } from "@/pages/Providers";
+import Calendary, { loader as calendarLoader } from "@/pages/Calendary";
 
 export const router = createBrowserRouter([
   {
@@ -18,7 +19,7 @@ export const router = createBrowserRouter([
     path: "booking",
     Component: AdminLayout,
     children: [
-      {
+      /*{
         path: "calendar",
         Component: AppointmentsCalendar,
         children: [
@@ -28,6 +29,11 @@ export const router = createBrowserRouter([
             loader: weekLoader(queryClient)
           }
         ],
+      },*/
+      {
+        path: "calendar",
+        Component: Calendary,
+        loader: calendarLoader(queryClient)
       },
       {
         path: "appointments",
