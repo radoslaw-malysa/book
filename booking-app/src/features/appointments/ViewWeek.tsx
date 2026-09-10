@@ -35,20 +35,7 @@ const ViewWeek = ({data}: ViewWeekProps) => {
     return null;
   }
   
-  return (<div>
-    <div className="flex flex-wrap border-b">
-      <div className="border-r w-12"></div>
-      <div className="flex-grow flex">
-      {data.days.map((item) => (
-        <div key={item.week_day} className="basis-sm not-last:border-r flex flex-col items-center py-2 text-center transition-colors hover:bg-muted/50 ">
-          <div className="text-muted-foreground text-xs">{item.week_day}</div>
-          <div className="mt-0.5 font-medium text-sm">{item.date?.substring(8)}</div>
-        </div>
-      ))}
-      </div>
-    </div>
-    
-    <ScrollArea className="c-height w-full">
+  return (<ScrollArea className="c-height w-full">
     {data.providers.map((prov) => (<div key={prov.id} className="w-full">
       <div className="border-b flex justify-center pt-4 pb-2 text-base font-semibold">{prov.name}</div>
       <div className="flex flex-wrap">
@@ -69,8 +56,7 @@ const ViewWeek = ({data}: ViewWeekProps) => {
         </div>
       </div>
     </div>))}
-    </ScrollArea>
-  </div>)
+    </ScrollArea>)
 }
 
 export default ViewWeek

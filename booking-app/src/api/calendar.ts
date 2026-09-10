@@ -16,9 +16,7 @@ interface ApiDay {
 const calendarWeekUrl = apiUrl + "/calendar/week";
 
 export interface CalendarFilters {
-  q?: string;
-  page?: string | number;
-  date: string;
+  date: string | undefined;
 }
 
 interface ApiItemsData {

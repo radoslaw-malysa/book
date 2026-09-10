@@ -6,7 +6,8 @@ interface ViewWeekProps {
     providers: [];
     hours: [];
     days: [];
-  };
+  },
+  date: {}
 }
 
 const stateBg = {
@@ -24,7 +25,7 @@ const AppointmentTip = ({ appointment }) => {
   </div>)
 }
 
-const ViewDay = ({data}: ViewWeekProps) => {
+const ViewDay = ({data, date}: ViewWeekProps) => {
   
   const DayProviderAppointments = ({ day, provider_id }) => {
     if (data.items[day] && data.items[day][provider_id]) {
@@ -35,34 +36,29 @@ const ViewDay = ({data}: ViewWeekProps) => {
 
     return null;
   }
+
+  const day = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`
+  console.log(day);
+  console.log(data.items[day])
   
   return (<div>
-    <div className="flex flex-wrap border-b">
+    <div className="flex flex-wrap border-b mt-6">
       <div className="border-r w-12"></div>
-      <div className="flex-grow flex">
-      {data.days.map((item) => (
-        <div key={item.week_day} className="basis-xl not-last:border-r flex flex-col items-center py-2 text-center transition-colors hover:bg-muted/50 ">
-          <div className="text-muted-foreground text-xs">{item.week_day}</div>
-          <div className="mt-0.5 font-medium text-sm">{item.date?.substring(8)}</div>
-        </div>
-      ))}
-      </div>
+      {data.providers.map((prov) => (<div key={prov.id} className="flex justify-center pt-4 pb-2 text-base font-semibold basis-sm flex-grow not-last:border-r">{prov.name}</div>))}
     </div>
-    
-    <ScrollArea className="c-height w-full">
-      <div className="flex flex-wrap border-b">
-        <div className="border-r w-12"></div>
-        {data.providers.map((prov) => (<div key={prov.id} className="basis-sm not-last:border-r flex justify-center">{prov.name}</div>))}
-      </div>
+    <ScrollArea className="c-height-d w-full">
       <div className="flex flex-wrap">
         <div className="border-r w-12 flex flex-col text-muted-foreground text-xs">
           {data.hours.map((h) => (
             <div key={h} className="c-h flex items-start justify-end pr-2 pt-1">{h}</div>
           ))}
         </div>
-        <div className="flex-grow flex">
-
-        </div>
+        {data.providers.map((prov) => (<div key={prov.id} className="flex flex-col font-semibold basis-sm flex-grow not-last:border-r relative">
+          {data.hours.map((h) => (
+              <div key={h} className="c-h"></div>
+            ))}
+          {<DayProviderAppointments day={day} provider_id={prov.id} />}
+        </div>))}
       </div>
     </ScrollArea>
   </div>)
