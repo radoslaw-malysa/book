@@ -56,12 +56,17 @@ const Calendary = () => {
     setFilters((current) => ({ ...current, date: d }))
   }
   
-  const [view, setView] = useState<string>('week');
+  const [view, setView] = useState<'week' | 'day'>('week');
 
   const dateString = `${filters.date.getFullYear()}-${String(filters.date.getMonth()+1).padStart(2,"0")}-${String(filters.date.getDate()).padStart(2,"0")}`
 
-  const changeDayHandler = (d) => {
-
+  const changeDayHandler = (d: string) => {
+    setFilters((current) => ({ ...current, date: new Date(d) }))
+    if (view === 'week') {
+      setView('day')
+    }
+    // filters.date = new Date(d.split("-").map(Number).map((v,i) => i===1 ? v-1 : v))
+    
   }
 
   // zmiany w filtrach
