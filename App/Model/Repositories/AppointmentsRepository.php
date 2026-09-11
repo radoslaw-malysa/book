@@ -68,7 +68,9 @@ class AppointmentsRepository extends Repository
 
     // count all records
     $query = "select count(*) 
-    from " . $this->model . " ap ";
+    from " . $this->model . " ap 
+    left join {$this->tables->services} se on ap.service_id = se.id 
+    left join {$this->tables->customers} cu on ap.customer_id = cu.id ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
     $st = $this->connection->prepare($query);
     
@@ -85,8 +87,10 @@ class AppointmentsRepository extends Repository
     $offset = $paginator->getCurrentPageFirstItem();
 
     // actual query
-    $query = "select ap.* 
-    from " . $this->model . " ap ";
+    $query = "select ap.*, se.name as service_name, cu.name as customer_name 
+    from " . $this->model . " ap 
+    left join {$this->tables->services} se on ap.service_id = se.id 
+    left join {$this->tables->customers} cu on ap.customer_id = cu.id ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
     $query .= " order by ap.id desc ";
     $query .= ($per_page) ? (" limit " . $offset . ", " . $per_page) : '';

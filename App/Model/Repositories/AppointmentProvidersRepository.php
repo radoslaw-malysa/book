@@ -9,15 +9,16 @@ use App\Model\Repositories\Repository;
 /**
  * Repository.
  */
-class AppointmentServicesRepository extends Repository
+class AppointmentProvidersRepository extends Repository
 {
   public function __construct(PDO $connection, Tables $tables)
   {
     $this->connection = $connection;
-    $this->model = $tables->appointment_services;
+    $this->model = $tables->appointment_providers;
     $this->tables = $tables;
   }
 
+  // get rows for calendar
   public function getRange($params = [])
   {
     $filters = [];
@@ -34,7 +35,7 @@ class AppointmentServicesRepository extends Repository
 
     $query = "select a.*, ap.state, se.name as service_name 
     from " . $this->model . " a left join " . $this->tables->appointments . " ap on a.appointment_id = ap.id 
-    left join {$this->tables->services} se on a.service_id = se.id ";
+    left join {$this->tables->services} se on ap.service_id = se.id ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
     $st = $this->connection->prepare($query);
 
@@ -42,7 +43,7 @@ class AppointmentServicesRepository extends Repository
     return $st->fetchAll();
   }
 
-  public function getRows($params = []) 
+  /*public function getRows($params = []) 
   {
     $filters = [];
     $per_page = 5; //pagination
@@ -94,5 +95,5 @@ class AppointmentServicesRepository extends Repository
     $paginator->setResults($items);
 
     return $paginator;
-  }
+  }*/
 }

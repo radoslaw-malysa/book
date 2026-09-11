@@ -46,10 +46,13 @@ interface IndicatorProps {
 }
 
 const StateIndicator: FC<IndicatorProps> = ({state}) => {
-  const states = ['', 'Aktywny', 'Zablokowany', 'Nieaktywny'];
-  const colors = ['bg-red-500', 'bg-green-500', 'bg-red-500', 'bg-red-500'];
+  const appointmentStates = {
+    pending: { title: 'Niepotwierdzona', color: 'bg-amber-500' },
+    confirmed: { title: 'Potwierdzona', color: 'bg-green-500' },
+    cancelled: { title: 'Anulowana', color: 'bg-red-500' },
+  }
 
-  return (<div className="flex items-center gap-2"><span className={`size-1.5 rounded-full ${colors[state]}`}></span><span className="text-muted-foreground">{states[state]}</span></div>)
+  return (<div className="flex items-center gap-2"><span className={`size-1.5 rounded-full ${appointmentStates[state].color}`}></span><span className="text-muted-foreground">{appointmentStates[state].title}</span></div>)
 }
 
 const Appointments = () => {
@@ -129,9 +132,10 @@ const Appointments = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Nazwa</TableHead>
-              <TableHead>Cena</TableHead>
+              <TableHead>Nr</TableHead>
+              <TableHead>Klient</TableHead>
+              <TableHead>Warsztaty</TableHead>
+              <TableHead>Utworzono</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
@@ -143,8 +147,9 @@ const Appointments = () => {
                 onClick={() => setSelectedId(item.id)}
               >
                 <TableCell>{item.id}</TableCell>
-                <TableCell>{item.name}</TableCell>
-                <TableCell></TableCell>
+                <TableCell className="font-medium">{item.customer_name}</TableCell>
+                <TableCell>{item.service_name}{item.service_description && <div className="text-muted-foreground text-xs">{item.service_description}</div>}</TableCell>
+                <TableCell>{item.create_time.substring(0, 16)}</TableCell>
                 <TableCell><StateIndicator state={item.state} /></TableCell>
               </TableRow>
             ))}

@@ -11,7 +11,7 @@ use \App\Model\Repositories\AppointmentsRepository;
 use \App\Model\Repositories\UsersRepository;
 use \App\Model\Repositories\ServicesRepository;
 use \App\Model\Repositories\CategoriesRepository;
-use \App\Model\Repositories\AppointmentServicesRepository;
+use \App\Model\Repositories\AppointmentProvidersRepository;
 use \App\Model\Repositories\ProvidersRepository;
 
 use \App\Support\JsonRenderer;
@@ -32,7 +32,7 @@ class CalendarAction
     UsersRepository $users,
     ServicesRepository $services,
     CategoriesRepository $categories,
-    AppointmentServicesRepository $appointment_services,
+    AppointmentProvidersRepository $appointment_providers,
     ProvidersRepository $providers
     )
   {
@@ -41,7 +41,7 @@ class CalendarAction
     $this->users = $users;
     $this->services = $services;
     $this->categories = $categories;
-    $this->appointment_services = $appointment_services;
+    $this->appointment_providers = $appointment_providers;
     $this->providers = $providers;
   }
 
@@ -77,7 +77,7 @@ class CalendarAction
       $d_params['start_time'] = $d_index . ' ' . RESERVATION_TIME_START;
       $d_params['end_time'] = $d_index . ' ' . RESERVATION_TIME_END;
 
-      $rows = $this->appointment_services->getRange(array_merge($query_params, $d_params));
+      $rows = $this->appointment_providers->getRange(array_merge($query_params, $d_params));
 
       foreach ($rows as $row) {
         $d_start = substr($row['start_time'], 0, 10);

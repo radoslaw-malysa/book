@@ -11,6 +11,9 @@ export interface Appointment {
   create_ip: string;
   update_time: string;
   update_ip: string;
+  service_name: string;
+  service_description: string;
+  customer_name: string;
 }
 
 const appointmentsUrl = apiUrl + "/appointments";

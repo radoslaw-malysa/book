@@ -7,7 +7,8 @@ final class Tables
 {
     public $users = 'users';
     public $appointments = 'appointments';
-    public $appointment_services = 'appointment_services';
+    //public $appointment_services = 'appointment_services';
+    public $appointment_providers = 'appointment_providers';
     public $services = 'services';
     public $customers = 'customers';
     public $categories = 'categories';
