@@ -93,7 +93,7 @@ const CategoryEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
             updateMutation.mutate(form);
           }}>
             <FieldGroup>
-              <Field>
+              <Field className="gap-2">
                 <FieldLabel htmlFor="name">Nazwa kategorii</FieldLabel>
                 <Input 
                   id="name"
@@ -102,7 +102,7 @@ const CategoryEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                   required 
                 />
               </Field>
-              <Field>
+              <Field className="gap-2">
                 <FieldLabel htmlFor="description">Opis</FieldLabel>
                 <Textarea 
                   id="description"
@@ -110,7 +110,7 @@ const CategoryEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                   onChange={(event) => updateField('description', event.target.value)}
                 />
               </Field>
-              <Field>
+              <Field className="gap-2">
                 <FieldLabel>Status</FieldLabel>
                 <Select 
                   items={states} 

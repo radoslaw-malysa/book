@@ -18,6 +18,15 @@ class CategoriesRepository extends Repository
     $this->tables = $tables;
   }
 
+  /**
+   * Edit service dialog
+   */
+  public function getServiceCategories($service_id)
+  {
+    $query = "select ca.id, ca.name, cs.service_id 
+    from {$this->model} ca left join {$this->tables->categories_services} cs on ca.id = cs.category_id ";
+  }
+
   public function getRows($params = []) 
   {
     $filters = [];

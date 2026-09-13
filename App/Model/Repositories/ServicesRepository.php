@@ -5,17 +5,19 @@ namespace App\Model\Repositories;
 use PDO;
 use App\Model\Repositories\Tables;
 use App\Model\Repositories\Repository;
+use App\Model\Repositories\CategoriesRepository;
 
 /**
  * Repository.
  */
 class ServicesRepository extends Repository
 {
-  public function __construct(PDO $connection, Tables $tables)
+  public function __construct(PDO $connection, Tables $tables, CategoriesRepository $categories)
   {
     $this->connection = $connection;
     $this->model = $tables->services;
     $this->tables = $tables;
+    $this->categories = $categories;
   }
 
   public function getRows($params = []) 
@@ -75,18 +77,14 @@ class ServicesRepository extends Repository
   public function getRow($params=[])
   { 
     if (!isset($params['id']) || $params['id'] == 0) {
-      return $this->getNew();
+      $data = $this->getNew();
+    } else {
+      $data = $this->where($this->model.'.id', (int)$params['id'])->first();
     }
     
-    return $this->where($this->model.'.id', (int)$params['id'])
-      ->first([
-        $this->model.'.id', 
-        $this->model.'.name', 
-        $this->model.'.description', 
-        $this->model.'.state', 
-        $this->model.'.update_time', 
-        $this->model.'.update_ip'
-    ]);
+    $data['categories'] = $this->categories->get();
+
+    return $data;
   }
 
   public function postRow($params=[])
@@ -97,7 +95,10 @@ class ServicesRepository extends Repository
     $data = [
       'name' => $params['name'] ?? '',
       'description' => $params['description'] ?? '',
-      'state' => (int)$params['state'],
+      'price' => $params['price'] ?? 0,
+      'duration' => $params['duration'] ?? 0,
+      'online' => $params['online'] ?? 0,
+      'state' => $params['state'] ?? 0,
       'update_ip' => $_SERVER['REMOTE_ADDR']
     ];
     

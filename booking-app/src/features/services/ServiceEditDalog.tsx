@@ -11,21 +11,44 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { getService, updateService, type Service } from "@/api/services";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet, FieldTitle } from "@/components/ui/field";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { X } from "lucide-react";
 
 interface ItemEditDialogProps {
   itemId: number | null;
   onClose: () => void;
 }
 
+const states = [
+  { label: 'Wybierz status', value: null },
+  { label: 'Aktywny', value: 1 },
+  { label: 'Zablokowany', value: 2 },
+  { label: 'Usunięty', value: 3 }
+];
+const days = [
+  {id: 1, label: 'Pon'},
+  {id: 2, label: 'Wt'},
+  {id: 3, label: 'Śr'},
+  {id: 4, label: 'Czw'},
+  {id: 5, label: 'Pt'},
+  {id: 6, label: 'Sob'},
+  {id: 7, label: 'Niedz'}
+];
+
 const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
   const queryClient = useQueryClient();
   const [form, setForm] = useState<Service | null>(null);
 
   const userQuery = useQuery({
-    queryKey: ["users", itemId],
+    queryKey: ["service", itemId],
     queryFn: () => getService(itemId as number),
     enabled: itemId !== null,
   });
@@ -33,7 +56,6 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
   const updateMutation = useMutation({
     mutationFn: updateService,
     onSuccess: (resp) => {
-      console.log(resp)
       if (resp.message) {
         toast.add({
           type: "error",
@@ -53,7 +75,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
     }
   }, [userQuery.data]);
 
-  const updateField = (field: "name" | "description" | "state", value: string) => {
+  const updateField = (field: string, value: string | number) => {
     setForm((current) => (current ? { ...current, [field]: value } : current));
   };
 
@@ -63,13 +85,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
     }
   };
 
-  const states = [
-    { label: 'Wybierz status', value: null },
-    { label: 'Aktywny', value: 1 },
-    { label: 'Zablokowany', value: 2 },
-    { label: 'Usunięty', value: 3 }
-  ];
-
+  
   return (
     <Dialog
       open={itemId !== null}
@@ -79,10 +95,9 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
         }
       }}
     >
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Edycja warsztatów</DialogTitle>
-          <DialogDescription>Zaktualizuj dane warsztatów.</DialogDescription>
         </DialogHeader>
         {userQuery.isPending && <p className="text-sm text-muted-foreground">Ładowanie danych...</p>}
         {userQuery.isError && <p className="text-sm text-destructive">{userQuery.error.message}</p>}
@@ -91,46 +106,143 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
             event.preventDefault();
             updateMutation.mutate(form);
           }}>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="name">Nazwa warsztatów</FieldLabel>
-                <Input 
-                  id="name"
-                  value={form.name}
-                  onChange={(event) => updateField('name', event.target.value)}
-                  required 
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="description">Opis</FieldLabel>
-                <Input 
-                  id="description"
-                  value={form.description}
-                  onChange={(event) => updateField('description', event.target.value)}
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Status</FieldLabel>
-                <Select 
-                  items={states} 
-                  value={form.state}
-                  onValueChange={(val) => updateField('state', val)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {states.map((item) => (
-                        <SelectItem key={item.label} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </Field>
-            </FieldGroup>
+
+            <Tabs defaultValue="overview" className="w-full gap-6">
+              <TabsList>
+                <TabsTrigger value="overview" className="cursor-pointer">Ustawienia</TabsTrigger>
+                <TabsTrigger value="schedule" className="cursor-pointer">Harmonogram</TabsTrigger>
+                <TabsTrigger value="categories" className="cursor-pointer">Grupy odbiorców</TabsTrigger>
+              </TabsList>
+              <TabsContent value="overview">
+                <FieldGroup className="gap-6">
+                  <Field className="gap-2">
+                    <FieldLabel htmlFor="name">Nazwa warsztatów</FieldLabel>
+                    <Input 
+                      id="name"
+                      value={form.name}
+                      onChange={(event) => updateField('name', event.target.value)}
+                      required 
+                    />
+                  </Field>
+                  <Field className="gap-2">
+                    <FieldLabel htmlFor="description">Opis</FieldLabel>
+                    <Input 
+                      id="description"
+                      value={form.description}
+                      onChange={(event) => updateField('description', event.target.value)}
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel htmlFor="price">Cena</FieldLabel>
+                    <InputGroup>
+                      <InputGroupInput 
+                        id="price" 
+                        placeholder="" 
+                        type="number" 
+                        value={form.price} 
+                        onChange={(event) => updateField('price', event.target.value)}
+                      />
+                      <InputGroupAddon align="inline-end">
+                        zł
+                      </InputGroupAddon>
+                    </InputGroup>
+                  </Field>
+
+                  <Field orientation="horizontal">
+                    <FieldContent>
+                      <FieldLabel htmlFor="online" className="cursor-pointer">
+                        Dostępne do rezerwacji online
+                      </FieldLabel>
+                    </FieldContent>
+                    <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />
+                  </Field>
+                  <Field className="gap-2">
+                    <FieldLabel>Status</FieldLabel>
+                    <Select 
+                      items={states} 
+                      value={form.state}
+                      onValueChange={(val) => updateField('state', val)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {states.map((item) => (
+                            <SelectItem key={item.label} value={item.value}>
+                              {item.label}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                </FieldGroup>
+              </TabsContent>
+              <TabsContent value="schedule" className="flex flex-col gap-6">
+                <Field>
+                  <FieldLabel htmlFor="price">Czas trwania zajęć</FieldLabel>
+                  <InputGroup>
+                    <InputGroupInput 
+                      id="duration" 
+                      placeholder="" 
+                      type="number" 
+                      value={form.duration} 
+                      onChange={(event) => updateField('duration', event.target.value)}
+                    />
+                    <InputGroupAddon align="inline-end">
+                      minut
+                    </InputGroupAddon>
+                  </InputGroup>
+                </Field>
+
+                <Field>
+                  <FieldLabel>Możliwe godziny rozpoczęcia zajęć</FieldLabel>
+                  <div className="flex flex-col gap-1">
+                    {days.map((d) => (<div key={d.id} className="grid grid-cols-5 gap-1 w-full">
+                      <div className="font-medium">{d.label}</div>
+                      {[1,2,3,4].map((n) => (<div>
+                        <Input type="time" id="input-group-url"  />
+                      </div>))}
+                    </div>))}
+                  </div>
+                </Field>
+              </TabsContent>
+              <TabsContent value="categories">
+                <FieldSet>
+                  <FieldLegend variant="label" className="mb-4">
+                    Warsztaty są przeznaczone dla:
+                  </FieldLegend>
+                  <FieldGroup className="gap-4">
+                    {form.categories && form.categories.map((ca) => (<Field key={ca.id} orientation="horizontal">
+                      <Checkbox
+                        id="finder-pref-9k2-hard-disks-ljj-checkbox"
+                        name="finder-pref-9k2-hard-disks-ljj-checkbox"
+                        defaultChecked
+                      />
+                      <FieldLabel
+                        htmlFor="finder-pref-9k2-hard-disks-ljj-checkbox"
+                        className="font-normal cursor-pointer"
+                      >
+                        {ca.name}
+                      </FieldLabel>
+                    </Field>))}
+                    
+                  </FieldGroup>
+                </FieldSet>
+              </TabsContent>
+            </Tabs>
+
+            
+                
+
+
+
+
+            
+
+            
             
             <DialogFooter className="mt-6">
               <Button type="button" variant="outline" onClick={handleClose}>

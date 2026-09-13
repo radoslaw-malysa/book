@@ -11,7 +11,7 @@ interface ViewWeekProps {
 
 const stateBg = {
   pending: { bg: 'border-l-amber-500 bg-amber-500/7', txt: 'text-amber-600 dark:text-amber-400' },
-  confirmed: { bg: 'border-l-green-500 bg-green-500/7', txt: 'text-green-600 dark:text-green-400' },
+  confirmed: { bg: 'border-l-emerald-500 bg-emerald-500/7', txt: 'text-emerald-600 dark:text-emerald-400' },
   cancelled: { bg: 'border-l-red-500 bg-red-500/7', txt: 'text-red-600 dark:text-red-400' }
 }
 //completed: { bg: 'border-l-blue-500 bg-green-500/7', txt: 'text-green-600 dark:text-green-400' },

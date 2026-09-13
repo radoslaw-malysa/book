@@ -48,7 +48,7 @@ interface IndicatorProps {
 const StateIndicator: FC<IndicatorProps> = ({state}) => {
   const appointmentStates = {
     pending: { title: 'Niepotwierdzona', color: 'bg-amber-500' },
-    confirmed: { title: 'Potwierdzona', color: 'bg-green-500' },
+    confirmed: { title: 'Potwierdzona', color: 'bg-emerald-500' },
     cancelled: { title: 'Anulowana', color: 'bg-red-500' },
   }
 

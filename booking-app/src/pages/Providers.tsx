@@ -47,7 +47,7 @@ interface IndicatorProps {
 
 const StateIndicator: FC<IndicatorProps> = ({state}) => {
   const states = ['', 'Aktywny', 'Zablokowany', 'Nieaktywny'];
-  const colors = ['bg-red-500', 'bg-green-500', 'bg-red-500', 'bg-red-500'];
+  const colors = ['bg-red-500', 'bg-emerald-500', 'bg-red-500', 'bg-red-500'];
 
   return (<div className="flex items-center gap-2"><span className={`size-1.5 rounded-full ${colors[state]}`}></span><span className="text-muted-foreground">{states[state]}</span></div>)
 }

@@ -101,7 +101,7 @@ const UserEditDialog = ({ userId, onClose }: UserEditDialogProps) => {
             updateMutation.mutate(form);
           }}>
             <FieldGroup>
-              <Field>
+              <Field className="gap-2">
                 <FieldLabel htmlFor="email">E-mail</FieldLabel>
                 <Input 
                   id="email"
@@ -111,7 +111,7 @@ const UserEditDialog = ({ userId, onClose }: UserEditDialogProps) => {
                   required 
                 />
               </Field>
-              <Field>
+              <Field className="gap-2">
                 <FieldLabel htmlFor="passwd">Ustaw hasło</FieldLabel>
                 <Input 
                   type="password" 
@@ -120,7 +120,7 @@ const UserEditDialog = ({ userId, onClose }: UserEditDialogProps) => {
                   onChange={(event) => updateField('passwd', event.target.value)}
                 />
               </Field>
-              <Field>
+              <Field className="gap-2">
                 <FieldLabel htmlFor="title">Nazwa użytkownika</FieldLabel>
                 <Input 
                   id="title" 
@@ -128,7 +128,7 @@ const UserEditDialog = ({ userId, onClose }: UserEditDialogProps) => {
                   onChange={(event) => updateField('title', event.target.value)}
                 />
               </Field>
-              <Field>
+              <Field className="gap-2">
                 <FieldLabel>Grupa uprawnień</FieldLabel>
                 <Select 
                   items={userGroups} 
@@ -149,7 +149,7 @@ const UserEditDialog = ({ userId, onClose }: UserEditDialogProps) => {
                   </SelectContent>
                 </Select>
               </Field>
-              <Field>
+              <Field className="gap-2">
                 <FieldLabel>Status</FieldLabel>
                 <Select 
                   items={states} 

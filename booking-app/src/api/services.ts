@@ -4,12 +4,15 @@ export interface Service {
   id: number;
   name: string;
   description: string;
-  base_price: string;
+  price: string;
+  duration: number;
+  online: number;
   state: string | undefined | number;
   create_time: string;
   create_ip: string;
   update_time: string;
   update_ip: string;
+  categories: [];
 }
 
 const servicesUrl = apiUrl + "/services";
