@@ -5,21 +5,41 @@ namespace App\Model\Repositories;
 use PDO;
 use App\Model\Repositories\Tables;
 use App\Model\Repositories\Repository;
-use App\Model\Repositories\CategoriesRepository;
-use App\Model\Repositories\ServiceScheduleRepository;
 
 /**
  * Repository.
  */
-class ServicesRepository extends Repository
+class ServiceScheduleRepository extends Repository
 {
-  public function __construct(PDO $connection, Tables $tables, CategoriesRepository $categories, ServiceScheduleRepository $service_schedule)
+  public function __construct(PDO $connection, Tables $tables)
   {
     $this->connection = $connection;
-    $this->model = $tables->services;
+    $this->model = $tables->service_schedule;
     $this->tables = $tables;
-    $this->categories = $categories;
-    $this->service_schedule = $service_schedule;
+  }
+
+  /**
+   * Get service schedule for edit dialog
+   */
+  public function getServiceScheduleEdit($service_id)
+  {
+    $hours_count = 4; // number of placeholders in day schedule
+    $data = []; // response
+
+    $schedule = [];
+    $data_schedule = $this->where('service_id', $service_id)->orderBy('day_of_week')->orderBy('start_time')->get();
+
+    foreach ($data_schedule as $row) {
+      $schedule[$row['day_of_week']][$row['ord']] = $row;
+    }
+
+    for ($day = 1; $day < 8; $day++) {
+      for ($hour = 0; $hour < $hours_count; $hour++) {
+        $data[$day][$hour] = $schedule[$day][$hour]['start_time'] ?? '';
+      }
+    }
+
+    return $data;
   }
 
   public function getRows($params = []) 
@@ -79,16 +99,16 @@ class ServicesRepository extends Repository
   public function getRow($params=[])
   { 
     if (!isset($params['id']) || $params['id'] == 0) {
-      $data = $this->getNew();
-    } else {
-      $data = $this->where($this->model.'.id', (int)$params['id'])->first();
+      return $this->getNew();
     }
     
-    $data['categories'] = $this->categories->getServiceCategories($data['id']);
-
-    $data['schedule'] = $this->service_schedule->getServiceScheduleEdit($data['id']);
-
-    return $data;
+    return $this->where($this->model.'.id', (int)$params['id'])
+      ->first([
+        $this->model.'.id', 
+        $this->model.'.name', 
+        $this->model.'.description', 
+        $this->model.'.state'
+    ]);
   }
 
   public function postRow($params=[])
@@ -99,11 +119,7 @@ class ServicesRepository extends Repository
     $data = [
       'name' => $params['name'] ?? '',
       'description' => $params['description'] ?? '',
-      'price' => $params['price'] ?? 0,
-      'duration' => $params['duration'] ?? 0,
-      'online' => $params['online'] ?? 0,
-      'state' => $params['state'] ?? 0,
-      'update_ip' => $_SERVER['REMOTE_ADDR']
+      'state' => (int)$params['state']
     ];
     
     if (isset($params['id']) && $params['id']) {
@@ -123,11 +139,7 @@ class ServicesRepository extends Repository
       'id' => 0,
       'name' => '',
       'description' => '',
-      'state' => 1,
-      'create_time' => '',
-      'create_ip' => '',
-      'update_time' => '',
-      'update_ip' => ''
+      'state' => 1
     ];
 
     return $new_row;

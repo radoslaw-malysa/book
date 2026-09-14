@@ -23,8 +23,20 @@ class CategoriesRepository extends Repository
    */
   public function getServiceCategories($service_id)
   {
-    $query = "select ca.id, ca.name, cs.service_id 
-    from {$this->model} ca left join {$this->tables->categories_services} cs on ca.id = cs.category_id ";
+    $query = "select ca.id, ca.name, if(cs.service_id IS NULL, 0, 1) as selected
+    from {$this->model} ca left join {$this->tables->categories_services} cs on ca.id = cs.category_id 
+    order by ca.ord desc";
+
+    $st = $this->connection->prepare($query);
+    $st->execute();
+    $rows = $st->fetchAll();
+
+    $data = [];
+    foreach ($rows as $row) {
+      $data[$row['id']] = $row;
+    }
+
+    return $data;
   }
 
   public function getRows($params = []) 

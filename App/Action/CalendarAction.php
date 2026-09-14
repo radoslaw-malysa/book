@@ -50,7 +50,7 @@ class CalendarAction
     $query_params = $request->getQueryParams();
 
     $salon_id = $query_params['salon_id'] ?? 1;
-    $day = $query_params['day'] ?? date("Y-m-d");
+    $day = $query_params['date'] ?? date("Y-m-d");
 
     // week start/end
     $datetime_day = \DateTime::createFromFormat('Y-m-d', $day);

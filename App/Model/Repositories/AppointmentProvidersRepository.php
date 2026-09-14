@@ -38,7 +38,7 @@ class AppointmentProvidersRepository extends Repository
     left join {$this->tables->services} se on ap.service_id = se.id ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
     $st = $this->connection->prepare($query);
-
+    
     $st->execute();
     return $st->fetchAll();
   }

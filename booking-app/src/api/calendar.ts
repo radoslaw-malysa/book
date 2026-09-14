@@ -29,11 +29,8 @@ interface ApiItemsData {
 export const getCalendarWeek = async (filters: CalendarFilters = {}): Promise<ApiItemsData> => {
   const params = new URLSearchParams();
 
-  if (filters.q) {
-    params.set("q", filters.q);
-  }
-  if (filters.page) {
-    params.set("page", filters.page);
+  if (filters.date) {
+    params.set("date", filters.date);
   }
 
   const query = params.toString();

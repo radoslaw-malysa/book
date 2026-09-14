@@ -42,7 +42,7 @@ const Calendary = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
-    date: (searchParams.get("date") !== null && searchParams.get("date") !== '') ? new Date('2026-09-10') : new Date(),
+    date: (searchParams.get("date") !== null && searchParams.get("date") !== '') ? new Date(searchParams.get("date")) : new Date(),
   });
   
   // loader (reat router + react query)

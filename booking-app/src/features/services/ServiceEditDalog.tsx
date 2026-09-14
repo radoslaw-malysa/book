@@ -63,7 +63,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
           description: resp.message
         })
       } else {
-        queryClient.invalidateQueries({ queryKey: ["services"] });
+        queryClient.invalidateQueries({ queryKey: ["service"] });
         onClose();
       }
     },
@@ -78,6 +78,14 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
   const updateField = (field: string, value: string | number) => {
     setForm((current) => (current ? { ...current, [field]: value } : current));
   };
+
+  const updateCategory = (id: string, value: boolean) => {
+    const newCategories = form?.categories;
+    if (newCategories) {
+      newCategories[id].selected = value ? 1 : 0;
+      setForm((current) => (current ? { ...current, categories: newCategories } : current));
+    }
+  }
 
   const handleClose = () => {
     if (!updateMutation.isPending) {
@@ -201,9 +209,9 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                   <FieldLabel>Możliwe godziny rozpoczęcia zajęć</FieldLabel>
                   <div className="flex flex-col gap-1">
                     {days.map((d) => (<div key={d.id} className="grid grid-cols-5 gap-1 w-full">
-                      <div className="font-medium">{d.label}</div>
+                      <div className="font-medium flex items-center">{d.label}</div>
                       {[1,2,3,4].map((n) => (<div>
-                        <Input type="time" id="input-group-url"  />
+                        <Input key={n} type="time" value=""  />
                       </div>))}
                     </div>))}
                   </div>
@@ -215,17 +223,19 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                     Warsztaty są przeznaczone dla:
                   </FieldLegend>
                   <FieldGroup className="gap-4">
-                    {form.categories && form.categories.map((ca) => (<Field key={ca.id} orientation="horizontal">
+                    {form.categories && Object.keys(form.categories).map((id) => (<Field key={id} orientation="horizontal">
                       <Checkbox
-                        id="finder-pref-9k2-hard-disks-ljj-checkbox"
-                        name="finder-pref-9k2-hard-disks-ljj-checkbox"
-                        defaultChecked
+                        id={`cat${id}`}
+                        name={`categories[${id}]`}
+                        value={id}
+                        checked={form.categories[id].selected === 1}
+                        onCheckedChange={(val) => updateCategory(id, val)}
                       />
                       <FieldLabel
-                        htmlFor="finder-pref-9k2-hard-disks-ljj-checkbox"
+                        htmlFor={`cat${id}`}
                         className="font-normal cursor-pointer"
                       >
-                        {ca.name}
+                        {form.categories[id].name}
                       </FieldLabel>
                     </Field>))}
                     
