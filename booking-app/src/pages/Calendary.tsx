@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import '@/features/appointments/calendar.css';
 import ViewWeek from "@/features/appointments/ViewWeek";
 import ViewDay from "@/features/appointments/ViewDay";
+import AppointmentEdit from "@/features/appointments/AppointmentEdit";
 
 
 export const calendarQuery = (filters: CalendarFilters = {}) =>
@@ -57,6 +58,7 @@ const Calendary = () => {
   }
   
   const [view, setView] = useState<'week' | 'day'>('week');
+  const [selectedId, setSelectedId] = useState<number | null>(null); 
 
   const dateString = `${filters.date.getFullYear()}-${String(filters.date.getMonth()+1).padStart(2,"0")}-${String(filters.date.getDate()).padStart(2,"0")}`
 
@@ -122,7 +124,7 @@ const Calendary = () => {
                 </InputGroupButton>
               </InputGroupAddon>
             </InputGroup>
-            <Button><Plus /> Utwórz rezerwację</Button>
+            <Button onClick={() => setSelectedId(1)}><Plus /> Utwórz rezerwację</Button>
           </div>
         </CardAction>
       </CardHeader>
@@ -142,6 +144,7 @@ const Calendary = () => {
         {view === 'day' && <ViewDay data={data} date={filters.date} />}
       </CardContent>
     </Card>
+    <AppointmentEdit itemId={selectedId} onClose={() => setSelectedId(null)} />
   </div>
 }
 

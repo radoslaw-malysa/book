@@ -7,19 +7,21 @@ use App\Model\Repositories\Tables;
 use App\Model\Repositories\Repository;
 use App\Model\Repositories\CategoriesRepository;
 use App\Model\Repositories\ServiceScheduleRepository;
+use App\Model\Repositories\CategoriesServicesRepository;
 
 /**
  * Repository.
  */
 class ServicesRepository extends Repository
 {
-  public function __construct(PDO $connection, Tables $tables, CategoriesRepository $categories, ServiceScheduleRepository $service_schedule)
+  public function __construct(PDO $connection, Tables $tables, CategoriesRepository $categories, ServiceScheduleRepository $service_schedule, CategoriesServicesRepository $categories_services)
   {
     $this->connection = $connection;
     $this->model = $tables->services;
     $this->tables = $tables;
     $this->categories = $categories;
     $this->service_schedule = $service_schedule;
+    $this->categories_services = $categories_services;
   }
 
   public function getRows($params = []) 
@@ -112,6 +114,16 @@ class ServicesRepository extends Repository
       $data['create_ip'] = $_SERVER['REMOTE_ADDR'];
 
       $status = $this->insert($data);
+    }
+
+    // categories
+    if (isset($params['categories'])) {
+      $this->categories_services->updateServiceCategories($params['id'], $params['categories']);
+    }
+
+    // schedule
+    if (isset($params['schedule'])) {
+      $this->service_schedule->updateServiceSchedule($params['id'], $params['schedule']);
     }
 
     return $data;

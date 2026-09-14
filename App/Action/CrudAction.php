@@ -81,6 +81,11 @@ class CrudAction
     $table = $args['table'];
     $data = $request->getParsedBody();
 
+    // json string in body
+    if (isset($data['json_data'])) {
+      $data = json_decode($data['json_data'], true);
+    }
+
     if (is_array($data)) {
       $payload = $this->$table->postRow($data);
     }

@@ -13,6 +13,7 @@ export interface Service {
   update_time: string;
   update_ip: string;
   categories: [];
+  schedule: {}
 }
 
 const servicesUrl = apiUrl + "/services";
@@ -63,6 +64,6 @@ export const updateService = async (item: Service): Promise<Service | ErrorMessa
   getServiceResponse(
     await fetch(`${servicesUrl}/${item.id}`, {
       method: "POST",
-      body: toFormData(item),
+      body: toFormData({json_data: JSON.stringify(item)}),
     }),
   );
