@@ -5,21 +5,23 @@ namespace App\Model\Repositories;
 use PDO;
 use App\Model\Repositories\Tables;
 use App\Model\Repositories\Repository;
+use App\Model\Repositories\ServicesRepository;
 
 /**
  * Repository.
  */
 class AppointmentsRepository extends Repository
 {
-  public function __construct(PDO $connection, Tables $tables)
+  public function __construct(PDO $connection, Tables $tables, ServicesRepository $services)
   {
     $this->connection = $connection;
     $this->model = $tables->appointments;
     $this->tables = $tables;
+    $this->services = $services;
   }
 
   // CRUD
-  public function _getRows($params = []) 
+  /*public function _getRows($params = []) 
   {
     // $filters = $this->createFilters($params);
     $filters = '';
@@ -49,7 +51,7 @@ class AppointmentsRepository extends Repository
     $paginator->setResults($items);
 
     return $paginator;
-  }
+  }*/
 
   public function getRows($params = []) 
   {
@@ -113,17 +115,16 @@ class AppointmentsRepository extends Repository
   { 
     if (!isset($params['id']) || $params['id'] == 0) {
       return $this->getNew();
+    } else {
+      $data = $this->where('id', (int)$params['id'])->first();
     }
+
+    // remove null
+    $data['total_price'] = $data['total_price'] ? $data['total_price'] : '';
+
+    $data['services'] = $this->services->get(['id','name']);
     
-    return $this->where($this->model.'.id', (int)$params['id'])
-      ->first([
-        $this->model.'.id', 
-        $this->model.'.name', 
-        $this->model.'.description', 
-        $this->model.'.state', 
-        $this->model.'.update_time', 
-        $this->model.'.update_ip'
-    ]);
+    return $data;
   }
 
   public function postRow($params=[])
@@ -153,9 +154,12 @@ class AppointmentsRepository extends Repository
   {
     $new_row = [
       'id' => 0,
-      'name' => '',
-      'description' => '',
-      'state' => 1,
+      'service_id' => 0,
+      'customer_id' => 0,
+      'salon_id' => 1,
+      'state' => 'pending',
+      'total_price' => 0,
+      'notes' => '',
       'create_time' => '',
       'create_ip' => '',
       'update_time' => '',

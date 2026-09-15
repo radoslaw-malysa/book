@@ -2,6 +2,7 @@ import { apiUrl, toFormData, type ErrorMessage } from "./api";
 
 export interface Appointment {
   id: number;
+  service_id: number;
   customer_id: number;
   salon_id: number;
   total_price: string;

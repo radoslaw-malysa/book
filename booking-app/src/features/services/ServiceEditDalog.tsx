@@ -200,7 +200,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                   <InputGroup>
                     <InputGroupInput 
                       id="duration" 
-                      placeholder="" 
+                      name="duration"
                       type="number" 
                       value={form.duration} 
                       onChange={(event) => updateField('duration', event.target.value)}
@@ -216,9 +216,9 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                   <div className="flex flex-col gap-1">
                     {form.schedule && Object.keys(form.schedule).map((d) => (<div key={d} className="grid grid-cols-5 gap-1 w-full">
                       <div className="font-medium flex items-center">{days[d].label}</div>
-                      {form.schedule[d].map((n, index) => (<div>
-                        <Input key={n} type="time" value={form.schedule[d][index]} onChange={(e) => updateSchedule(d, index, e.target.value)}  />
-                      </div>))}
+                      {form.schedule[d].map((n, index) => (
+                        <Input key={index} type="time" value={form.schedule[d][index]} onChange={(e) => updateSchedule(d, index, e.target.value)}  />
+                      ))}
                     </div>))}
                   </div>
                 </Field>

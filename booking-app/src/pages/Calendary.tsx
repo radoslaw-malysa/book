@@ -52,7 +52,6 @@ const Calendary = () => {
   >
   const { data } = useSuspenseQuery(calendarQuery(loaderFilters));
 
-  //const [date, setDate] = useState<Date | undefined>(new Date());
   const setDateHandler = (d: Date) => {
     setFilters((current) => ({ ...current, date: d }))
   }
@@ -124,7 +123,7 @@ const Calendary = () => {
                 </InputGroupButton>
               </InputGroupAddon>
             </InputGroup>
-            <Button onClick={() => setSelectedId(1)}><Plus /> Utwórz rezerwację</Button>
+            <Button onClick={() => setSelectedId(0)}><Plus /> Utwórz rezerwację</Button>
           </div>
         </CardAction>
       </CardHeader>
@@ -140,8 +139,8 @@ const Calendary = () => {
           ))}
           </div>
         </div>
-        {view === 'week' && <ViewWeek data={data} />}
-        {view === 'day' && <ViewDay data={data} date={filters.date} />}
+        {view === 'week' && <ViewWeek data={data} selectedId={selectedId} onEdit={setSelectedId} />}
+        {view === 'day' && <ViewDay data={data} selectedId={selectedId} date={filters.date} onEdit={setSelectedId} />}
       </CardContent>
     </Card>
     <AppointmentEdit itemId={selectedId} onClose={() => setSelectedId(null)} />

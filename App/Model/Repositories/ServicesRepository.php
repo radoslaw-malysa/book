@@ -85,6 +85,10 @@ class ServicesRepository extends Repository
     } else {
       $data = $this->where($this->model.'.id', (int)$params['id'])->first();
     }
+
+    // remove null
+    $data['price'] = $data['price'] ? $data['price'] : '';
+    $data['duration'] = $data['duration'] ? $data['duration'] : '';
     
     $data['categories'] = $this->categories->getServiceCategories($data['id']);
 
@@ -101,8 +105,8 @@ class ServicesRepository extends Repository
     $data = [
       'name' => $params['name'] ?? '',
       'description' => $params['description'] ?? '',
-      'price' => $params['price'] ?? 0,
-      'duration' => $params['duration'] ?? 0,
+      'price' => $params['price'] ? $params['price'] : 0,
+      'duration' => $params['duration'] ? $params['duration'] : 0,
       'online' => $params['online'] ?? 0,
       'state' => $params['state'] ?? 0,
       'update_ip' => $_SERVER['REMOTE_ADDR']
