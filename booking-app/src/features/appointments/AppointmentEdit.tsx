@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,6 +25,12 @@ const states = [
   { label: 'Potwierdzona', value: 'confirmed' },
   { label: 'Anulowana', value: 'cancelled' }
 ];
+
+const stateColors = {
+  pending: 'bg-amber-500', 
+  confirmed: 'bg-emerald-500', 
+  cancelled: 'bg-red-500'
+};
 
 const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
   const queryClient = useQueryClient();
@@ -79,51 +87,70 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
     >
       {form && <SheetContent>
         <SheetHeader>
-          <SheetTitle>Rezerwacja {form.id ? 'nr ' + form.id : 'NOWA'}</SheetTitle>
+          <SheetTitle className="flex gap-1.5 items-center"><div className={`size-3 rounded-full ${stateColors[form.state]}`}></div> Rezerwacja {form.id ? 'nr ' + form.id : 'NOWA'}</SheetTitle>
         </SheetHeader>
+        
         <form onSubmit={(event) => {
           event.preventDefault();
           updateMutation.mutate(form);
-        }}>
+        }}
+          className="grid gap-6"
+        >
+          <Separator />
+          <div className="grid gap-6 px-6">
+            <Field className="gap-2">
+              <FieldLabel htmlFor="sheet-demo-name">Warsztaty</FieldLabel>
+              <NativeSelect className="w-full" value={form.service_id} onChange={(e) => updateField('service_id', e.target.value)}>
+                <NativeSelectOption value="">Bez warsztatów</NativeSelectOption>
+                {form.services.map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
+              </NativeSelect>
+            </Field>
+            <FieldGroup className="gap-2">
+              <Field orientation="horizontal">
+                <Checkbox id="admission" name="toggle-checkbox" />
+                <FieldLabel htmlFor="admission">Wstęp na wystawy</FieldLabel>
+              </Field>
+              <Field orientation="horizontal">
+                <Checkbox id="guide" name="toggle-checkbox" />
+                <FieldLabel htmlFor="guide">Przewodnik</FieldLabel>
+              </Field>
+              <Field orientation="horizontal">
+                <Checkbox id="cinema" name="toggle-checkbox" />
+                <FieldLabel htmlFor="cinema">Kino</FieldLabel>
+              </Field>
+              <Field orientation="horizontal">
+                <Checkbox id="cinema" name="toggle-checkbox" />
+                <FieldLabel htmlFor="cinema">Kulturalna Szkoła na Mazowszu</FieldLabel>
+              </Field>
+              <Field orientation="horizontal">
+                <Checkbox id="cinema" name="toggle-checkbox" />
+                <FieldLabel htmlFor="cinema">Kultura za zł (wsparcie osób z niepełnospr.)</FieldLabel>
+              </Field>
+            </FieldGroup>
+            <Field className="gap-2">
+              <FieldLabel htmlFor="notes">Liczba uczestników</FieldLabel>
+              <InputGroup>
+                  <InputGroupInput 
+                    type="number"
+                    id="pax"
+                  />
+                  <InputGroupAddon align="inline-end">
+                    osób
+                  </InputGroupAddon>
+                </InputGroup>
+            </Field>
+          </div>
+
+          <Separator className="w-full" />
+
           <Tabs defaultValue="overview" className="w-full gap-6 px-6">
-            <TabsList>
-              <TabsTrigger value="overview" className="cursor-pointer">Zamówienie</TabsTrigger>
+            <TabsList className="w-full">
+              <TabsTrigger value="overview" className="cursor-pointer">Rezerwacja</TabsTrigger>
               <TabsTrigger value="contact" className="cursor-pointer">Kontakt</TabsTrigger>
               <TabsTrigger value="prices" className="cursor-pointer">Rozliczenie</TabsTrigger>
             </TabsList>
-
             <TabsContent value="overview">
               <div className="grid flex-1 auto-rows-min gap-6">
-                <Field className="gap-2">
-                  <FieldLabel htmlFor="sheet-demo-name">Warsztaty</FieldLabel>
-                  <NativeSelect className="w-full" value={form.service_id} onChange={(e) => updateField('service_id', e.target.value)}>
-                    <NativeSelectOption value="">Bez warsztatów</NativeSelectOption>
-                    {form.services.map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
-                  </NativeSelect>
-                </Field>
-                <FieldGroup className="gap-2">
-                  <Field orientation="horizontal">
-                    <Checkbox id="admission" name="toggle-checkbox" />
-                    <FieldLabel htmlFor="admission">Wstęp na wystawy</FieldLabel>
-                  </Field>
-                  <Field orientation="horizontal">
-                    <Checkbox id="guide" name="toggle-checkbox" />
-                    <FieldLabel htmlFor="guide">Przewodnik</FieldLabel>
-                  </Field>
-                  <Field orientation="horizontal">
-                    <Checkbox id="cinema" name="toggle-checkbox" />
-                    <FieldLabel htmlFor="cinema">Kino</FieldLabel>
-                  </Field>
-                  <Field orientation="horizontal">
-                    <Checkbox id="cinema" name="toggle-checkbox" />
-                    <FieldLabel htmlFor="cinema">Kulturalna Szkoła na Mazowszu</FieldLabel>
-                  </Field>
-                  <Field orientation="horizontal">
-                    <Checkbox id="cinema" name="toggle-checkbox" />
-                    <FieldLabel htmlFor="cinema">Kultura za zł (wsparcie osób z niepełnospr.)</FieldLabel>
-                  </Field>
-                </FieldGroup>
-
                 <FieldGroup className="gap-3">
                   <Field className="gap-2">
                     <FieldLabel htmlFor="sheet-demo-name">Sala</FieldLabel>
@@ -165,7 +192,28 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
             </TabsContent>
 
             <TabsContent value="contact">
-              aaa
+              <FieldGroup className="gap-3">
+                <Field className="gap-2">
+                  <FieldLabel htmlFor="notes">Nazwa</FieldLabel>
+                  <Input 
+                    id="name"
+                  />
+                </Field>
+                <Field className="gap-2">
+                  <FieldLabel htmlFor="notes">Telefon</FieldLabel>
+                  <Input 
+                    type="tel"
+                    id="name"
+                  />
+                </Field>
+                <Field className="gap-2">
+                  <FieldLabel htmlFor="notes">E-mail</FieldLabel>
+                  <Input 
+                    type="email"
+                    id="email"
+                  />
+                </Field>
+              </FieldGroup>
             </TabsContent>
             <TabsContent value="prices">
               bb
