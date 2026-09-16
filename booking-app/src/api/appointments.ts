@@ -5,6 +5,12 @@ export interface Appointment {
   service_id: number;
   customer_id: number;
   salon_id: number;
+  admission: number;
+  guide: number;
+  cinema: number;
+  kulturalna_szkola: number;
+  pax: number;
+  kultura_za_zl: number;
   total_price: string;
   state: string | undefined | number;
   notes: string;
@@ -15,6 +21,8 @@ export interface Appointment {
   service_name: string;
   service_description: string;
   customer_name: string;
+  appointment_providers: [];
+  providers: [];
 }
 
 const appointmentsUrl = apiUrl + "/appointments";
@@ -65,6 +73,6 @@ export const updateAppointment = async (item: Appointment): Promise<Appointment 
   getAppointmentsResponse(
     await fetch(`${appointmentsUrl}/${item.id}`, {
       method: "POST",
-      body: toFormData(item),
+      body: toFormData({json_data: JSON.stringify(item)}),
     }),
   );

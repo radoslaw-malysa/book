@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 13, 2026 at 09:55 PM
+-- Generation Time: Sep 16, 2026 at 02:26 PM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.30
 
@@ -32,10 +32,15 @@ CREATE TABLE `book_appointments` (
   `service_id` int UNSIGNED NOT NULL,
   `customer_id` int NOT NULL,
   `salon_id` int NOT NULL,
+  `admission` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `guide` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `cinema` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `kulturalna_szkola` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `kultura_za_zl` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `pax` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `state` enum('pending','confirmed','completed','cancelled','no-show') CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci DEFAULT 'pending',
   `total_price` decimal(10,2) DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `notes` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci DEFAULT NULL,
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `create_ip` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -46,9 +51,9 @@ CREATE TABLE `book_appointments` (
 -- Dumping data for table `book_appointments`
 --
 
-INSERT INTO `book_appointments` (`id`, `service_id`, `customer_id`, `salon_id`, `state`, `total_price`, `notes`, `created_at`, `create_time`, `create_ip`, `update_time`, `update_ip`) VALUES
-(1, 1, 1, 1, 'confirmed', 100.00, NULL, '2026-09-06 17:55:00', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', ''),
-(2, 2, 2, 1, 'pending', 100.00, NULL, '2026-09-06 17:55:00', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '');
+INSERT INTO `book_appointments` (`id`, `service_id`, `customer_id`, `salon_id`, `admission`, `guide`, `cinema`, `kulturalna_szkola`, `kultura_za_zl`, `pax`, `state`, `total_price`, `notes`, `create_time`, `create_ip`, `update_time`, `update_ip`) VALUES
+(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 'confirmed', 100.00, NULL, '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1'),
+(2, 3, 2, 1, 1, 1, 1, 1, 0, 25, 'pending', 100.00, 'ta rezerwacja jest moja', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1');
 
 -- --------------------------------------------------------
 
@@ -57,20 +62,20 @@ INSERT INTO `book_appointments` (`id`, `service_id`, `customer_id`, `salon_id`, 
 --
 
 CREATE TABLE `book_appointment_providers` (
+  `id` int UNSIGNED NOT NULL,
   `appointment_id` int NOT NULL,
   `provider_id` int UNSIGNED NOT NULL DEFAULT '0',
   `start_time` datetime DEFAULT NULL,
-  `end_time` datetime DEFAULT NULL,
-  `price_at_booking` decimal(10,2) NOT NULL DEFAULT '0.00'
+  `end_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
 
 --
 -- Dumping data for table `book_appointment_providers`
 --
 
-INSERT INTO `book_appointment_providers` (`appointment_id`, `provider_id`, `start_time`, `end_time`, `price_at_booking`) VALUES
-(1, 1, '2026-09-08 09:00:00', '2026-09-10 11:00:00', 0.00),
-(2, 2, '2026-09-09 10:00:00', '2026-09-09 11:30:00', 0.00);
+INSERT INTO `book_appointment_providers` (`id`, `appointment_id`, `provider_id`, `start_time`, `end_time`) VALUES
+(1, 1, 1, '2026-09-08 09:00:00', '2026-09-09 16:00:00'),
+(2, 2, 2, '2026-09-09 10:00:00', '2026-09-09 11:45:00');
 
 -- --------------------------------------------------------
 
@@ -110,6 +115,13 @@ CREATE TABLE `book_categories_services` (
   `service_id` int UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
 
+--
+-- Dumping data for table `book_categories_services`
+--
+
+INSERT INTO `book_categories_services` (`category_id`, `service_id`) VALUES
+(1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -118,9 +130,15 @@ CREATE TABLE `book_categories_services` (
 
 CREATE TABLE `book_customers` (
   `id` int NOT NULL,
+  `customer_type` enum('primary','post_primary','individual','organized_group','other') COLLATE utf8mb4_polish_ci DEFAULT NULL,
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
+  `address` varchar(255) COLLATE utf8mb4_polish_ci NOT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci DEFAULT NULL,
   `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
+  `contact_name` varchar(64) COLLATE utf8mb4_polish_ci NOT NULL,
+  `contact_phone` varchar(32) COLLATE utf8mb4_polish_ci NOT NULL,
+  `contact_email` varchar(64) COLLATE utf8mb4_polish_ci NOT NULL,
+  `pax_care` tinyint NOT NULL DEFAULT '0',
   `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
@@ -129,9 +147,9 @@ CREATE TABLE `book_customers` (
 -- Dumping data for table `book_customers`
 --
 
-INSERT INTO `book_customers` (`id`, `name`, `email`, `phone`, `notes`, `created_at`) VALUES
-(1, 'Elektrownia', NULL, '', NULL, '2026-09-06 17:54:37'),
-(2, 'Szkoła Podstawowa nr 30', NULL, '', NULL, '2026-09-11 13:11:16');
+INSERT INTO `book_customers` (`id`, `customer_type`, `name`, `address`, `email`, `phone`, `contact_name`, `contact_phone`, `contact_email`, `pax_care`, `notes`, `created_at`) VALUES
+(1, NULL, 'Elektrownia', '', NULL, '', '', '', '', 0, NULL, '2026-09-06 17:54:37'),
+(2, NULL, 'Szkoła Podstawowa nr 30', '', NULL, '', '', '', '', 0, NULL, '2026-09-11 13:11:16');
 
 -- --------------------------------------------------------
 
@@ -219,8 +237,8 @@ INSERT INTO `book_services` (`id`, `name`, `description`, `price`, `duration`, `
 (1, 'Rezerwacja sali', 'Blokowanie sali dla celów organizacyjnych', 100.00, NULL, 0, 1, '2026-09-06 18:00:28', '', '2026-09-06 18:00:28', '127.0.0.1'),
 (2, 'Spacer po wystawie i warsztaty plastyczne', '', NULL, NULL, 0, 1, '2026-09-09 13:52:40', '127.0.0.1', '2026-09-09 13:52:40', '127.0.0.1'),
 (3, 'Nowe Horyzonty Edukacji Filmowej', '', NULL, NULL, 0, 1, '2026-09-09 14:28:39', '127.0.0.1', '2026-09-09 14:28:39', '127.0.0.1'),
-(4, 'Warsztaty ruchowo-plastyczne podczas spaceru po wystawie', '', NULL, NULL, 0, 1, '2026-09-09 14:28:52', '127.0.0.1', '2026-09-09 14:28:52', '127.0.0.1'),
-(5, 'Seanse filmowe z bieżącego repertuaru', '', NULL, NULL, 0, 1, '2026-09-09 14:29:06', '127.0.0.1', '2026-09-09 14:29:06', '127.0.0.1'),
+(4, 'Warsztaty ruchowo-plastyczne podczas spaceru po wystawie', '', 0.00, 0, 0, 1, '2026-09-09 14:28:52', '127.0.0.1', '2026-09-09 14:28:52', '127.0.0.1'),
+(5, 'Seanse filmowe z bieżącego repertuaru', '', 100.00, 60, 0, 1, '2026-09-09 14:29:06', '127.0.0.1', '2026-09-09 14:29:06', '127.0.0.1'),
 (6, 'Warsztaty sensoryczno-plastyczne „Bajki z pieca”', '', NULL, NULL, 0, 1, '2026-09-09 14:29:22', '127.0.0.1', '2026-09-09 14:29:22', '127.0.0.1'),
 (7, 'Filmowe pokazy specjalne', '', 125.00, 60, 1, 1, '2026-09-09 14:29:33', '127.0.0.1', '2026-09-09 14:29:33', '127.0.0.1');
 
@@ -235,8 +253,19 @@ CREATE TABLE `book_service_schedule` (
   `service_id` int UNSIGNED NOT NULL DEFAULT '0',
   `day_of_week` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `start_time` time DEFAULT NULL,
-  `end_time` time DEFAULT NULL
+  `end_time` time DEFAULT NULL,
+  `ord` tinyint UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
+
+--
+-- Dumping data for table `book_service_schedule`
+--
+
+INSERT INTO `book_service_schedule` (`id`, `service_id`, `day_of_week`, `start_time`, `end_time`, `ord`) VALUES
+(1, 4, 1, '09:00:00', NULL, 0),
+(2, 5, 1, '10:00:00', NULL, 0),
+(3, 5, 1, '12:00:00', NULL, 1),
+(4, 4, 1, '10:00:00', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -317,7 +346,7 @@ ALTER TABLE `book_appointments`
 -- Indexes for table `book_appointment_providers`
 --
 ALTER TABLE `book_appointment_providers`
-  ADD PRIMARY KEY (`appointment_id`),
+  ADD PRIMARY KEY (`id`),
   ADD KEY `start_time` (`start_time`,`end_time`),
   ADD KEY `provider_id` (`provider_id`);
 
@@ -338,8 +367,7 @@ ALTER TABLE `book_categories_services`
 -- Indexes for table `book_customers`
 --
 ALTER TABLE `book_customers`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `book_providers`
@@ -405,6 +433,12 @@ ALTER TABLE `book_appointments`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `book_appointment_providers`
+--
+ALTER TABLE `book_appointment_providers`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `book_categories`
 --
 ALTER TABLE `book_categories`
@@ -438,7 +472,7 @@ ALTER TABLE `book_services`
 -- AUTO_INCREMENT for table `book_service_schedule`
 --
 ALTER TABLE `book_service_schedule`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `book_unavailability`

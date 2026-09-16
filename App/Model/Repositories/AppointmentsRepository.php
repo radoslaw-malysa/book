@@ -6,18 +6,24 @@ use PDO;
 use App\Model\Repositories\Tables;
 use App\Model\Repositories\Repository;
 use App\Model\Repositories\ServicesRepository;
+use App\Model\Repositories\AppointmentProvidersRepository;
+use App\Model\Repositories\ProvidersRepository;
+use App\Model\Repositories\CustomersRepository;
 
 /**
  * Repository.
  */
 class AppointmentsRepository extends Repository
 {
-  public function __construct(PDO $connection, Tables $tables, ServicesRepository $services)
+  public function __construct(PDO $connection, Tables $tables, ServicesRepository $services, AppointmentProvidersRepository $appointment_providers, ProvidersRepository $providers, CustomersRepository $customers)
   {
     $this->connection = $connection;
     $this->model = $tables->appointments;
     $this->tables = $tables;
     $this->services = $services;
+    $this->appointment_providers = $appointment_providers;
+    $this->providers = $providers;
+    $this->customers = $customers;
   }
 
   // CRUD
@@ -122,29 +128,51 @@ class AppointmentsRepository extends Repository
     // remove null
     $data['total_price'] = $data['total_price'] ? $data['total_price'] : '';
 
+    // appointment_providers
+    $data['appointment_providers'] = $this->appointment_providers->where('appointment_id', (int)$params['id'])->get();
+
+    // services select
     $data['services'] = $this->services->get(['id','name']);
+
+    // providers select (sale)
+    $data['providers'] = $this->providers->get(['id','name']);
+
+    // customer
+    $data['customer'] = $this->customers->where('id', $data['customer_id'])->first();
     
     return $data;
   }
 
   public function postRow($params=[])
   {
-    if (!isset($params['name']) || !$params['name']) { return ['error' => 2, 'message' => 'Wypełnij nazwę warsztatów']; }
-    if (!isset($params['state']) || !$params['state'] || $params['state'] === '0') { return ['error' => 2, 'message' => 'Ustaw status']; }
+    //if (!isset($params['name']) || !$params['name']) { return ['error' => 2, 'message' => 'Wypełnij nazwę warsztatów']; }
+    if (!isset($params['state']) || !$params['state']) { return ['error' => 2, 'message' => 'Ustaw status rezerwacji']; }
 
     $data = [
-      'name' => $params['name'] ?? '',
-      'description' => $params['description'] ?? '',
-      'state' => (int)$params['state'],
+      'service_id' => $params['service_id'] ?? 0,
+      'customer_id' => $params['customer_id'] ?? 0,
+      'admission' => $params['admission'] ?? 0,
+      'guide' => $params['guide'] ?? 0,
+      'cinema' => $params['cinema'] ?? 0,
+      'kulturalna_szkola' => $params['kulturalna_szkola'] ?? 0,
+      'kultura_za_zl' => $params['kultura_za_zl'] ?? 0,
+      'pax' => $params['pax'] ?? 0,
+      'notes' => $params['notes'] ?? '',
+      'state' => $params['state'],
       'update_ip' => $_SERVER['REMOTE_ADDR']
     ];
     
     if (isset($params['id']) && $params['id']) {
       $status = $this->where('id', (int)$params['id'])->update($data);
-    } else {
+    } elseif ($params['id'] == 0) {
       $data['create_ip'] = $_SERVER['REMOTE_ADDR'];
 
       $status = $this->insert($data);
+    }
+
+    // appointment_providers
+    if (isset($params['appointment_providers'])) {
+      $this->appointment_providers->updateAppointment($params['id'], $params['appointment_providers']);
     }
 
     return $data;

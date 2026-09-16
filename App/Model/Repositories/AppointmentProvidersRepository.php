@@ -43,57 +43,31 @@ class AppointmentProvidersRepository extends Repository
     return $st->fetchAll();
   }
 
-  /*public function getRows($params = []) 
+  /**
+   * CRUD update appointment
+   */
+  public function updateAppointment($appointment_id, $data) 
   {
-    $filters = [];
-    $per_page = 5; //pagination
+    if (is_array($data)) {
+      $updated = [];
 
-    if (isset($params['q']) && $params['q']) {
-      $filters[] = "(se.name like :name or se.description like :description) ";
-      $q_param = '%'.$params['q'].'%';
+      foreach ($data as $item) {
+        $to_update_data = [
+          'provider_id' => $item['provider_id'],
+          'start_time' => $item['start_time'],
+          'end_time' => $item['end_time']
+        ];
+
+        if (isset($item['id']) && $item['id'] > 0 ) {
+          $this->where('id', $item['id'])->update($to_update_data);
+          $updated[] = $item['id'];
+        } else {
+          $updated[] = $this->insert($to_update_data);
+        }
+      }
+
+      // delete not existing id in new dataset
+      $this->where('appointment_id', $appointment_id)->where('id', 'NOT IN', $updated)->delete();
     }
-
-    // deleted state
-    if (!isset($params['state']) || !$params['state']) {
-      $filters[] = "ap.state != '3' ";
-    }
-
-    // count all records
-    $query = "select count(*) 
-    from " . $this->model . " ap ";
-    $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
-    $st = $this->connection->prepare($query);
-    
-    if (isset($params['q']) && $params['q']) {
-      $st->bindParam(':name', $q_param, PDO::PARAM_STR);
-      $st->bindParam(':description', $q_param, PDO::PARAM_STR);
-    }
-
-    $st->execute();
-    $total_items = $st->fetchColumn();
-    
-    // paginate
-    $paginator = new Paginator([], $total_items, $per_page, $params['page'] ?? 1, '');
-    $offset = $paginator->getCurrentPageFirstItem();
-
-    // actual query
-    $query = "select ap.* 
-    from " . $this->model . " ap ";
-    $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
-    $query .= " order by ap.id desc ";
-    $query .= ($offset) ? (" limit " . $offset . ", " . $per_page) : '';
-    $st = $this->connection->prepare($query);
-    
-    if (isset($params['q']) && $params['q']) {
-      $st->bindParam(':name', $q_param, PDO::PARAM_STR);
-      $st->bindParam(':description', $q_param, PDO::PARAM_STR);
-    }
-
-    $st->execute();
-    $items = $st->fetchAll();
-
-    $paginator->setResults($items);
-
-    return $paginator;
-  }*/
+  }
 }

@@ -5,10 +5,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { Label } from "@/components/ui/label"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent,  SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
@@ -32,6 +31,14 @@ const stateColors = {
   cancelled: 'bg-red-500'
 };
 
+const customerTypes = [
+  { value: 'primary', label: 'Szkoła podstawowa' },
+  { value: 'post_primary', label: 'Szkoła ponadpodstawowa' },
+  { value: 'individual', label: 'Indywidualny' },
+  { value: 'organized_group', label: 'Grupa' },
+  { value: 'other', label: 'Inny' }
+];
+
 const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
   const queryClient = useQueryClient();
   const [form, setForm] = useState<Appointment | null>(null);
@@ -52,7 +59,7 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
           description: resp.message
         })
       } else {
-        queryClient.invalidateQueries({ queryKey: ["services"] });
+        queryClient.invalidateQueries({ queryKey: ["calendar"] });
         onClose();
       }
     },
@@ -64,9 +71,19 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
     }
   }, [itemQuery.data]);
 
-  const updateField = (field: string, value: string | number) => {
+  const updateField = (field: string, value: string | number | boolean) => {
+    if (typeof value === 'boolean') { value = value ? 1 : 0 }
     console.log(field + '/' + value)
+
     setForm((current) => (current ? { ...current, [field]: value } : current));
+  };
+
+  const updateProvider = (index: number, field: string, value: number | string) => {
+    const newState = form?.appointment_providers;
+    if (newState) {
+      newState[index][field] = value;
+      setForm((current) => (current ? { ...current, appointment_providers: newState } : current));
+    }
   };
 
   const handleClose = () => {
@@ -75,6 +92,9 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
     }
   };
   
+  const submitFormHandler = () => {
+    updateMutation.mutate(form);
+  }
   
   return (
     <Sheet 
@@ -85,9 +105,9 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
         }
       }}
     >
-      {form && <SheetContent>
+      {form && <SheetContent className="rounded-l-2xl">
         <SheetHeader>
-          <SheetTitle className="flex gap-1.5 items-center"><div className={`size-3 rounded-full ${stateColors[form.state]}`}></div> Rezerwacja {form.id ? 'nr ' + form.id : 'NOWA'}</SheetTitle>
+          <SheetTitle className="flex gap-2 items-center"><div className={`size-3 rounded-full ${stateColors[form.state]}`}></div> Rezerwacja {form.id ? 'nr ' + form.id : 'NOWA'}</SheetTitle>
         </SheetHeader>
         
         <form onSubmit={(event) => {
@@ -107,32 +127,66 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
             </Field>
             <FieldGroup className="gap-2">
               <Field orientation="horizontal">
-                <Checkbox id="admission" name="toggle-checkbox" />
+                <Checkbox 
+                  id="admission" 
+                  value="1" 
+                  name="admission" 
+                  checked={form.admission == 1}
+                  onCheckedChange={(val) => updateField('admission', val)}
+                 />
                 <FieldLabel htmlFor="admission">Wstęp na wystawy</FieldLabel>
               </Field>
               <Field orientation="horizontal">
-                <Checkbox id="guide" name="toggle-checkbox" />
+                <Checkbox 
+                  id="guide" 
+                  value="1" 
+                  name="guide" 
+                  checked={form.guide == 1}
+                  onCheckedChange={(val) => updateField('guide', val)}
+                 />
                 <FieldLabel htmlFor="guide">Przewodnik</FieldLabel>
               </Field>
               <Field orientation="horizontal">
-                <Checkbox id="cinema" name="toggle-checkbox" />
+                <Checkbox 
+                  id="cinema" 
+                  value="1" 
+                  name="cinema" 
+                  checked={form.cinema == 1}
+                  onCheckedChange={(val) => updateField('cinema', val)}
+                 />
                 <FieldLabel htmlFor="cinema">Kino</FieldLabel>
               </Field>
               <Field orientation="horizontal">
-                <Checkbox id="cinema" name="toggle-checkbox" />
-                <FieldLabel htmlFor="cinema">Kulturalna Szkoła na Mazowszu</FieldLabel>
+                <Checkbox 
+                  id="kulturalna_szkola" 
+                  value="1" 
+                  name="kulturalna_szkola" 
+                  checked={form.kulturalna_szkola == 1}
+                  onCheckedChange={(val) => updateField('kulturalna_szkola', val)}
+                 />
+                <FieldLabel htmlFor="kulturalna_szkola">Kulturalna Szkoła na Mazowszu</FieldLabel>
               </Field>
               <Field orientation="horizontal">
-                <Checkbox id="cinema" name="toggle-checkbox" />
-                <FieldLabel htmlFor="cinema">Kultura za zł (wsparcie osób z niepełnospr.)</FieldLabel>
+                <Checkbox 
+                  id="kultura_za_zl" 
+                  value="1" 
+                  name="kultura_za_zl" 
+                  checked={form.kultura_za_zl == 1}
+                  onCheckedChange={(val) => updateField('kultura_za_zl', val)}
+                 />
+                <FieldLabel htmlFor="kultura_za_zl">Kultura za zł (wsparcie osób z niepełnospr.)</FieldLabel>
               </Field>
             </FieldGroup>
             <Field className="gap-2">
-              <FieldLabel htmlFor="notes">Liczba uczestników</FieldLabel>
+              <FieldLabel htmlFor="pax" className="hidden">Liczba uczestników</FieldLabel>
               <InputGroup>
                   <InputGroupInput 
                     type="number"
                     id="pax"
+                    name="pax"
+                    placeholder="Liczba uczestników"
+                    value={form.pax}
+                    onChange={(event) => updateField('pax', event.target.value)}
                   />
                   <InputGroupAddon align="inline-end">
                     osób
@@ -151,27 +205,34 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
             </TabsList>
             <TabsContent value="overview">
               <div className="grid flex-1 auto-rows-min gap-6">
-                <FieldGroup className="gap-3">
+                
+                {form.appointment_providers && form.appointment_providers.map((as, index) => (<FieldGroup className="gap-3">
                   <Field className="gap-2">
                     <FieldLabel htmlFor="sheet-demo-name">Sala</FieldLabel>
-                    <NativeSelect className="w-full" value={form.state} onChange={(e) => updateField('state', e.target.value)}>
+                    <NativeSelect className="w-full" value={form.appointment_providers[index].provider_id} onChange={(e) => updateProvider(index, 'provider_id', e.target.value)}>
                       <NativeSelectOption value=""></NativeSelectOption>
-                      {states.map((st) => (<NativeSelectOption key={st.value} value={st.value}>{st.label}</NativeSelectOption>))}
+                      {form.providers.map((pr) => (<NativeSelectOption key={pr.id} value={pr.id}>{pr.name}</NativeSelectOption>))}
                     </NativeSelect>
                   </Field>
                   <div className="grid grid-cols-2 gap-2">
                     <Field className="gap-2">
                       <Input 
                         type="datetime-local"
+                        name="start_time"
+                        value={as.start_time}
+                        onChange={(e) => updateProvider(index, 'start_time', e.target.value)}
                       />
                     </Field>
                     <Field className="gap-2">
                       <Input 
                         type="datetime-local"
+                        name="end_time"
+                        value={as.end_time}
+                        onChange={(e) => updateProvider(index, 'end_time', e.target.value)}
                       />
                     </Field>
                   </div>
-                </FieldGroup>
+                </FieldGroup>))}
 
                 <Field className="gap-2">
                   <FieldLabel htmlFor="notes">Uwagi</FieldLabel>
@@ -182,8 +243,8 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
                   />
                 </Field>
                 <Field className="gap-2">
-                  <FieldLabel htmlFor="sheet-demo-name">Status</FieldLabel>
-                  <NativeSelect className="w-full" value={form.state} onChange={(e) => updateField('state', e.target.value)}>
+                  <FieldLabel htmlFor="state">Status</FieldLabel>
+                  <NativeSelect id="state" className="w-full" value={form.state} onChange={(e) => updateField('state', e.target.value)}>
                     <NativeSelectOption value=""></NativeSelectOption>
                     {states.map((st) => (<NativeSelectOption key={st.value} value={st.value}>{st.label}</NativeSelectOption>))}
                   </NativeSelect>
@@ -194,23 +255,62 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
             <TabsContent value="contact">
               <FieldGroup className="gap-3">
                 <Field className="gap-2">
-                  <FieldLabel htmlFor="notes">Nazwa</FieldLabel>
+                  <FieldLabel htmlFor="notes">Dane klienta</FieldLabel>
                   <Input 
                     id="name"
                   />
                 </Field>
                 <Field className="gap-2">
-                  <FieldLabel htmlFor="notes">Telefon</FieldLabel>
+                  <NativeSelect className="w-full" value={form.state} onChange={(e) => updateField('state', e.target.value)}>
+                    <NativeSelectOption value=""></NativeSelectOption>
+                    {customerTypes.map((st) => (<NativeSelectOption key={st.value} value={st.value}>{st.label}</NativeSelectOption>))}
+                  </NativeSelect>
+                </Field>
+
+                <Field className="gap-2">
                   <Input 
                     type="tel"
                     id="name"
                   />
                 </Field>
                 <Field className="gap-2">
-                  <FieldLabel htmlFor="notes">E-mail</FieldLabel>
+                  <Input 
+                    type="tel"
+                    id="name"
+                  />
+                </Field>
+                <Field className="gap-2">
                   <Input 
                     type="email"
                     id="email"
+                  />
+                </Field>
+                <Field className="gap-2">
+                  <FieldLabel htmlFor="notes">Osoba do kontaktu</FieldLabel>
+                  <Input 
+                    id="email"
+                    placeholder="Imię i nazwisko"
+                  />
+                </Field>
+                <Field className="gap-2">
+                  <Input 
+                    type="tel"
+                    id="email"
+                    placeholder="Telefon"
+                  />
+                </Field>
+                <Field className="gap-2">
+                  <Input 
+                    type="email"
+                    id="email"
+                    placeholder="E-mail"
+                  />
+                </Field>
+                <Field className="gap-2">
+                  <FieldLabel htmlFor="notes">Ilość opiekunów</FieldLabel>
+                  <Input 
+                    type="number"
+                    id="name"
                   />
                 </Field>
               </FieldGroup>
@@ -220,10 +320,11 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
             </TabsContent>
           </Tabs>
         </form>
-        <SheetFooter>
-          <Button type="button">Zapisz zmiany</Button>
-          <SheetClose render={<Button variant="outline" type="button">Zamknij</Button>} />
+        <SheetFooter className="border-t">
+          <Button type="button" onClick={submitFormHandler} disabled={updateMutation.isPending}>{updateMutation.isPending ? "Zapisywanie..." : "Zapisz zmiany"}</Button>
+          {/*<SheetClose render={<Button variant="outline" type="button">Zamknij</Button>} />*/}
         </SheetFooter>
+        
       </SheetContent>}
     </Sheet>
   )
