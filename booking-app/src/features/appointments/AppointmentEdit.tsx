@@ -6,6 +6,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent,  SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -86,6 +87,14 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
     }
   };
 
+  const updateCustomer = (field: string, value: number | string) => {
+    const newState = form?.customer;
+    if (newState) {
+      newState[field] = value;
+      setForm((current) => (current ? { ...current, customer: newState } : current));
+    }
+  };
+
   const handleClose = () => {
     if (!updateMutation.isPending) {
       onClose();
@@ -106,18 +115,17 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
       }}
     >
       {form && <SheetContent className="rounded-l-2xl">
-        <SheetHeader>
-          <SheetTitle className="flex gap-2 items-center"><div className={`size-3 rounded-full ${stateColors[form.state]}`}></div> Rezerwacja {form.id ? 'nr ' + form.id : 'NOWA'}</SheetTitle>
+        <SheetHeader className="h-head border-b">
+          <SheetTitle className="flex gap-2 items-center leading-none"><div className={`size-3 rounded-full ${stateColors[form.state]}`}></div> Rezerwacja {form.id ? 'nr ' + form.id : 'NOWA'}</SheetTitle>
         </SheetHeader>
         
+        <ScrollArea className="h-side">
         <form onSubmit={(event) => {
           event.preventDefault();
           updateMutation.mutate(form);
         }}
-          className="grid gap-6"
         >
-          <Separator />
-          <div className="grid gap-6 px-6">
+          <div className="grid gap-6 p-6">
             <Field className="gap-2">
               <FieldLabel htmlFor="sheet-demo-name">Warsztaty</FieldLabel>
               <NativeSelect className="w-full" value={form.service_id} onChange={(e) => updateField('service_id', e.target.value)}>
@@ -197,7 +205,7 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
 
           <Separator className="w-full" />
 
-          <Tabs defaultValue="overview" className="w-full gap-6 px-6">
+          <Tabs defaultValue="overview" className="w-full gap-6 p-6">
             <TabsList className="w-full">
               <TabsTrigger value="overview" className="cursor-pointer">Rezerwacja</TabsTrigger>
               <TabsTrigger value="contact" className="cursor-pointer">Kontakt</TabsTrigger>
@@ -253,38 +261,50 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
             </TabsContent>
 
             <TabsContent value="contact">
-              <FieldGroup className="gap-3">
+              <FieldGroup className="gap-3 mb-6">
                 <Field className="gap-2">
                   <FieldLabel htmlFor="notes">Dane klienta</FieldLabel>
                   <Input 
-                    id="name"
+                    name="name"
+                    placeholder="Nazwa"
+                    value={form.customer.name}
+                    onChange={(e) => updateCustomer('name', e.target.value)}
                   />
                 </Field>
                 <Field className="gap-2">
-                  <NativeSelect className="w-full" value={form.state} onChange={(e) => updateField('state', e.target.value)}>
-                    <NativeSelectOption value=""></NativeSelectOption>
+                  <NativeSelect className="w-full" value={form.customer.customer_type} onChange={(e) => updateCustomer('customer_type', e.target.value)}>
+                    <NativeSelectOption value="">Wybierz typ klienta</NativeSelectOption>
                     {customerTypes.map((st) => (<NativeSelectOption key={st.value} value={st.value}>{st.label}</NativeSelectOption>))}
                   </NativeSelect>
                 </Field>
-
                 <Field className="gap-2">
                   <Input 
-                    type="tel"
-                    id="name"
+                    name="address"
+                    placeholder="Ulica, nr domu, kod pocztowy, miasto"
+                    value={form.customer.address}
+                    onChange={(e) => updateCustomer('address', e.target.value)}
                   />
                 </Field>
                 <Field className="gap-2">
                   <Input 
-                    type="tel"
-                    id="name"
+                    name="phone"
+                    placeholder="Telefon"
+                    value={form.customer.phone}
+                    onChange={(e) => updateCustomer('phone', e.target.value)}
                   />
                 </Field>
                 <Field className="gap-2">
                   <Input 
                     type="email"
-                    id="email"
+                    name="email"
+                    placeholder="E-mail"
+                    value={form.customer.email}
+                    onChange={(e) => updateCustomer('email', e.target.value)}
                   />
                 </Field>
+              </FieldGroup>
+
+              <FieldGroup className="gap-3 mb-6">
                 <Field className="gap-2">
                   <FieldLabel htmlFor="notes">Osoba do kontaktu</FieldLabel>
                   <Input 
@@ -306,6 +326,9 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
                     placeholder="E-mail"
                   />
                 </Field>
+              </FieldGroup>
+
+              <FieldGroup className="gap-3">
                 <Field className="gap-2">
                   <FieldLabel htmlFor="notes">Ilość opiekunów</FieldLabel>
                   <Input 
@@ -320,7 +343,8 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
             </TabsContent>
           </Tabs>
         </form>
-        <SheetFooter className="border-t">
+        </ScrollArea>
+        <SheetFooter className="h-foot border-t">
           <Button type="button" onClick={submitFormHandler} disabled={updateMutation.isPending}>{updateMutation.isPending ? "Zapisywanie..." : "Zapisz zmiany"}</Button>
           {/*<SheetClose render={<Button variant="outline" type="button">Zamknij</Button>} />*/}
         </SheetFooter>

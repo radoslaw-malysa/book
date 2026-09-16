@@ -139,6 +139,7 @@ class AppointmentsRepository extends Repository
 
     // customer
     $data['customer'] = $this->customers->where('id', $data['customer_id'])->first();
+    $data['customer']['customer_type'] = $data['customer']['customer_type'] ? $data['customer']['customer_type'] : '';
     
     return $data;
   }
@@ -173,6 +174,11 @@ class AppointmentsRepository extends Repository
     // appointment_providers
     if (isset($params['appointment_providers'])) {
       $this->appointment_providers->updateAppointment($params['id'], $params['appointment_providers']);
+    }
+
+    // customer
+    if (isset($params['customer'])) {
+      $this->customers->updateCustomer($params['customer']);
     }
 
     return $data;

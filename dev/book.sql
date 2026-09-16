@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 16, 2026 at 02:26 PM
+-- Generation Time: Sep 16, 2026 at 10:38 PM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.30
 
@@ -75,7 +75,7 @@ CREATE TABLE `book_appointment_providers` (
 
 INSERT INTO `book_appointment_providers` (`id`, `appointment_id`, `provider_id`, `start_time`, `end_time`) VALUES
 (1, 1, 1, '2026-09-08 09:00:00', '2026-09-09 16:00:00'),
-(2, 2, 2, '2026-09-09 10:00:00', '2026-09-09 11:45:00');
+(2, 2, 2, '2026-09-09 10:00:00', '2026-09-09 11:30:00');
 
 -- --------------------------------------------------------
 
@@ -130,26 +130,24 @@ INSERT INTO `book_categories_services` (`category_id`, `service_id`) VALUES
 
 CREATE TABLE `book_customers` (
   `id` int NOT NULL,
-  `customer_type` enum('primary','post_primary','individual','organized_group','other') COLLATE utf8mb4_polish_ci DEFAULT NULL,
+  `customer_type` enum('primary','post_primary','individual','organized_group','other') CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci DEFAULT NULL,
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
-  `address` varchar(255) COLLATE utf8mb4_polish_ci NOT NULL,
+  `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci DEFAULT NULL,
   `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
-  `contact_name` varchar(64) COLLATE utf8mb4_polish_ci NOT NULL,
-  `contact_phone` varchar(32) COLLATE utf8mb4_polish_ci NOT NULL,
-  `contact_email` varchar(64) COLLATE utf8mb4_polish_ci NOT NULL,
-  `pax_care` tinyint NOT NULL DEFAULT '0',
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+  `contact_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
+  `contact_phone` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
+  `contact_email` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
+  `pax_care` tinyint NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
 
 --
 -- Dumping data for table `book_customers`
 --
 
-INSERT INTO `book_customers` (`id`, `customer_type`, `name`, `address`, `email`, `phone`, `contact_name`, `contact_phone`, `contact_email`, `pax_care`, `notes`, `created_at`) VALUES
-(1, NULL, 'Elektrownia', '', NULL, '', '', '', '', 0, NULL, '2026-09-06 17:54:37'),
-(2, NULL, 'Szkoła Podstawowa nr 30', '', NULL, '', '', '', '', 0, NULL, '2026-09-11 13:11:16');
+INSERT INTO `book_customers` (`id`, `customer_type`, `name`, `address`, `email`, `phone`, `contact_name`, `contact_phone`, `contact_email`, `pax_care`) VALUES
+(1, NULL, 'Elektrownia', '', NULL, '', '', '', '', 0),
+(2, 'primary', 'Szkoła Podstawowa nr 30', '', '', '', '', '', '', 0);
 
 -- --------------------------------------------------------
 

@@ -23,6 +23,7 @@ export interface Appointment {
   customer_name: string;
   appointment_providers: [];
   providers: [];
+  customer: [];
 }
 
 const appointmentsUrl = apiUrl + "/appointments";

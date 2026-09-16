@@ -12,3 +12,13 @@
 .c-height-d {
   height: calc(100svh - 340px);
 }
+
+.h-head {
+  height: 65px;
+}
+.h-foot {
+  height: 85px;
+}
+.h-side {
+  height: calc(100svh - 150px);
+}
