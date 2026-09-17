@@ -6,7 +6,7 @@ const AdminLayout = () => {
   return <>
     <header className="h-16 flex justify-between items-center">
       <div className="flex items-center gap-8">
-        <img src="/images/logo.svg" alt="logo" />
+        <Link to="/booking/calendar"><img src="/images/logo.svg" alt="logo" /></Link>
         <nav>
           <ul className="flex gap-4 xl:gap-6">
             <li>

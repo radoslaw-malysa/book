@@ -17,6 +17,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { Paginate } from "@/components/Paginate";
 import { getAppointments, type AppointmentFilters } from "@/api/appointments";
 import AppointmentEdit from "@/features/appointments/AppointmentEdit";
+import { Input } from "@/components/ui/input";
 
 export const appointmentsQuery = (filters: AppointmentFilters = {}) =>
   queryOptions({
@@ -107,13 +108,18 @@ const Appointments = () => {
         <CardTitle>Warsztaty</CardTitle>
         <CardAction>
           <div className="flex gap-2 items-center">
+            <Input 
+              name="id"
+              placeholder="Nr rezerwacji"
+              className="w-xs"
+            />
             <InputGroup>
               <InputGroupInput 
                 name="q"
-                placeholder="Szukaj..." 
+                placeholder="Szukaj szkoły, klienta..." 
                 value={q} 
                 onChange={(event) => setQ(event.target.value)}
-                className="focus:min-w-sm " />
+                className="w-sm" />
               <InputGroupAddon><SearchIcon /></InputGroupAddon>
               {q && <InputGroupAddon align="inline-end">
                 <InputGroupButton aria-label="Wyczyść" title="Wyczyść" size="icon-xs" onClick={() => setQ('')}>

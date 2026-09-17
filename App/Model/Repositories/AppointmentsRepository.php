@@ -33,7 +33,7 @@ class AppointmentsRepository extends Repository
     $per_page = 5; //pagination
 
     if (isset($params['q']) && $params['q']) {
-      $filters[] = "(se.name like :name or se.description like :description) ";
+      $filters[] = "(cu.name like :name) ";
       $q_param = '%'.$params['q'].'%';
     }
 
@@ -52,7 +52,7 @@ class AppointmentsRepository extends Repository
     
     if (isset($params['q']) && $params['q']) {
       $st->bindParam(':name', $q_param, PDO::PARAM_STR);
-      $st->bindParam(':description', $q_param, PDO::PARAM_STR);
+      //$st->bindParam(':description', $q_param, PDO::PARAM_STR);
     }
 
     $st->execute();
@@ -74,7 +74,7 @@ class AppointmentsRepository extends Repository
     
     if (isset($params['q']) && $params['q']) {
       $st->bindParam(':name', $q_param, PDO::PARAM_STR);
-      $st->bindParam(':description', $q_param, PDO::PARAM_STR);
+      //$st->bindParam(':description', $q_param, PDO::PARAM_STR);
     }
 
     $st->execute();
