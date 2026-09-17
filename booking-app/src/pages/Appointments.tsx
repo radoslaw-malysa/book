@@ -16,7 +16,7 @@ import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "
 import { useDebounce } from "@/hooks/useDebounce";
 import { Paginate } from "@/components/Paginate";
 import { getAppointments, type AppointmentFilters } from "@/api/appointments";
-import AppointmentEdit from "@/features/appointments/AppointmentsEdit";
+import AppointmentEdit from "@/features/appointments/AppointmentEdit";
 
 export const appointmentsQuery = (filters: AppointmentFilters = {}) =>
   queryOptions({
@@ -101,7 +101,7 @@ const Appointments = () => {
     }
   }, [filters, navigate, searchParams])
 
-  return (
+  return (<>
     <Card className="w-full h-full shadow-none ring-0">
       <CardHeader>
         <CardTitle>Warsztaty</CardTitle>
@@ -133,8 +133,12 @@ const Appointments = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Nr</TableHead>
+              <TableHead>Data wizyty</TableHead>
               <TableHead>Klient</TableHead>
               <TableHead>Warsztaty</TableHead>
+              <TableHead title="Kultura za zł">ZŁ</TableHead>
+              <TableHead title="Cena z cennika">Cennik</TableHead>
+              <TableHead title="Cena sprzedaży">Sprzedaż</TableHead>
               <TableHead>Utworzono</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
@@ -147,8 +151,12 @@ const Appointments = () => {
                 onClick={() => setSelectedId(item.id)}
               >
                 <TableCell>{item.id}</TableCell>
+                <TableCell>{item.visit_time?.substring(0, 16)}</TableCell>
                 <TableCell className="font-medium">{item.customer_name}</TableCell>
                 <TableCell>{item.service_name}{item.service_description && <div className="text-muted-foreground text-xs">{item.service_description}</div>}</TableCell>
+                <TableCell>{item.kulturalna_szkola}</TableCell>
+                <TableCell>{item.total_price}</TableCell>
+                <TableCell>{item.sell_price}</TableCell>
                 <TableCell>{item.create_time.substring(0, 16)}</TableCell>
                 <TableCell><StateIndicator state={item.state} /></TableCell>
               </TableRow>
@@ -160,9 +168,9 @@ const Appointments = () => {
       {data.total_pages > 1 && <CardFooter>
         <Paginate page={filters.page} totalPages={data.total_pages} onChange={pageChangeHandler} />
       </CardFooter>}
-      <AppointmentEdit itemId={selectedId} onClose={() => setSelectedId(null)} />
     </Card>
-  );
+    <AppointmentEdit itemId={selectedId} refreshKey="appointments" onClose={() => setSelectedId(null)} />
+  </>);
 };
 
 export default Appointments;

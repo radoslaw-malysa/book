@@ -30,9 +30,9 @@ return function (App $app) {
         //$app->get('/{table}/{id}', CrudAction::class . ":fakePostRow");
         $app->get('/{table}/{id}', CrudAction::class . ":getRow");
         $app->get('/{table}', CrudAction::class . ":getTable");
-        $app->post('/{table}', CrudAction::class . ":postRow");
         $app->post('/{table}/{id}', CrudAction::class . ":postRow");
-
+        $app->post('/{table}', CrudAction::class . ":postRow");
+        
         $app->get('/', CurrentAction::class); // home ->add($cache)
     }); /*->add(function (Request $request, RequestHandler $handler) use ($app) {
         

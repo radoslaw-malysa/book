@@ -62,6 +62,7 @@ class AppointmentProvidersRepository extends Repository
           $this->where('id', $item['id'])->update($to_update_data);
           $updated[] = $item['id'];
         } else {
+          $to_update_data['appointment_id'] = $appointment_id;
           $updated[] = $this->insert($to_update_data);
         }
       }
@@ -69,5 +70,15 @@ class AppointmentProvidersRepository extends Repository
       // delete not existing id in new dataset
       $this->where('appointment_id', $appointment_id)->where('id', 'NOT IN', $updated)->delete();
     }
+  }
+
+  public function getNew()
+  {
+    return [[
+      'appointment_id' => 0,
+      'provider_id' => 0,
+      'start_time' => '',
+      'end_time' => ''
+    ]];
   }
 }

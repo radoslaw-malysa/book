@@ -13,10 +13,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Mail, Printer } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface ItemEditDialogProps {
   itemId: number | null;
+  refreshKey: string;
   onClose: () => void;
 }
 
@@ -40,16 +42,16 @@ const customerTypes = [
   { value: 'other', label: 'Inny' }
 ];
 
-const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
+const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) => {
   const queryClient = useQueryClient();
   const [form, setForm] = useState<Appointment | null>(null);
 
   const itemQuery = useQuery({
     queryKey: ["appointment", itemId],
-    queryFn: () => getAppointment(itemId as number),
+    queryFn: () => getAppointment(itemId),
     enabled: itemId !== null,
   });
-  
+  // as number
   const updateMutation = useMutation({
     mutationFn: updateAppointment,
     onSuccess: (resp) => {
@@ -60,7 +62,7 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
           description: resp.message
         })
       } else {
-        queryClient.invalidateQueries({ queryKey: ["calendar"] });
+        queryClient.invalidateQueries({ queryKey: [refreshKey] });
         onClose();
       }
     },
@@ -119,20 +121,31 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
           <SheetTitle className="flex gap-2 items-center leading-none"><div className={`size-3 rounded-full ${stateColors[form.state]}`}></div> Rezerwacja {form.id ? 'nr ' + form.id : 'NOWA'}</SheetTitle>
         </SheetHeader>
         
-        <ScrollArea className="h-side">
+        <div className="h-side no-scrollbar overflow-y-auto">
         <form onSubmit={(event) => {
           event.preventDefault();
           updateMutation.mutate(form);
         }}
         >
           <div className="grid gap-6 p-6">
-            <Field className="gap-2">
-              <FieldLabel htmlFor="sheet-demo-name">Warsztaty</FieldLabel>
-              <NativeSelect className="w-full" value={form.service_id} onChange={(e) => updateField('service_id', e.target.value)}>
-                <NativeSelectOption value="">Bez warsztatów</NativeSelectOption>
-                {form.services.map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
-              </NativeSelect>
-            </Field>
+            <FieldGroup className="gap-3">
+              <Field className="gap-2">
+                <FieldLabel htmlFor="visit-time">Data wizyty i warsztaty</FieldLabel>
+                <Input 
+                  id="visit-time"
+                  type="datetime-local"
+                  name="visit_time"
+                  value={form.visit_time}
+                  onChange={(e) => updateField('visit_time', e.target.value)}
+                />
+              </Field>
+              <Field className="gap-2">
+                <NativeSelect className="w-full" value={form.service_id} onChange={(e) => updateField('service_id', e.target.value)}>
+                  <NativeSelectOption value="">Bez warsztatów</NativeSelectOption>
+                  {form.services.map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
+                </NativeSelect>
+              </Field>
+            </FieldGroup>
             <FieldGroup className="gap-2">
               <Field orientation="horizontal">
                 <Checkbox 
@@ -203,10 +216,8 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
             </Field>
           </div>
 
-          <Separator className="w-full" />
-
-          <Tabs defaultValue="overview" className="w-full gap-6 p-6">
-            <TabsList className="w-full">
+          <Tabs defaultValue="overview" className="w-full gap-6 px-6 pb-6">
+            <TabsList variant="line" className="w-full pb-px px-0 border-b">
               <TabsTrigger value="overview" className="cursor-pointer">Rezerwacja</TabsTrigger>
               <TabsTrigger value="contact" className="cursor-pointer">Kontakt</TabsTrigger>
               <TabsTrigger value="prices" className="cursor-pointer">Rozliczenie</TabsTrigger>
@@ -214,7 +225,7 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
             <TabsContent value="overview">
               <div className="grid flex-1 auto-rows-min gap-6">
                 
-                {form.appointment_providers && form.appointment_providers.map((as, index) => (<FieldGroup className="gap-3">
+                {form.appointment_providers && form.appointment_providers.map((as, index) => (<FieldGroup key={index} className="gap-3">
                   <Field className="gap-2">
                     <FieldLabel htmlFor="sheet-demo-name">Sala</FieldLabel>
                     <NativeSelect className="w-full" value={form.appointment_providers[index].provider_id} onChange={(e) => updateProvider(index, 'provider_id', e.target.value)}>
@@ -308,42 +319,127 @@ const AppointmentEdit = ({ itemId, onClose }: ItemEditDialogProps) => {
                 <Field className="gap-2">
                   <FieldLabel htmlFor="notes">Osoba do kontaktu</FieldLabel>
                   <Input 
-                    id="email"
+                    name="contact_name"
+                    value={form.customer.contact_name}
+                    onChange={(e) => updateCustomer('contact_name', e.target.value)}
                     placeholder="Imię i nazwisko"
                   />
                 </Field>
                 <Field className="gap-2">
                   <Input 
-                    type="tel"
-                    id="email"
+                    name="contact_phone"
+                    value={form.customer.contact_phone}
+                    onChange={(e) => updateCustomer('contact_phone', e.target.value)}
                     placeholder="Telefon"
                   />
                 </Field>
                 <Field className="gap-2">
                   <Input 
-                    type="email"
-                    id="email"
+                    name="contact_email"
+                    value={form.customer.contact_email}
+                    onChange={(e) => updateCustomer('contact_email', e.target.value)}
                     placeholder="E-mail"
                   />
                 </Field>
               </FieldGroup>
 
-              <FieldGroup className="gap-3">
+              <FieldGroup className="gap-3 mb-6">
                 <Field className="gap-2">
                   <FieldLabel htmlFor="notes">Ilość opiekunów</FieldLabel>
                   <Input 
-                    type="number"
-                    id="name"
+                    name="pax_care"
+                    value={form.customer.pax_care}
+                    onChange={(e) => updateCustomer('pax_care', e.target.value)}
+                  />
+                </Field>
+              </FieldGroup>
+
+              <FieldGroup className="gap-2 mb-6">
+                <Field orientation="horizontal">
+                  <Checkbox 
+                    id="accept_processing" 
+                    value="1" 
+                    name="accept_processing" 
+                    checked={form.customer.accept_processing == 1}
+                    onCheckedChange={(val) => updateCustomer('accept_processing', (val) ? 1 : 0)}
+                  />
+                  <FieldLabel htmlFor="accept_processing">Zgoda na przetwarznie danych</FieldLabel>
+                </Field>
+                <Field orientation="horizontal">
+                  <Checkbox 
+                    id="accept_regulations" 
+                    value="1" 
+                    name="accept_regulations" 
+                    checked={form.customer.accept_regulations == 1}
+                    onCheckedChange={(val) => updateCustomer('accept_regulations', (val) ? 1 : 0)}
+                  />
+                  <FieldLabel htmlFor="accept_processing">Akceptacja Regulaminu</FieldLabel>
+                </Field>
+                <Field orientation="horizontal">
+                  <Checkbox 
+                    id="accept_kultura_zl" 
+                    value="1" 
+                    name="accept_kultura_zl" 
+                    checked={form.customer.accept_kultura_zl == 1}
+                    onCheckedChange={(val) => updateCustomer('accept_kultura_zl', (val) ? 1 : 0)}
+                  />
+                  <FieldLabel htmlFor="accept_kultura_zl">Akceptacja regulaminu Kultura za zł.</FieldLabel>
+                </Field>
+              </FieldGroup>
+              <FieldGroup className="gap-2">
+                <Button variant="outline"><Printer data-icon="inline-start" /> Wniosek Kultura za zł</Button>
+                <Button variant="outline"><Mail data-icon="inline-start" /> Poinformuj o rezerwacji</Button>
+              </FieldGroup>
+
+            </TabsContent>
+
+            <TabsContent value="prices">
+              <div className="mb-6 text-center">[ - - - Kalkulacja ceny - - - ]</div>
+
+              <FieldGroup className="gap-3">
+                <Field className="gap-2">
+                  <FieldLabel htmlFor="pax">Cena z cennika</FieldLabel>
+                  <InputGroup>
+                      <InputGroupInput 
+                        type="number"
+                        id="total_price"
+                        name="total_price"
+                        value={form.total_price}
+                        onChange={(event) => updateField('total_price', event.target.value)}
+                      />
+                      <InputGroupAddon align="inline-end">
+                        zł
+                      </InputGroupAddon>
+                    </InputGroup>
+                </Field>
+                <Field className="gap-2">
+                  <FieldLabel htmlFor="pax">Cena sprzedaży</FieldLabel>
+                  <InputGroup>
+                      <InputGroupInput 
+                        type="number"
+                        id="sell_price"
+                        name="sell_price"
+                        value={form.sell_price}
+                        onChange={(e) => updateField('sell_price', e.target.value)}
+                      />
+                      <InputGroupAddon align="inline-end">
+                        zł
+                      </InputGroupAddon>
+                    </InputGroup>
+                </Field>
+                <Field className="gap-2">
+                  <FieldLabel htmlFor="notes">Nr dokumentu sprzedaży</FieldLabel>
+                  <Input 
+                    name="sell_doc"
+                    value={form.sell_doc}
+                    onChange={(e) => updateField('sell_doc', e.target.value)}
                   />
                 </Field>
               </FieldGroup>
             </TabsContent>
-            <TabsContent value="prices">
-              bb
-            </TabsContent>
           </Tabs>
         </form>
-        </ScrollArea>
+        </div>
         <SheetFooter className="h-foot border-t">
           <Button type="button" onClick={submitFormHandler} disabled={updateMutation.isPending}>{updateMutation.isPending ? "Zapisywanie..." : "Zapisz zmiany"}</Button>
           {/*<SheetClose render={<Button variant="outline" type="button">Zamknij</Button>} />*/}

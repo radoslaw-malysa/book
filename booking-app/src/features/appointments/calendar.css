@@ -3,6 +3,9 @@
   border-bottom: 1px solid var(--border);
   width: 100%;
 }
+.c-h:hover {
+  background-color: var(--muted);
+}
 .c-height {
   height: calc(100svh - 250px);
 }

@@ -1,6 +1,6 @@
 import { queryOptions, useSuspenseQuery, type QueryClient } from "@tanstack/react-query";
 import { useLoaderData, useNavigate, useSearchParams, type LoaderFunctionArgs } from "react-router";
-import { getCalendarWeek, type CalendarFilters, type AppointmentService } from "@/api/calendar";
+import { getCalendarWeek, type CalendarFilters } from "@/api/calendar";
 import { Button } from "@/components/ui/button";
 import { Calendar1, CalendarDays, ChevronDownIcon, Plus, SearchIcon, XIcon } from "lucide-react";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -57,7 +57,7 @@ const Calendary = () => {
   }
   
   const [view, setView] = useState<'week' | 'day'>('week');
-  const [selectedId, setSelectedId] = useState<number | null>(null); 
+  const [selectedId, setSelectedId] = useState<number | {} | null>(null); 
 
   const dateString = `${filters.date.getFullYear()}-${String(filters.date.getMonth()+1).padStart(2,"0")}-${String(filters.date.getDate()).padStart(2,"0")}`
 
@@ -143,7 +143,7 @@ const Calendary = () => {
         {view === 'day' && <ViewDay data={data} selectedId={selectedId} date={filters.date} onEdit={setSelectedId} />}
       </CardContent>
     </Card>
-    <AppointmentEdit itemId={selectedId} onClose={() => setSelectedId(null)} />
+    <AppointmentEdit itemId={selectedId} refreshKey="calendar" onClose={() => setSelectedId(null)} />
   </div>
 }
 

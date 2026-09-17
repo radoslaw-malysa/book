@@ -5,6 +5,7 @@ export interface Appointment {
   service_id: number;
   customer_id: number;
   salon_id: number;
+  visit_time: string;
   admission: number;
   guide: number;
   cinema: number;
@@ -12,6 +13,8 @@ export interface Appointment {
   pax: number;
   kultura_za_zl: number;
   total_price: string;
+  sell_price: string;
+  sell_doc: string;
   state: string | undefined | number;
   notes: string;
   create_time: string;
@@ -67,8 +70,20 @@ export const getAppointments = async (filters: AppointmentFilters = {}): Promise
   return response.json() as Promise<ApiItemsData>;
 };
 
-export const getAppointment = async (id: number): Promise<Appointment> =>
-  getAppointmentsResponse(await fetch(`${appointmentsUrl}/${id}`));
+export const getAppointment = async (id: number | {visit_time: string, provider_id: number} | null): Promise<Appointment> => {
+  // new appointment on calendar
+  if (typeof id === 'object' && id !== null) {
+    const { visit_time, provider_id } = id;
+    const params = new URLSearchParams();
+    params.set("visit_time", visit_time);
+    params.set("provider_id", provider_id.toString());
+    const query = params.toString();
+
+    return getAppointmentsResponse(await fetch(`${appointmentsUrl}/0?${query}`));
+  }
+
+  return getAppointmentsResponse(await fetch(`${appointmentsUrl}/${id}`));
+}
 
 export const updateAppointment = async (item: Appointment): Promise<Appointment | ErrorMessage> =>
   getAppointmentsResponse(

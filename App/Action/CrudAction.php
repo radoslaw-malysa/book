@@ -70,8 +70,13 @@ class CrudAction
   {
     $table = $args['table'];
     $id = $args['id'];
+    $query_params = $request->getQueryParams();
 
-    $payload = $this->$table->getRow(['id' => $id]);
+    if ($query_params) {
+      $payload = $this->$table->getRow(array_merge($query_params, ['id' => $id]));
+    } else {
+      $payload = $this->$table->getRow(['id' => $id]);
+    }
 
     return $this->json->render($response, $payload);
   }
@@ -79,6 +84,7 @@ class CrudAction
   public function postRow($request, $response, $args) 
   {
     $table = $args['table'];
+    $id = $args['id'];
     $data = $request->getParsedBody();
 
     // json string in body
@@ -88,6 +94,8 @@ class CrudAction
 
     if (is_array($data)) {
       $payload = $this->$table->postRow($data);
+    } else {
+      $payload = ['error' => 1, 'message' => 'Brak danych do zapisu'];
     }
     
     return $this->json->render($response, $payload);

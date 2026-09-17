@@ -46,7 +46,7 @@ const ViewWeek = ({data, selectedId, onEdit}: ViewWeekProps) => {
         {data.days.map((d) => (
           <div key={d.week_day} className="basis-sm flex flex-col justify-center items-center not-last:border-r relative">
             {data.hours.map((h) => (
-              <div key={h} className="c-h"></div>
+              <div key={h} className="c-h" onClick={() => onEdit({visit_time: `${d.date}T${h}`, provider_id: prov.id})}></div>
             ))}
             <DayProviderAppointments day={d.date} provider_id={prov.id} />
           </div>

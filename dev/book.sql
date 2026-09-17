@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 16, 2026 at 10:38 PM
+-- Generation Time: Sep 17, 2026 at 03:12 PM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.30
 
@@ -31,7 +31,8 @@ CREATE TABLE `book_appointments` (
   `id` int NOT NULL,
   `service_id` int UNSIGNED NOT NULL,
   `customer_id` int NOT NULL,
-  `salon_id` int NOT NULL,
+  `salon_id` int NOT NULL DEFAULT '1',
+  `visit_time` datetime DEFAULT NULL,
   `admission` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `guide` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `cinema` tinyint UNSIGNED NOT NULL DEFAULT '0',
@@ -39,7 +40,9 @@ CREATE TABLE `book_appointments` (
   `kultura_za_zl` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `pax` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `state` enum('pending','confirmed','completed','cancelled','no-show') CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci DEFAULT 'pending',
-  `total_price` decimal(10,2) DEFAULT NULL,
+  `total_price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `sell_price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `sell_doc` varchar(32) COLLATE utf8mb4_polish_ci NOT NULL,
   `notes` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci DEFAULT NULL,
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `create_ip` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
@@ -51,9 +54,10 @@ CREATE TABLE `book_appointments` (
 -- Dumping data for table `book_appointments`
 --
 
-INSERT INTO `book_appointments` (`id`, `service_id`, `customer_id`, `salon_id`, `admission`, `guide`, `cinema`, `kulturalna_szkola`, `kultura_za_zl`, `pax`, `state`, `total_price`, `notes`, `create_time`, `create_ip`, `update_time`, `update_ip`) VALUES
-(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 'confirmed', 100.00, NULL, '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1'),
-(2, 3, 2, 1, 1, 1, 1, 1, 0, 25, 'pending', 100.00, 'ta rezerwacja jest moja', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1');
+INSERT INTO `book_appointments` (`id`, `service_id`, `customer_id`, `salon_id`, `visit_time`, `admission`, `guide`, `cinema`, `kulturalna_szkola`, `kultura_za_zl`, `pax`, `state`, `total_price`, `sell_price`, `sell_doc`, `notes`, `create_time`, `create_ip`, `update_time`, `update_ip`) VALUES
+(1, 1, 1, 1, '2026-09-15 09:00:00', 0, 0, 0, 0, 0, 0, 'confirmed', 100.00, 0.00, '', '', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1'),
+(2, 3, 2, 1, '2026-09-16 10:00:00', 1, 0, 1, 1, 1, 25, 'pending', 100.00, 0.00, '', 'ta rezerwacja jest moja', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1'),
+(3, 2, 5, 1, '2026-09-18 08:00:00', 0, 0, 0, 0, 0, 20, 'pending', 0.00, 0.00, '', 'test nr 2', '2026-09-17 16:05:18', '127.0.0.1', '2026-09-17 16:05:18', '127.0.0.1');
 
 -- --------------------------------------------------------
 
@@ -74,8 +78,9 @@ CREATE TABLE `book_appointment_providers` (
 --
 
 INSERT INTO `book_appointment_providers` (`id`, `appointment_id`, `provider_id`, `start_time`, `end_time`) VALUES
-(1, 1, 1, '2026-09-08 09:00:00', '2026-09-09 16:00:00'),
-(2, 2, 2, '2026-09-09 10:00:00', '2026-09-09 11:30:00');
+(1, 1, 1, '2026-09-15 09:00:00', '2026-09-16 16:00:00'),
+(2, 2, 2, '2026-09-16 10:00:00', '2026-09-16 11:45:00'),
+(3, 3, 1, '2026-09-18 08:00:00', '2026-09-18 10:30:00');
 
 -- --------------------------------------------------------
 
@@ -138,16 +143,20 @@ CREATE TABLE `book_customers` (
   `contact_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
   `contact_phone` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
   `contact_email` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci NOT NULL,
-  `pax_care` tinyint NOT NULL DEFAULT '0'
+  `pax_care` tinyint NOT NULL DEFAULT '0',
+  `accept_processing` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `accept_regulations` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `accept_kultura_zl` tinyint UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
 
 --
 -- Dumping data for table `book_customers`
 --
 
-INSERT INTO `book_customers` (`id`, `customer_type`, `name`, `address`, `email`, `phone`, `contact_name`, `contact_phone`, `contact_email`, `pax_care`) VALUES
-(1, NULL, 'Elektrownia', '', NULL, '', '', '', '', 0),
-(2, 'primary', 'Szkoła Podstawowa nr 30', '', '', '', '', '', '', 0);
+INSERT INTO `book_customers` (`id`, `customer_type`, `name`, `address`, `email`, `phone`, `contact_name`, `contact_phone`, `contact_email`, `pax_care`, `accept_processing`, `accept_regulations`, `accept_kultura_zl`) VALUES
+(1, NULL, 'Elektrownia', '', '', '', '', '', '', 0, 0, 0, 0),
+(2, 'primary', 'Szkoła Podstawowa nr 30', 'Graniczna 17/9', 'radek.malysa@gmail.com', '222', 'Joanna Kowalska', '997', 'radek.malysa@gmail.com', 1, 1, 0, 0),
+(5, NULL, '', '', '', '', '', '', '', 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -428,13 +437,13 @@ ALTER TABLE `book_working_hours`
 -- AUTO_INCREMENT for table `book_appointments`
 --
 ALTER TABLE `book_appointments`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `book_appointment_providers`
 --
 ALTER TABLE `book_appointment_providers`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `book_categories`
@@ -446,7 +455,7 @@ ALTER TABLE `book_categories`
 -- AUTO_INCREMENT for table `book_customers`
 --
 ALTER TABLE `book_customers`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `book_providers`
