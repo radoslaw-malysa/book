@@ -18,10 +18,11 @@ import { Paginate } from "@/components/Paginate";
 import { getAppointments, type AppointmentFilters } from "@/api/appointments";
 import AppointmentEdit from "@/features/appointments/AppointmentEdit";
 import { Input } from "@/components/ui/input";
+import DateRangePicker from "@/components/DateRangePicker";
 
 export const appointmentsQuery = (filters: AppointmentFilters = {}) =>
   queryOptions({
-    queryKey: ["appointments", filters.q ?? "", filters.page ?? ""],
+    queryKey: ["appointments", filters.q ?? "", filters.page ?? "", , filters.from ?? "", , filters.to ?? ""],
     queryFn: () => getAppointments(filters),
   });
 
@@ -31,10 +32,14 @@ export const loader =
     const searchParams = new URL(request.url).searchParams;
     const q = searchParams.get("q") ?? undefined;
     const page = searchParams.get("page") ?? undefined;
+    const from = searchParams.get("from") ?? undefined;
+    const to = searchParams.get("to") ?? undefined;
 
     const filters: AppointmentFilters = {
       q: q,
       page: page,
+      from: from,
+      to: to
     };
 
     await client.ensureQueryData(appointmentsQuery(filters));
@@ -62,6 +67,10 @@ const Appointments = () => {
   const [filters, setFilters] = useState<AppointmentFilters>({
     q: searchParams.get("q") ?? "",
     page: searchParams.get("page") ?? "",
+    range: {
+      from: (searchParams.get("from") !== null && searchParams.get("from") !== '') ? new Date(searchParams.get("from")) : "",
+      to: (searchParams.get("to") !== null && searchParams.get("to") !== '') ? new Date(searchParams.get("to")) : ""
+    }
   });
   
   // loader (reat router + react query)
@@ -82,6 +91,11 @@ const Appointments = () => {
     setFilters((current) => ({ ...current, page: p }))
   }
 
+  // date range
+  const setRangeHandler = (range: {}) => {
+    setFilters((current) => ({ ...current, range: range }))
+  }
+
   useEffect(() => {
     setFilters((current) => ({ ...current, q: debouncedQ, page: "" }))
   }, [debouncedQ])
@@ -95,6 +109,16 @@ const Appointments = () => {
     }
     if (filters.page) {
       nextSearchParams.set("page", filters.page);
+    }
+    if (filters.range) {
+      if (filters.range.from) {
+        const fr = filters.range.from;
+        nextSearchParams.set("from", `${fr.getFullYear()}-${String(fr.getMonth()+1).padStart(2,"0")}-${String(fr.getDate()).padStart(2,"0")}`);
+      }
+      if (filters.range.to) {
+        const to = filters.range.to;
+        nextSearchParams.set("to", `${to.getFullYear()}-${String(to.getMonth()+1).padStart(2,"0")}-${String(to.getDate()).padStart(2,"0")}`);
+      }
     }
 
     if (nextSearchParams.toString() !== searchParams.toString()) {
@@ -110,7 +134,7 @@ const Appointments = () => {
           <div className="flex gap-2 items-center">
             <Input 
               name="id"
-              placeholder="Nr rezerwacji"
+              placeholder="Nr rezerwacjii"
               className="w-xs"
             />
             <InputGroup>
@@ -119,7 +143,7 @@ const Appointments = () => {
                 placeholder="Szukaj szkoły, klienta..." 
                 value={q} 
                 onChange={(event) => setQ(event.target.value)}
-                className="w-sm" />
+                 />
               <InputGroupAddon><SearchIcon /></InputGroupAddon>
               {q && <InputGroupAddon align="inline-end">
                 <InputGroupButton aria-label="Wyczyść" title="Wyczyść" size="icon-xs" onClick={() => setQ('')}>
@@ -127,6 +151,7 @@ const Appointments = () => {
                 </InputGroupButton>
               </InputGroupAddon>}
             </InputGroup>
+            <DateRangePicker range={filters.range} setRange={setRangeHandler} />
             <Button 
               className="cursor-pointer" 
               onClick={() => setSelectedId(0)}
@@ -157,8 +182,8 @@ const Appointments = () => {
                 onClick={() => setSelectedId(item.id)}
               >
                 <TableCell>{item.id}</TableCell>
-                <TableCell>{item.visit_time?.substring(0, 16)}</TableCell>
-                <TableCell className="font-medium">{item.customer_name}</TableCell>
+                <TableCell className="font-medium">{item.visit_time?.substring(0, 16)}</TableCell>
+                <TableCell>{item.customer_name}</TableCell>
                 <TableCell>{item.service_name}{item.service_description && <div className="text-muted-foreground text-xs">{item.service_description}</div>}</TableCell>
                 <TableCell>{item.kulturalna_szkola}</TableCell>
                 <TableCell>{item.total_price}</TableCell>

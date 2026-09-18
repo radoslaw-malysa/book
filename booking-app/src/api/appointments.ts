@@ -34,6 +34,9 @@ const appointmentsUrl = apiUrl + "/appointments";
 export interface AppointmentFilters {
   q?: string;
   page?: string | number;
+  range?: {};
+  from?: string | Date | undefined;
+  to?: string | Date | undefined;
 }
 
 interface ApiItemsData {
@@ -52,12 +55,18 @@ const getAppointmentsResponse = async (response: Response): Promise<Appointment>
 
 export const getAppointments = async (filters: AppointmentFilters = {}): Promise<ApiItemsData> => {
   const params = new URLSearchParams();
-
+  
   if (filters.q) {
     params.set("q", filters.q);
   }
   if (filters.page) {
     params.set("page", filters.page);
+  }
+  if (filters.from) {
+    params.set("from", filters.from);
+  }
+  if (filters.to) {
+    params.set("to", filters.to);
   }
 
   const query = params.toString();

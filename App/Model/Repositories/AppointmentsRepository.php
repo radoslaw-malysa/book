@@ -36,6 +36,12 @@ class AppointmentsRepository extends Repository
       $filters[] = "(cu.name like :name) ";
       $q_param = '%'.$params['q'].'%';
     }
+    if (isset($params['from']) && $params['from']) {
+      $filters[]= "ap.visit_time >= '{$params['from']} 00:00:00' ";
+    }
+    if (isset($params['to']) && $params['to']) {
+      $filters[]= "ap.visit_time <= '{$params['to']} 23:59:59' ";
+    }
 
     // deleted state
     if (!isset($params['state']) || !$params['state']) {
