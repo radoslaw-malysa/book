@@ -4,6 +4,7 @@ declare(strict_types=1);
 use App\Action\CrudAction;
 use App\Action\AuthAction;
 use App\Action\CalendarAction;
+use App\Action\BookingAction;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -13,6 +14,10 @@ use Slim\App;
 
 return function (App $app) {
 
+    // web frontend
+    $app->any('/rezerwacja', BookingAction::class);
+
+    // admin
     $app->any('/login', AuthAction::class);
     $app->any('/logged-out', AuthAction::class . ":loggedOut");
     $app->any('/logout', AuthAction::class . ":logOut");
@@ -51,6 +56,7 @@ return function (App $app) {
             ->withStatus(302);
         }
     });*/
+
 };
 
 // https://api.freepik.com/v1/ai/text-to-image/imagen3
