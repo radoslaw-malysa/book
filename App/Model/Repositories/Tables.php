@@ -15,6 +15,7 @@ final class Tables
     public $categories_services = 'categories_services';
     public $salons = 'salons';
     public $providers = 'providers';
+    public $providers_services = 'providers_services';
 
     public function __construct($prefix=null)
     {

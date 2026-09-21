@@ -75,10 +75,18 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
     setForm((current) => (current ? { ...current, [field]: value } : current));
   };
 
-  const updateCategory = (id: string, value: boolean) => {
+  const updateProvider = (index: string, value: boolean) => {
+    const newProviders = form?.providers;
+    if (newProviders) {
+      newProviders[index].selected = value ? 1 : 0;
+      setForm((current) => (current ? { ...current, providers: newProviders } : current));
+    }
+  }
+
+  const updateCategory = (index: string, value: boolean) => {
     const newCategories = form?.categories;
     if (newCategories) {
-      newCategories[id].selected = value ? 1 : 0;
+      newCategories[index].selected = value ? 1 : 0;
       setForm((current) => (current ? { ...current, categories: newCategories } : current));
     }
   }
@@ -123,6 +131,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
               <TabsList>
                 <TabsTrigger value="overview" className="cursor-pointer">Ustawienia</TabsTrigger>
                 <TabsTrigger value="schedule" className="cursor-pointer">Harmonogram</TabsTrigger>
+                <TabsTrigger value="providers" className="cursor-pointer">Sale</TabsTrigger>
                 <TabsTrigger value="categories" className="cursor-pointer">Grupy odbiorców</TabsTrigger>
               </TabsList>
               <TabsContent value="overview">
@@ -134,14 +143,6 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                       value={form.name}
                       onChange={(event) => updateField('name', event.target.value)}
                       required 
-                    />
-                  </Field>
-                  <Field className="gap-2">
-                    <FieldLabel htmlFor="description">Uwagi</FieldLabel>
-                    <Input 
-                      id="description"
-                      value={form.description}
-                      onChange={(event) => updateField('description', event.target.value)}
                     />
                   </Field>
 
@@ -168,6 +169,15 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                         zł
                       </InputGroupAddon>
                     </InputGroup>
+                  </Field>
+
+                  <Field className="gap-2">
+                    <FieldLabel htmlFor="description">Uwagi</FieldLabel>
+                    <Input 
+                      id="description"
+                      value={form.description}
+                      onChange={(event) => updateField('description', event.target.value)}
+                    />
                   </Field>
 
                   <Field className="gap-2">
@@ -224,42 +234,57 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                 </Field>
               </TabsContent>
 
-              <TabsContent value="categories">
+              <TabsContent value="providers" className="flex flex-col gap-6">
+                <FieldSet>
+                  <FieldLegend variant="label" className="mb-4">
+                    Warsztaty można przeprowadzić w salach:
+                  </FieldLegend>
+                  <FieldGroup className="gap-4">
+                    {form.providers && form.providers.map((pro, index) => (<Field key={pro.id} orientation="horizontal">
+                      <Checkbox
+                        id={`pro${pro.id}`}
+                        name={`providers[${pro.id}]`}
+                        value={pro.id}
+                        checked={pro.selected === 1}
+                        onCheckedChange={(val) => updateProvider(index, val)}
+                      />
+                      <FieldLabel
+                        htmlFor={`pro${pro.id}`}
+                        className="font-normal cursor-pointer"
+                      >
+                        {pro.name}
+                      </FieldLabel>
+                    </Field>))}
+                  </FieldGroup>
+                </FieldSet>
+              </TabsContent>
+
+              <TabsContent value="categories" className="flex flex-col gap-6">
                 <FieldSet>
                   <FieldLegend variant="label" className="mb-4">
                     Warsztaty są przeznaczone dla:
                   </FieldLegend>
                   <FieldGroup className="gap-4">
-                    {form.categories && Object.keys(form.categories).map((id) => (<Field key={id} orientation="horizontal">
+                    {form.categories && form.categories.map((cat, index) => (<Field key={cat.id} orientation="horizontal">
                       <Checkbox
-                        id={`cat${id}`}
-                        name={`categories[${id}]`}
-                        value={id}
-                        checked={form.categories[id].selected === 1}
-                        onCheckedChange={(val) => updateCategory(id, val)}
+                        id={`cat${cat.id}`}
+                        name={`categories[${cat.id}]`}
+                        value={cat.id}
+                        checked={cat.selected === 1}
+                        onCheckedChange={(val) => updateCategory(index, val)}
                       />
                       <FieldLabel
-                        htmlFor={`cat${id}`}
+                        htmlFor={`cat${cat.id}`}
                         className="font-normal cursor-pointer"
                       >
-                        {form.categories[id].name}
+                        {cat.name}
                       </FieldLabel>
                     </Field>))}
-                    
                   </FieldGroup>
                 </FieldSet>
               </TabsContent>
+
             </Tabs>
-
-            
-                
-
-
-
-
-            
-
-            
             
             <DialogFooter className="mt-6">
               <Button type="button" variant="outline" onClick={handleClose}>

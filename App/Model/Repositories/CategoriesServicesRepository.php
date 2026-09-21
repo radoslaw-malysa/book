@@ -19,6 +19,21 @@ class CategoriesServicesRepository extends Repository
   }
 
   /**
+   * Edit service dialog
+   */
+  public function getServiceCategories($service_id)
+  {
+    $query = "select ca.id, ca.name, if(cs.service_id IS NULL, 0, 1) as selected
+    from {$this->tables->categories} ca left join {$this->model} cs on ca.id = cs.category_id and cs.service_id = '{$service_id}'
+    order by ca.ord desc";
+
+    $st = $this->connection->prepare($query);
+    $st->execute();
+    
+    return $st->fetchAll();
+  }
+
+  /**
    * Update service categories (Edit service dialog)
    */
   public function updateServiceCategories($service_id, $categories = [])

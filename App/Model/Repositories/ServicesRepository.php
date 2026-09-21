@@ -8,13 +8,14 @@ use App\Model\Repositories\Repository;
 use App\Model\Repositories\CategoriesRepository;
 use App\Model\Repositories\ServiceScheduleRepository;
 use App\Model\Repositories\CategoriesServicesRepository;
+use App\Model\Repositories\ProvidersServicesRepository;
 
 /**
  * Repository.
  */
 class ServicesRepository extends Repository
 {
-  public function __construct(PDO $connection, Tables $tables, CategoriesRepository $categories, ServiceScheduleRepository $service_schedule, CategoriesServicesRepository $categories_services)
+  public function __construct(PDO $connection, Tables $tables, CategoriesRepository $categories, ServiceScheduleRepository $service_schedule, CategoriesServicesRepository $categories_services, ProvidersServicesRepository $providers_services)
   {
     $this->connection = $connection;
     $this->model = $tables->services;
@@ -22,6 +23,7 @@ class ServicesRepository extends Repository
     $this->categories = $categories;
     $this->service_schedule = $service_schedule;
     $this->categories_services = $categories_services;
+    $this->providers_services = $providers_services;
   }
 
   public function getRows($params = []) 
@@ -90,9 +92,9 @@ class ServicesRepository extends Repository
     $data['price'] = $data['price'] ? $data['price'] : '';
     $data['duration'] = $data['duration'] ? $data['duration'] : '';
     
-    $data['categories'] = $this->categories->getServiceCategories($data['id']);
-
+    $data['categories'] = $this->categories_services->getServiceCategories($data['id']);
     $data['schedule'] = $this->service_schedule->getServiceScheduleEdit($data['id']);
+    $data['providers'] = $this->providers_services->getServiceProviders($data['id']); // sale
 
     return $data;
   }
@@ -128,6 +130,11 @@ class ServicesRepository extends Repository
     // schedule
     if (isset($params['schedule'])) {
       $this->service_schedule->updateServiceSchedule($params['id'], $params['schedule']);
+    }
+
+    // providers (sale)
+    if (isset($params['providers'])) {
+      $this->providers_services->updateServiceProviders($params['id'], $params['providers']);
     }
 
     return $data;

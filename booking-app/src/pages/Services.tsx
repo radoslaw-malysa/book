@@ -133,6 +133,7 @@ const Services = () => {
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Nazwa</TableHead>
+              <TableHead>Czas</TableHead>
               <TableHead>Cena</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
@@ -146,7 +147,8 @@ const Services = () => {
               >
                 <TableCell>{item.id}</TableCell>
                 <TableCell><div  className="font-medium">{item.name}</div>{item.description && <div className="text-muted-foreground text-xs">{item.description}</div>}</TableCell>
-                <TableCell></TableCell>
+                <TableCell>{item.duration ? `${item.duration} min.` : ''}</TableCell>
+                <TableCell>{item.price ? `${item.price} zł` : ''}</TableCell>
                 <TableCell><StateIndicator state={item.state} /></TableCell>
               </TableRow>
             ))}

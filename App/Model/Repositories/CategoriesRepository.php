@@ -18,27 +18,6 @@ class CategoriesRepository extends Repository
     $this->tables = $tables;
   }
 
-  /**
-   * Edit service dialog
-   */
-  public function getServiceCategories($service_id)
-  {
-    $query = "select ca.id, ca.name, if(cs.service_id IS NULL, 0, 1) as selected
-    from {$this->model} ca left join {$this->tables->categories_services} cs on ca.id = cs.category_id and cs.service_id = '{$service_id}'
-    order by ca.ord desc";
-
-    $st = $this->connection->prepare($query);
-    $st->execute();
-    $rows = $st->fetchAll();
-
-    $data = [];
-    foreach ($rows as $row) {
-      $data[$row['id']] = $row;
-    }
-
-    return $data;
-  }
-
   public function getRows($params = []) 
   {
     $filters = [];

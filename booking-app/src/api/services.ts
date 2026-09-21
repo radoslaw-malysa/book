@@ -13,6 +13,7 @@ export interface Service {
   update_time: string;
   update_ip: string;
   categories: [];
+  providers: [];
   schedule: {}
 }
 

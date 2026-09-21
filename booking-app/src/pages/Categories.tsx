@@ -131,7 +131,6 @@ const Categories = () => {
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Nazwa</TableHead>
-              <TableHead>Cena</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
@@ -144,7 +143,6 @@ const Categories = () => {
               >
                 <TableCell>{item.id}</TableCell>
                 <TableCell className="font-medium">{item.name}</TableCell>
-                <TableCell></TableCell>
                 <TableCell><StateIndicator state={item.state} /></TableCell>
               </TableRow>
             ))}
