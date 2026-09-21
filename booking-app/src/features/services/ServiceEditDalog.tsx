@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { toast } from "@/components/ui/toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface ItemEditDialogProps {
@@ -146,13 +146,30 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                     />
                   </Field>
 
-                  <Field orientation="horizontal">
-                    <FieldContent>
-                      <FieldLabel htmlFor="online" className="cursor-pointer">
-                        Dostępne do rezerwacji online
-                      </FieldLabel>
-                    </FieldContent>
-                    <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />
+                  
+
+                  <Field>
+                    <FieldLabel>Wielkość grupy</FieldLabel>
+                    <div className="grid grid-cols-2 gap-4">
+                      <InputGroup>
+                        <InputGroupAddon>
+                          <InputGroupText>Min.</InputGroupText>
+                        </InputGroupAddon>
+                        <InputGroupInput />
+                        <InputGroupAddon align="inline-end">
+                          <InputGroupText>osób</InputGroupText>
+                        </InputGroupAddon>
+                      </InputGroup>
+                      <InputGroup>
+                        <InputGroupAddon>
+                          <InputGroupText>Max.</InputGroupText>
+                        </InputGroupAddon>
+                        <InputGroupInput />
+                        <InputGroupAddon align="inline-end">
+                          <InputGroupText>osób</InputGroupText>
+                        </InputGroupAddon>
+                      </InputGroup>
+                    </div>
                   </Field>
 
                   <Field>
@@ -169,6 +186,42 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                         zł
                       </InputGroupAddon>
                     </InputGroup>
+                  </Field>
+
+                  <Field orientation="horizontal">
+                    <FieldContent>
+                      <FieldLabel htmlFor="online" className="cursor-pointer">
+                        Dostępne do rezerwacji online
+                      </FieldLabel>
+                    </FieldContent>
+                    <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />
+                  </Field>
+
+                  <Field orientation="horizontal">
+                    <FieldContent>
+                      <FieldLabel htmlFor="online" className="cursor-pointer">
+                        Dostępne z seansem kinowym
+                      </FieldLabel>
+                    </FieldContent>
+                    <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />
+                  </Field>
+
+                  <Field orientation="horizontal">
+                    <FieldContent>
+                      <FieldLabel htmlFor="online" className="cursor-pointer">
+                        Dostępne ze wstępem na wystawy
+                      </FieldLabel>
+                    </FieldContent>
+                    <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />
+                  </Field>
+
+                  <Field orientation="horizontal">
+                    <FieldContent>
+                      <FieldLabel htmlFor="online" className="cursor-pointer">
+                        Dostępne ze zwiedzaniem z przewodnikiem
+                      </FieldLabel>
+                    </FieldContent>
+                    <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />
                   </Field>
 
                   <Field className="gap-2">
