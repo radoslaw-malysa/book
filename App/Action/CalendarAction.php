@@ -132,7 +132,7 @@ class CalendarAction
       'items' => $items,
       'days' => $days,
       'hours' => $hours,
-      'providers' => $this->providers->where('state', 1)->get(['id', 'name'])
+      'providers' => $this->providers->where('state', 1)->orderBy('ord')->get(['id', 'name'])
     ];
 
     // echo '<pre>'; print_r($payload); exit;

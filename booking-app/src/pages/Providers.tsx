@@ -132,6 +132,7 @@ const Providers = () => {
               <TableHead>ID</TableHead>
               <TableHead>Nazwa</TableHead>
               <TableHead>Opis</TableHead>
+              <TableHead>Kolejność</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
@@ -145,6 +146,7 @@ const Providers = () => {
                 <TableCell>{item.id}</TableCell>
                 <TableCell className="font-medium">{item.name}</TableCell>
                 <TableCell>{item.description}</TableCell>
+                <TableCell>{item.ord}</TableCell>
                 <TableCell><StateIndicator state={item.state} /></TableCell>
               </TableRow>
             ))}

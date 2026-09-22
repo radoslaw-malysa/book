@@ -60,6 +60,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
         })
       } else {
         queryClient.invalidateQueries({ queryKey: ["services"] });
+        queryClient.invalidateQueries({ queryKey: ["service"] });
         onClose();
       }
     },
@@ -155,7 +156,10 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                         <InputGroupAddon>
                           <InputGroupText>Min.</InputGroupText>
                         </InputGroupAddon>
-                        <InputGroupInput />
+                        <InputGroupInput 
+                          value={form.pax_min} 
+                          onChange={(event) => updateField('pax_min', event.target.value)}
+                        />
                         <InputGroupAddon align="inline-end">
                           <InputGroupText>osób</InputGroupText>
                         </InputGroupAddon>
@@ -164,7 +168,10 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                         <InputGroupAddon>
                           <InputGroupText>Max.</InputGroupText>
                         </InputGroupAddon>
-                        <InputGroupInput />
+                        <InputGroupInput 
+                          value={form.pax_max} 
+                          onChange={(event) => updateField('pax_max', event.target.value)}
+                        />
                         <InputGroupAddon align="inline-end">
                           <InputGroupText>osób</InputGroupText>
                         </InputGroupAddon>
@@ -183,7 +190,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                         onChange={(event) => updateField('price', event.target.value)}
                       />
                       <InputGroupAddon align="inline-end">
-                        zł
+                        zł/os.
                       </InputGroupAddon>
                     </InputGroup>
                   </Field>

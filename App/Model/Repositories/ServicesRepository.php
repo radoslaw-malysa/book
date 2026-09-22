@@ -110,6 +110,8 @@ class ServicesRepository extends Repository
       'price' => $params['price'] ? $params['price'] : 0,
       'duration' => $params['duration'] ? $params['duration'] : 0,
       'online' => $params['online'] ?? 0,
+      'pax_min' => $params['pax_min'] ?? 0,
+      'pax_max' => $params['pax_max'] ?? 0,
       'state' => $params['state'] ?? 0,
       'update_ip' => $_SERVER['REMOTE_ADDR']
     ];
@@ -146,6 +148,11 @@ class ServicesRepository extends Repository
       'id' => 0,
       'name' => '',
       'description' => '',
+      'price' => '',
+      'duration' => '',
+      'online' => '',
+      'pax_min' => '',
+      'pax_max' => '',
       'state' => 1,
       'create_time' => '',
       'create_ip' => '',

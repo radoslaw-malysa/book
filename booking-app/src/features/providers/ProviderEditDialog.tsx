@@ -111,6 +111,16 @@ const ProviderEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                 />
               </Field>
               <Field className="gap-2">
+                <FieldLabel htmlFor="name">Kolejność na listach</FieldLabel>
+                <Input 
+                  type="number"
+                  id="ord"
+                  value={form.ord}
+                  onChange={(event) => updateField('ord', event.target.value)}
+                  required 
+                />
+              </Field>
+              <Field className="gap-2">
                 <FieldLabel>Status</FieldLabel>
                 <Select 
                   items={states} 

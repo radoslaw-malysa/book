@@ -12,9 +12,9 @@ interface ViewWeekProps {
 }
 
 const stateBg = {
-  pending: { bg: 'border-l-amber-500 bg-amber-500/7 hover:bg-amber-700/7', txt: 'text-amber-600 dark:text-amber-400' },
-  confirmed: { bg: 'border-l-emerald-500 bg-emerald-500/7 hover:bg-emerald-700/7', txt: 'text-emerald-600 dark:text-emerald-400' },
-  cancelled: { bg: 'border-l-red-500 bg-red-500/7 hover:bg-red-700/7', txt: 'text-red-600 dark:text-red-400' }
+  pending: { bg: 'border-l-amber-500 bg-amber-500/15 hover:bg-amber-500/25', txt: 'text-amber-600 dark:text-amber-400' },
+  confirmed: { bg: 'border-l-emerald-500 bg-emerald-500/15 hover:bg-emerald-500/25', txt: 'text-emerald-600 dark:text-emerald-400' },
+  cancelled: { bg: 'border-l-red-500 bg-red-500/15 hover:bg-red-500/25', txt: 'text-red-600 dark:text-red-400' }
 }
 //completed: { bg: 'border-l-blue-500 bg-green-500/7', txt: 'text-green-600 dark:text-green-400' },
 
@@ -25,8 +25,8 @@ const ViewWeek = ({data, selectedId, onEdit}: ViewWeekProps) => {
       const apps = data.items[day][provider_id];
 
       return (<>{apps.map((appointment) => (<div key={appointment.appointment_id} onClick={() => onEdit(appointment.appointment_id)} className={`absolute top-0.5 left-0.5 right-0.5 z-10 cursor-pointer ${(appointment.cut_start !== undefined) ? 'rounded-t-none' : 'rounded-t-sm' } ${(appointment.cut_end !== undefined) ? 'rounded-b-none' : 'rounded-b-sm' } border-l-3 px-1.5 py-1 ${stateBg[appointment.state].bg} ${selectedId === appointment.appointment_id ? 'bg-neutral-900 dark' : ''}`} style={{ top: appointment.offset + 'px', height: appointment.duration + 'px' }}>
+        <div className="truncate text-muted-foreground font-medium text-xs">{appointment.hours}</div>
         <div className={`line-clamp-2 font-medium text-xs ${stateBg[appointment.state].txt}`}>{appointment.service_name}</div>
-        <div className="truncate text-muted-foreground text-xs">{appointment.hours}</div>
       </div>))}</>);
     }
 
@@ -35,7 +35,7 @@ const ViewWeek = ({data, selectedId, onEdit}: ViewWeekProps) => {
   
   return (<ScrollArea className="c-height w-full">
     {data.providers.map((prov) => (<div key={prov.id} className="w-full">
-      <div className="border-b flex pt-4 pb-2 text-base font-semibold">{prov.name}</div>
+      <div className="border-b flex pt-4 pb-2 text-lg font-semibold justify-center bg-linear-to-t from-white to-muted">{prov.name}</div>
       <div className="flex flex-wrap">
         <div className="border-r w-12 flex flex-col text-muted-foreground text-xs">
           {data.hours.map((h) => (

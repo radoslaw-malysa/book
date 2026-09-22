@@ -55,7 +55,7 @@ class ProvidersRepository extends Repository
     $query = "select pr.* 
     from " . $this->model . " pr ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
-    $query .= " order by pr.id desc ";
+    $query .= " order by pr.ord ";
     $query .= ($per_page) ? (" limit " . $offset . ", " . $per_page) : '';
     $st = $this->connection->prepare($query);
     
@@ -78,13 +78,7 @@ class ProvidersRepository extends Repository
       return $this->getNew();
     }
     
-    return $this->where($this->model.'.id', (int)$params['id'])
-      ->first([
-        $this->model.'.id', 
-        $this->model.'.name', 
-        $this->model.'.description', 
-        $this->model.'.state'
-    ]);
+    return $this->where($this->model.'.id', (int)$params['id'])->first();
   }
 
   public function postRow($params=[])
@@ -95,13 +89,14 @@ class ProvidersRepository extends Repository
     $data = [
       'name' => $params['name'] ?? '',
       'description' => $params['description'] ?? '',
-      'state' => (int)$params['state']
+      'state' => (int)$params['state'],
+      'ord' => $params['ord'] ?? 0
     ];
     
     if (isset($params['id']) && $params['id']) {
       $status = $this->where('id', (int)$params['id'])->update($data);
     } else {
-      // $data['create_ip'] = $_SERVER['REMOTE_ADDR'];
+      $data['salon_id'] = 1;
 
       $status = $this->insert($data);
     }
@@ -115,7 +110,8 @@ class ProvidersRepository extends Repository
       'id' => 0,
       'name' => '',
       'description' => '',
-      'state' => 1
+      'state' => 1,
+      'ord' => 0
     ];
 
     return $new_row;
