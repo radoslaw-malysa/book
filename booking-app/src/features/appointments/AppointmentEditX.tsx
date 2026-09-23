@@ -147,6 +147,36 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
             <FieldGroup className="gap-2">
               <Field orientation="horizontal">
                 <Checkbox 
+                  id="admission" 
+                  value="1" 
+                  name="admission" 
+                  checked={form.admission == 1}
+                  onCheckedChange={(val) => updateField('admission', val)}
+                 />
+                <FieldLabel htmlFor="admission">Wstęp na wystawy</FieldLabel>
+              </Field>
+              <Field orientation="horizontal">
+                <Checkbox 
+                  id="guide" 
+                  value="1" 
+                  name="guide" 
+                  checked={form.guide == 1}
+                  onCheckedChange={(val) => updateField('guide', val)}
+                 />
+                <FieldLabel htmlFor="guide">Przewodnik</FieldLabel>
+              </Field>
+              <Field orientation="horizontal">
+                <Checkbox 
+                  id="cinema" 
+                  value="1" 
+                  name="cinema" 
+                  checked={form.cinema == 1}
+                  onCheckedChange={(val) => updateField('cinema', val)}
+                 />
+                <FieldLabel htmlFor="cinema">Kino</FieldLabel>
+              </Field>
+              <Field orientation="horizontal">
+                <Checkbox 
                   id="kulturalna_szkola" 
                   value="1" 
                   name="kulturalna_szkola" 
