@@ -125,101 +125,61 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
           updateMutation.mutate(form);
         }}
         >
-          <div className="grid gap-6 p-6">
-            <FieldGroup className="gap-3">
-              <Field className="gap-2">
-                <FieldLabel htmlFor="visit-time">Data wizyty i warsztaty</FieldLabel>
-                <Input 
-                  id="visit-time"
-                  type="datetime-local"
-                  name="visit_time"
-                  value={form.visit_time}
-                  onChange={(e) => updateField('visit_time', e.target.value)}
-                />
-              </Field>
-              <Field className="gap-2">
-                <NativeSelect className="w-full" value={form.service_id} onChange={(e) => updateField('service_id', e.target.value)}>
-                  <NativeSelectOption value="">Bez warsztatów</NativeSelectOption>
-                  {form.services.map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
-                </NativeSelect>
-              </Field>
-            </FieldGroup>
-            <FieldGroup className="gap-2">
-              <Field orientation="horizontal">
-                <Checkbox 
-                  id="kulturalna_szkola" 
-                  value="1" 
-                  name="kulturalna_szkola" 
-                  checked={form.kulturalna_szkola == 1}
-                  onCheckedChange={(val) => updateField('kulturalna_szkola', val)}
-                 />
-                <FieldLabel htmlFor="kulturalna_szkola">Kulturalna Szkoła na Mazowszu</FieldLabel>
-              </Field>
-              <Field orientation="horizontal">
-                <Checkbox 
-                  id="kultura_za_zl" 
-                  value="1" 
-                  name="kultura_za_zl" 
-                  checked={form.kultura_za_zl == 1}
-                  onCheckedChange={(val) => updateField('kultura_za_zl', val)}
-                 />
-                <FieldLabel htmlFor="kultura_za_zl">Kultura za zł (wsparcie osób z niepełnospr.)</FieldLabel>
-              </Field>
-            </FieldGroup>
-            <Field className="gap-2">
-              <FieldLabel htmlFor="pax" className="hidden">Liczba uczestników</FieldLabel>
-              <InputGroup>
-                  <InputGroupInput 
-                    type="number"
-                    id="pax"
-                    name="pax"
-                    placeholder="Liczba uczestników"
-                    value={form.pax}
-                    onChange={(event) => updateField('pax', event.target.value)}
-                  />
-                  <InputGroupAddon align="inline-end">
-                    osób
-                  </InputGroupAddon>
-                </InputGroup>
-            </Field>
-          </div>
+          
 
-          <Tabs defaultValue="overview" className="w-full gap-6 px-6 pb-6">
-            <TabsList variant="line" className="w-full pb-px px-0 border-b">
+          <Tabs defaultValue="overview" className="w-full gap-6 pb-6">
+            <TabsList variant="default" className="w-full border-b px-6 rounded-none">
               <TabsTrigger value="overview" className="cursor-pointer">Rezerwacja</TabsTrigger>
               <TabsTrigger value="contact" className="cursor-pointer">Kontakt</TabsTrigger>
               <TabsTrigger value="prices" className="cursor-pointer">Rozliczenie</TabsTrigger>
             </TabsList>
-            <TabsContent value="overview">
+            <TabsContent value="overview" className="px-6">
+
+
+            <div className="grid gap-6">
+              <Field className="gap-2">
+                <FieldLabel htmlFor="pax" className="hidden">Liczba uczestników</FieldLabel>
+                <InputGroup>
+                    <InputGroupInput 
+                      type="number"
+                      id="pax"
+                      name="pax"
+                      placeholder="Liczba uczestników"
+                      value={form.pax}
+                      onChange={(event) => updateField('pax', event.target.value)}
+                    />
+                    <InputGroupAddon align="inline-end">
+                      osób
+                    </InputGroupAddon>
+                  </InputGroup>
+              </Field>
+              <FieldGroup className="gap-2">
+                <Field orientation="horizontal">
+                  <Checkbox 
+                    id="kulturalna_szkola" 
+                    value="1" 
+                    name="kulturalna_szkola" 
+                    checked={form.kulturalna_szkola == 1}
+                    onCheckedChange={(val) => updateField('kulturalna_szkola', val)}
+                  />
+                  <FieldLabel htmlFor="kulturalna_szkola">Kulturalna Szkoła na Mazowszu</FieldLabel>
+                </Field>
+                <Field orientation="horizontal">
+                  <Checkbox 
+                    id="kultura_za_zl" 
+                    value="1" 
+                    name="kultura_za_zl" 
+                    checked={form.kultura_za_zl == 1}
+                    onCheckedChange={(val) => updateField('kultura_za_zl', val)}
+                  />
+                  <FieldLabel htmlFor="kultura_za_zl">Kultura za zł (wsparcie osób z niepełnospr.)</FieldLabel>
+                </Field>
+              </FieldGroup>
+            </div>
+
+
               <div className="grid flex-1 auto-rows-min gap-6">
                 
-                {form.appointment_providers && form.appointment_providers.map((as, index) => (<FieldGroup key={index} className="gap-3">
-                  <Field className="gap-2">
-                    <FieldLabel htmlFor="sheet-demo-name">Sala</FieldLabel>
-                    <NativeSelect className="w-full" value={form.appointment_providers[index].provider_id} onChange={(e) => updateProvider(index, 'provider_id', e.target.value)}>
-                      <NativeSelectOption value=""></NativeSelectOption>
-                      {form.providers.map((pr) => (<NativeSelectOption key={pr.id} value={pr.id}>{pr.name}</NativeSelectOption>))}
-                    </NativeSelect>
-                  </Field>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Field className="gap-2">
-                      <Input 
-                        type="datetime-local"
-                        name="start_time"
-                        value={as.start_time}
-                        onChange={(e) => updateProvider(index, 'start_time', e.target.value)}
-                      />
-                    </Field>
-                    <Field className="gap-2">
-                      <Input 
-                        type="datetime-local"
-                        name="end_time"
-                        value={as.end_time}
-                        onChange={(e) => updateProvider(index, 'end_time', e.target.value)}
-                      />
-                    </Field>
-                  </div>
-                </FieldGroup>))}
 
                 <Field className="gap-2">
                   <FieldLabel htmlFor="notes">Uwagi</FieldLabel>
