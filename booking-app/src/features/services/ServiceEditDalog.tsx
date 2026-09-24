@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { getService, updateService, type Service } from "@/api/services";
+import { getService, serviceTypes, updateService, type Service } from "@/api/services";
 import { Field, FieldContent, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
@@ -29,6 +29,7 @@ const states = [
   { label: 'Zablokowany', value: 2 },
   { label: 'Usunięty', value: 3 }
 ];
+
 const days = {
   1: {label: 'Pon.'},
   2: {label: 'Wt.'},
@@ -138,6 +139,28 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
               <TabsContent value="overview">
                 <FieldGroup className="gap-6">
                   <Field className="gap-2">
+                    <FieldLabel>Rodzaj usługi</FieldLabel>
+                    <Select 
+                      items={serviceTypes} 
+                      value={form.service_type}
+                      onValueChange={(val) => updateField('service_type', val)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {serviceTypes.map((item) => (
+                            <SelectItem key={item.label} value={item.value}>
+                              {item.label}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+
+                  <Field className="gap-2">
                     <FieldLabel htmlFor="name">Nazwa warsztatów</FieldLabel>
                     <Input 
                       id="name"
@@ -146,8 +169,6 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                       required 
                     />
                   </Field>
-
-                  
 
                   <Field>
                     <FieldLabel>Wielkość grupy</FieldLabel>
@@ -207,7 +228,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                   <Field orientation="horizontal">
                     <FieldContent>
                       <FieldLabel htmlFor="online" className="cursor-pointer">
-                        Dostępne z seansem kinowym
+                        Można łączyć z kinem
                       </FieldLabel>
                     </FieldContent>
                     <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />
@@ -216,16 +237,7 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                   <Field orientation="horizontal">
                     <FieldContent>
                       <FieldLabel htmlFor="online" className="cursor-pointer">
-                        Dostępne ze wstępem na wystawy
-                      </FieldLabel>
-                    </FieldContent>
-                    <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />
-                  </Field>
-
-                  <Field orientation="horizontal">
-                    <FieldContent>
-                      <FieldLabel htmlFor="online" className="cursor-pointer">
-                        Dostępne ze zwiedzaniem z przewodnikiem
+                        Można łączyć ze zwiedzaniem
                       </FieldLabel>
                     </FieldContent>
                     <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />

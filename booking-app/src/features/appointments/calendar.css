@@ -25,3 +25,6 @@
 .h-side {
   height: calc(100svh - 150px);
 }
+.h-tab {
+  height: calc(100svh - 203px);
+}

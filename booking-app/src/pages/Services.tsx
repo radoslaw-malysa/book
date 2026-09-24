@@ -52,7 +52,13 @@ const StateIndicator: FC<IndicatorProps> = ({state}) => {
   return (<div className="flex items-center gap-2"><span className={`size-1.5 rounded-full ${colors[state]}`}></span><span className="text-muted-foreground">{states[state]}</span></div>)
 }
 
-const GroupNames = ['', 'Admin', 'Redaktor']
+const GroupNames = ['', 'Admin', 'Redaktor'];
+const serviceTypes = {
+  lesson: 'Warsztaty',
+  tour: 'Zwiedzanie',
+  cinema: 'Kino',
+  blockade: 'Blokada/Rezerwacja sali'
+};
 
 const Services = () => {
   const [searchParams] = useSearchParams();
@@ -133,6 +139,7 @@ const Services = () => {
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Nazwa</TableHead>
+              <TableHead>Typ</TableHead>
               <TableHead>Czas</TableHead>
               <TableHead>Cena</TableHead>
               <TableHead>Status</TableHead>
@@ -147,6 +154,7 @@ const Services = () => {
               >
                 <TableCell>{item.id}</TableCell>
                 <TableCell><div  className="font-medium">{item.name}</div>{item.description && <div className="text-muted-foreground text-xs">{item.description}</div>}</TableCell>
+                <TableCell>{serviceTypes[item.service_type]}</TableCell>
                 <TableCell>{item.duration ? `${item.duration} min.` : ''}</TableCell>
                 <TableCell>{item.price ? `${item.price} zł` : ''}</TableCell>
                 <TableCell><StateIndicator state={item.state} /></TableCell>

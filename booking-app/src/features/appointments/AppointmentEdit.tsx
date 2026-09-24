@@ -11,8 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Mail, Printer } from "lucide-react";
+import { Clock, Mail, MapPin, MapPinPlusInside, Printer } from "lucide-react";
 import { useEffect, useState } from "react";
+import './appointment_edit.css';
 
 interface ItemEditDialogProps {
   itemId: number | null;
@@ -115,11 +116,11 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
       }}
     >
       {form && <SheetContent className="rounded-l-2xl">
-        <SheetHeader className="h-head border-b">
+        <SheetHeader className="h-head">
           <SheetTitle className="flex gap-2 items-center leading-none"><div className={`size-3 rounded-full ${stateColors[form.state]}`}></div> Rezerwacja {form.id ? 'nr ' + form.id : 'NOWA'}</SheetTitle>
         </SheetHeader>
         
-        <div className="h-side no-scrollbar overflow-y-auto">
+        <div className="xh-side ">
         <form onSubmit={(event) => {
           event.preventDefault();
           updateMutation.mutate(form);
@@ -127,75 +128,193 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
         >
           
 
-          <Tabs defaultValue="overview" className="w-full gap-6 pb-6">
-            <TabsList variant="default" className="w-full border-b px-6 rounded-none">
-              <TabsTrigger value="overview" className="cursor-pointer">Rezerwacja</TabsTrigger>
-              <TabsTrigger value="contact" className="cursor-pointer">Kontakt</TabsTrigger>
-              <TabsTrigger value="prices" className="cursor-pointer">Rozliczenie</TabsTrigger>
-            </TabsList>
-            <TabsContent value="overview" className="px-6">
-
-
-            <div className="grid gap-6">
-              <Field className="gap-2">
-                <FieldLabel htmlFor="pax" className="hidden">Liczba uczestników</FieldLabel>
-                <InputGroup>
-                    <InputGroupInput 
-                      type="number"
-                      id="pax"
-                      name="pax"
-                      placeholder="Liczba uczestników"
-                      value={form.pax}
-                      onChange={(event) => updateField('pax', event.target.value)}
-                    />
-                    <InputGroupAddon align="inline-end">
-                      osób
-                    </InputGroupAddon>
-                  </InputGroup>
-              </Field>
-              <FieldGroup className="gap-2">
-                <Field orientation="horizontal">
-                  <Checkbox 
-                    id="kulturalna_szkola" 
-                    value="1" 
-                    name="kulturalna_szkola" 
-                    checked={form.kulturalna_szkola == 1}
-                    onCheckedChange={(val) => updateField('kulturalna_szkola', val)}
-                  />
-                  <FieldLabel htmlFor="kulturalna_szkola">Kulturalna Szkoła na Mazowszu</FieldLabel>
-                </Field>
-                <Field orientation="horizontal">
-                  <Checkbox 
-                    id="kultura_za_zl" 
-                    value="1" 
-                    name="kultura_za_zl" 
-                    checked={form.kultura_za_zl == 1}
-                    onCheckedChange={(val) => updateField('kultura_za_zl', val)}
-                  />
-                  <FieldLabel htmlFor="kultura_za_zl">Kultura za zł (wsparcie osób z niepełnospr.)</FieldLabel>
-                </Field>
-              </FieldGroup>
+          <Tabs defaultValue="overview" className="w-full gap-0">
+            <div className="px-4 pb-4 border-b">
+              <TabsList variant="default" className="w-full primary-tabs ">
+                <TabsTrigger value="overview" className="cursor-pointer">Rezerwacja</TabsTrigger>
+                <TabsTrigger value="contact" className="cursor-pointer">Kontakt</TabsTrigger>
+                <TabsTrigger value="prices" className="cursor-pointer">Rozliczenie</TabsTrigger>
+              </TabsList>
             </div>
+            <TabsContent value="overview">
+              <div className="h-tab no-scrollbar overflow-y-auto">
+
+                <div className="border-b px-4 py-6 flex flex-col gap-4">
+                  <Field orientation="horizontal" className="gap-4">
+                    <Checkbox 
+                      id="lessons" 
+                      value="1" 
+                      name="kulturalna_szkola" 
+                      checked={form.kulturalna_szkola == 1}
+                      onCheckedChange={(val) => updateField('kulturalna_szkola', val)}
+                    />
+                    <FieldLabel htmlFor="lessons">Warsztaty</FieldLabel>
+                  </Field>
+                  <div className="flex items-center">
+                    <div className="w-8 flex-none"></div>
+                    <div className="flex-grow">
+                      <Field>
+                        <NativeSelect className="w-full" value={form.service_id} onChange={(e) => updateField('service_id', e.target.value)}>
+                          <NativeSelectOption value=""></NativeSelectOption>
+                          {form.services.map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
+                        </NativeSelect>
+                      </Field>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2"> 
+                    <div className="flex items-center">
+                      <div className="w-8 flex-none"><MapPin size="20" /></div>
+                      <div className="flex-grow">
+                        <Field>
+                          <NativeSelect className="w-full" value={form.service_id} onChange={(e) => updateField('service_id', e.target.value)}>
+                            <NativeSelectOption value="">Bez warsztatów</NativeSelectOption>
+                            {form.services.map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
+                          </NativeSelect>
+                        </Field>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-8 flex-none text-muted-foreground"><MapPinPlusInside size="20" /></div>
+                      <div className="flex-grow">
+                        <Field>
+                          <NativeSelect className="w-full">
+                            <NativeSelectOption value=""></NativeSelectOption>
+                          </NativeSelect>
+                        </Field>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-8 flex-none"><Clock size="20" /></div>
+                    <div className="flex-grow flex gap-2">
+                      <Field>
+                        <Input 
+                          type="date"
+                          name="visit_time"
+                          value={form.visit_time}
+                          onChange={(e) => updateField('visit_time', e.target.value)}
+                        />
+                      </Field>
+                      <Field>
+                        <Input 
+                          type="time"
+                          name="visit_time"
+                          value={form.visit_time}
+                          onChange={(e) => updateField('visit_time', e.target.value)}
+                          className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                        />
+                      </Field>
+                      <Field>
+                        <Input 
+                          type="time"
+                          name="visit_time"
+                          value={form.visit_time}
+                          onChange={(e) => updateField('visit_time', e.target.value)}
+                          className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                        />
+                      </Field>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-b px-4 py-4">
+                  <Field orientation="horizontal">
+                    <Checkbox 
+                      id="kulturalna_szkola" 
+                      value="1" 
+                      name="kulturalna_szkola" 
+                      checked={form.kulturalna_szkola == 1}
+                      onCheckedChange={(val) => updateField('kulturalna_szkola', val)}
+                    />
+                    <FieldLabel htmlFor="kulturalna_szkola">Zwiedzanie wystaw</FieldLabel>
+                  </Field>
+                </div>
+                <div className="border-b px-4 py-4">
+                  <Field orientation="horizontal">
+                    <Checkbox 
+                      id="kulturalna_szkola" 
+                      value="1" 
+                      name="kulturalna_szkola" 
+                      checked={form.kulturalna_szkola == 1}
+                      onCheckedChange={(val) => updateField('kulturalna_szkola', val)}
+                    />
+                    <FieldLabel htmlFor="kulturalna_szkola">Warsztaty</FieldLabel>
+                  </Field>
+                </div>
+                <div className="border-b px-4 py-4">
+                  <Field orientation="horizontal">
+                    <Checkbox 
+                      id="kulturalna_szkola" 
+                      value="1" 
+                      name="kulturalna_szkola" 
+                      checked={form.kulturalna_szkola == 1}
+                      onCheckedChange={(val) => updateField('kulturalna_szkola', val)}
+                    />
+                    <FieldLabel htmlFor="kulturalna_szkola">Warsztaty</FieldLabel>
+                  </Field>
+                </div>
+
+                <div className="grid gap-6 py-6 px-4">
+                  <Field className="gap-2">
+                    <FieldLabel htmlFor="pax">Liczba uczestników</FieldLabel>
+                    <InputGroup>
+                        <InputGroupInput 
+                          type="number"
+                          id="pax"
+                          name="pax"
+                          placeholder="Liczba uczestników"
+                          value={form.pax}
+                          onChange={(event) => updateField('pax', event.target.value)}
+                        />
+                        <InputGroupAddon align="inline-end">
+                          osób
+                        </InputGroupAddon>
+                      </InputGroup>
+                  </Field>
+                  <FieldGroup className="gap-2">
+                    <Field orientation="horizontal">
+                      <Checkbox 
+                        id="kulturalna_szkola" 
+                        value="1" 
+                        name="kulturalna_szkola" 
+                        checked={form.kulturalna_szkola == 1}
+                        onCheckedChange={(val) => updateField('kulturalna_szkola', val)}
+                      />
+                      <FieldLabel htmlFor="kulturalna_szkola">Kulturalna Szkoła na Mazowszu</FieldLabel>
+                    </Field>
+                    <Field orientation="horizontal">
+                      <Checkbox 
+                        id="kultura_za_zl" 
+                        value="1" 
+                        name="kultura_za_zl" 
+                        checked={form.kultura_za_zl == 1}
+                        onCheckedChange={(val) => updateField('kultura_za_zl', val)}
+                      />
+                      <FieldLabel htmlFor="kultura_za_zl">Kultura za zł (wsparcie osób z niepełnospr.)</FieldLabel>
+                    </Field>
+                  </FieldGroup>
+                </div>
 
 
-              <div className="grid flex-1 auto-rows-min gap-6">
-                
+                <div className="grid flex-1 auto-rows-min gap-6 px-4">
+                  
 
-                <Field className="gap-2">
-                  <FieldLabel htmlFor="notes">Uwagi</FieldLabel>
-                  <Textarea 
-                    id="notes"
-                    value={form.notes}
-                    onChange={(event) => updateField('notes', event.target.value)}
-                  />
-                </Field>
-                <Field className="gap-2">
-                  <FieldLabel htmlFor="state">Status</FieldLabel>
-                  <NativeSelect id="state" className="w-full" value={form.state} onChange={(e) => updateField('state', e.target.value)}>
-                    <NativeSelectOption value=""></NativeSelectOption>
-                    {states.map((st) => (<NativeSelectOption key={st.value} value={st.value}>{st.label}</NativeSelectOption>))}
-                  </NativeSelect>
-                </Field>
+                  <Field className="gap-2">
+                    <FieldLabel htmlFor="notes">Uwagi</FieldLabel>
+                    <Textarea 
+                      id="notes"
+                      value={form.notes}
+                      onChange={(event) => updateField('notes', event.target.value)}
+                    />
+                  </Field>
+                  <Field className="gap-2">
+                    <FieldLabel htmlFor="state">Status</FieldLabel>
+                    <NativeSelect id="state" className="w-full" value={form.state} onChange={(e) => updateField('state', e.target.value)}>
+                      <NativeSelectOption value=""></NativeSelectOption>
+                      {states.map((st) => (<NativeSelectOption key={st.value} value={st.value}>{st.label}</NativeSelectOption>))}
+                    </NativeSelect>
+                  </Field>
+                </div>
               </div>
             </TabsContent>
 

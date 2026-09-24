@@ -1,0 +1,6 @@
+.primary-tabs .data-active\:text-foreground:where([data-active]:not([data-active="false"])) {
+  color: var(--background);
+}
+.primary-tabs .data-active\:bg-background:where([data-active]:not([data-active="false"])) {
+  background-color: var(--foreground);
+}

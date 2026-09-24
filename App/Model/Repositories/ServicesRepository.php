@@ -105,6 +105,7 @@ class ServicesRepository extends Repository
     if (!isset($params['state']) || !$params['state'] || $params['state'] === '0') { return ['error' => 2, 'message' => 'Ustaw status']; }
 
     $data = [
+      'service_type' => $params['service_type'] ?? 'lesson',
       'name' => $params['name'] ?? '',
       'description' => $params['description'] ?? '',
       'price' => $params['price'] ? $params['price'] : 0,
@@ -146,6 +147,7 @@ class ServicesRepository extends Repository
   {
     $new_row = [
       'id' => 0,
+      'service_type' => 'lesson',
       'name' => '',
       'description' => '',
       'price' => '',

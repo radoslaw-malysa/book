@@ -2,6 +2,7 @@ import { apiUrl, toFormData, type ErrorMessage } from "./api";
 
 export interface Service {
   id: number;
+  service_type: string;
   name: string;
   description: string;
   price: string;
@@ -18,6 +19,13 @@ export interface Service {
 }
 
 const servicesUrl = apiUrl + "/services";
+
+export const serviceTypes = [
+  { label: 'Warsztaty', value: 'lesson' },
+  { label: 'Zwiedzanie', value: 'tour' },
+  { label: 'Kino', value: 'cinema' },
+  { label: 'Blokada/Rezerwacja sali', value: 'blockade' }
+];
 
 export interface ServiceFilters {
   q?: string;
