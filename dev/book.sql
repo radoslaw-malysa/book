@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 24, 2026 at 02:34 PM
+-- Generation Time: Sep 25, 2026 at 01:16 PM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.30
 
@@ -33,9 +33,10 @@ CREATE TABLE `book_appointments` (
   `customer_id` int NOT NULL,
   `salon_id` int NOT NULL DEFAULT '1',
   `visit_time` datetime DEFAULT NULL,
-  `admission` tinyint UNSIGNED NOT NULL DEFAULT '0',
-  `guide` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `lesson` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `tour` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `cinema` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `blockade` tinyint(1) NOT NULL DEFAULT '0',
   `kulturalna_szkola` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `kultura_za_zl` tinyint UNSIGNED NOT NULL DEFAULT '0',
   `pax` tinyint UNSIGNED NOT NULL DEFAULT '0',
@@ -54,12 +55,12 @@ CREATE TABLE `book_appointments` (
 -- Dumping data for table `book_appointments`
 --
 
-INSERT INTO `book_appointments` (`id`, `service_id`, `customer_id`, `salon_id`, `visit_time`, `admission`, `guide`, `cinema`, `kulturalna_szkola`, `kultura_za_zl`, `pax`, `state`, `total_price`, `sell_price`, `sell_doc`, `notes`, `create_time`, `create_ip`, `update_time`, `update_ip`) VALUES
-(1, 1, 1, 1, '2026-09-22 09:00:00', 0, 0, 0, 0, 0, 0, 'confirmed', 100.00, 0.00, '', '', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1'),
-(2, 3, 2, 1, '2026-09-23 10:00:00', 1, 0, 1, 1, 1, 25, 'pending', 100.00, 0.00, '', 'ta rezerwacja jest moja', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1'),
-(3, 2, 5, 1, '2026-09-25 08:00:00', 0, 0, 0, 0, 0, 20, 'pending', 0.00, 0.00, '', 'test nr 2', '2026-09-17 16:05:18', '127.0.0.1', '2026-09-17 16:05:18', '127.0.0.1'),
-(4, 3, 6, 1, '2026-09-25 11:00:00', 0, 0, 1, 0, 0, 20, 'confirmed', 0.00, 0.00, '', '', '2026-09-22 09:15:18', '127.0.0.1', '2026-09-22 09:15:18', '127.0.0.1'),
-(5, 1, 7, 1, '2026-09-25 09:00:00', 0, 0, 0, 0, 0, 0, 'confirmed', 0.00, 0.00, '', 'Sprzątanie sali', '2026-09-22 09:17:45', '127.0.0.1', '2026-09-22 09:17:45', '127.0.0.1');
+INSERT INTO `book_appointments` (`id`, `service_id`, `customer_id`, `salon_id`, `visit_time`, `lesson`, `tour`, `cinema`, `blockade`, `kulturalna_szkola`, `kultura_za_zl`, `pax`, `state`, `total_price`, `sell_price`, `sell_doc`, `notes`, `create_time`, `create_ip`, `update_time`, `update_ip`) VALUES
+(1, 1, 1, 1, '2026-09-22 09:00:00', 0, 0, 0, 1, 0, 0, 0, 'confirmed', 100.00, 0.00, '', '', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1'),
+(2, 3, 2, 1, '2026-09-23 10:00:00', 1, 0, 1, 0, 1, 1, 25, 'pending', 100.00, 0.00, '', 'ta rezerwacja jest moja', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1'),
+(3, 2, 5, 1, '2026-09-25 08:00:00', 0, 0, 0, 0, 0, 0, 20, 'pending', 0.00, 0.00, '', 'test nr 2', '2026-09-17 16:05:18', '127.0.0.1', '2026-09-17 16:05:18', '127.0.0.1'),
+(4, 3, 6, 1, '2026-09-25 11:00:00', 0, 0, 1, 0, 0, 0, 20, 'confirmed', 0.00, 0.00, '', '', '2026-09-22 09:15:18', '127.0.0.1', '2026-09-22 09:15:18', '127.0.0.1'),
+(5, 1, 7, 1, '2026-09-25 09:00:00', 0, 0, 0, 0, 0, 0, 0, 'confirmed', 0.00, 0.00, '', 'Sprzątanie sali', '2026-09-22 09:17:45', '127.0.0.1', '2026-09-22 09:17:45', '127.0.0.1');
 
 -- --------------------------------------------------------
 
@@ -81,7 +82,7 @@ CREATE TABLE `book_appointment_providers` (
 --
 
 INSERT INTO `book_appointment_providers` (`id`, `appointment_id`, `service_id`, `provider_id`, `start_time`, `end_time`) VALUES
-(1, 1, 0, 1, '2026-09-22 09:00:00', '2026-09-23 16:00:00'),
+(1, 1, 1, 1, '2026-09-22 09:00:00', '2026-09-23 16:00:00'),
 (2, 2, 0, 2, '2026-09-23 10:00:00', '2026-09-23 11:45:00'),
 (3, 3, 2, 1, '2026-09-25 08:00:00', '2026-09-25 10:30:00'),
 (4, 4, 0, 1, '2026-09-25 11:00:00', '2026-09-25 12:45:00'),

@@ -6,9 +6,10 @@ export interface Appointment {
   customer_id: number;
   salon_id: number;
   visit_time: string;
-  admission: number;
-  guide: number;
+  lesson: number;
+  tour: number;
   cinema: number;
+  blockade: number;
   kulturalna_szkola: number;
   pax: number;
   kultura_za_zl: number;
