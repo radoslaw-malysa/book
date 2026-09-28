@@ -122,10 +122,10 @@ class AppointmentsRepository extends Repository
     $data['sell_price'] = $data['sell_price'] ? $data['sell_price'] : '';
 
     // appointment_providers
-    $data['appointment_providers'] = (!$is_new) ? $this->appointment_providers->where('appointment_id', (int)$params['id'])->get() : $this->appointment_providers->getNew();
+    $data['appointment_providers'] = (!$is_new) ? $this->appointment_providers->getGrouppedByType((int)$params['id']) : $this->appointment_providers->getNew();
 
     // services select
-    $data['services'] = $this->services->get(['id','name']);
+    $data['services'] = $this->services->getGrouppedByType();
 
     // providers select (sale)
     $data['providers'] = $this->providers->get(['id','name']);

@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import './appointment_edit.css';
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
+import type { Provider } from "@/api/providers";
 
 interface ItemEditDialogProps {
   itemId: number | null;
@@ -77,7 +78,6 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
 
   const updateField = (field: string, value: string | number | boolean) => {
     if (typeof value === 'boolean') { value = value ? 1 : 0 }
-    console.log(field + '/' + value)
 
     setForm((current) => (current ? { ...current, [field]: value } : current));
   };
@@ -106,6 +106,38 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
   
   const submitFormHandler = () => {
     updateMutation.mutate(form);
+  }
+
+  const updateAppointmentProvider = (serviceType: string, index: number, field: string, value: number | string) => {
+    const newState = form?.appointment_providers;
+    
+    if (newState) {
+      
+      if (field === 'start_time_h') {
+        const [dateStart, timeStart] = newState[serviceType][0].start_time.split(' ');
+        const [dateEnd, timeEnd] = newState[serviceType][0].end_time.split(' ');
+        newState[serviceType][0].start_time = `${dateStart} ${value}`;
+        newState[serviceType][1].start_time = `${dateStart} ${value}`;
+      } else if (field === 'end_time_h') {
+        const [dateStart, timeStart] = newState[serviceType][0].start_time.split(' ');
+        const [dateEnd, timeEnd] = newState[serviceType][0].end_time.split(' ');
+        newState[serviceType][0].end_time = `${dateStart} ${value}`;
+        newState[serviceType][1].end_time = `${dateStart} ${value}`;
+      } else if (field === 'start_time_y') {
+        const [dateStart, timeStart] = newState[serviceType][0].start_time.split(' ');
+        const [dateEnd, timeEnd] = newState[serviceType][0].end_time.split(' ');
+        newState[serviceType][index].start_time = `${value} ${timeStart}`;
+        newState[serviceType][index].end_time = `${value} ${timeEnd}`;
+        console.log(`${value} ${timeStart}`)
+      } else if (field === 'provider_id') {
+        newState[serviceType][index][field] = value
+      } else {
+        newState[serviceType][0][field] = value;
+        newState[serviceType][1][field] = value;
+      }
+
+      setForm((current) => (current ? { ...current, appointment_providers: newState } : current));
+    }
   }
   
   return (
@@ -148,82 +180,83 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                 <div className="py-2">
                   <div className="px-4 flex gap-3">
                     <div className="w-9 h-9 flex-none flex justify-center items-center">
-                      <Checkbox id="show-lessons" />
+                      <Checkbox id="show-lessons" value="1" checked={form.lesson == 1} onCheckedChange={(checked) => updateField('lesson', checked ? 1 : 0)} className="cursor-pointer" />
                     </div>
                     <div className="flex-grow flex items-center h-9">
                       <Label htmlFor="show-lessons">Warsztaty</Label>
                     </div>
                   </div>
-                  <div className="px-4 flex gap-3 mb-4">
-                    <div className="w-9 h-9 flex-none"></div>
-                    <div className="flex-grow">
-                      <Field>
-                        <NativeSelect className="w-full" value={form.service_id} onChange={(e) => updateField('service_id', e.target.value)}>
-                          <NativeSelectOption value=""></NativeSelectOption>
-                          {form.services.map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
-                        </NativeSelect>
-                      </Field>
+
+                  {form.lesson == 1 && (<div>
+                    <div className="px-4 flex gap-3 mb-4">
+                      <div className="w-9 h-9 flex-none"></div>
+                      <div className="flex-grow">
+                        <Field>
+                          <NativeSelect className="w-full" value={form.appointment_providers.lesson[0].service_id} onChange={(e) => updateAppointmentProvider('lesson', 0, 'service_id', e.target.value)}>
+                            <NativeSelectOption value=""></NativeSelectOption>
+                            {form.services['lesson'].map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
+                          </NativeSelect>
+                        </Field>
+                      </div>
                     </div>
-                  </div>
-                  <div className="px-4 flex gap-3 mb-2">
-                    <div className="w-9 h-9 flex-none flex justify-center items-center">
-                      <MapPin size="20" />
+                    <div className="px-4 flex gap-3 mb-2">
+                      <div className="w-9 h-9 flex-none flex justify-center items-center">
+                        <MapPin size="20" className={`${!form.appointment_providers.lesson[0].provider_id ? 'text-muted-foreground' : ''}`} />
+                      </div>
+                      <div className="flex-grow">
+                        <Field>
+                          <NativeSelect className="w-full" value={form.appointment_providers.lesson[0].provider_id} onChange={(e) => updateAppointmentProvider('lesson', 0, 'provider_id', e.target.value)}>
+                            <NativeSelectOption value=""></NativeSelectOption>
+                            {form.providers.map((s: Provider) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
+                          </NativeSelect>
+                        </Field>
+                      </div>
                     </div>
-                    <div className="flex-grow">
-                      <Field>
-                        <NativeSelect className="w-full" value={form.service_id} onChange={(e) => updateField('service_id', e.target.value)}>
-                          <NativeSelectOption value=""></NativeSelectOption>
-                          {form.services.map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
-                        </NativeSelect>
-                      </Field>
+                    <div className="px-4 flex gap-3 mb-4">
+                      <div className="w-9 h-9 flex-none flex justify-center items-center">
+                        <MapPin size="20" className={`${!form.appointment_providers.lesson[1].provider_id ? 'text-muted-foreground' : ''}`} />
+                      </div>
+                      <div className="flex-grow">
+                        <Field>
+                          <NativeSelect className="w-full" value={form.appointment_providers.lesson[1].provider_id} onChange={(e) => updateAppointmentProvider('lesson', 1, 'provider_id', e.target.value)}>
+                            <NativeSelectOption value=""></NativeSelectOption>
+                            {form.providers.map((s: Provider) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
+                          </NativeSelect>
+                        </Field>
+                      </div>
                     </div>
-                  </div>
-                  <div className="px-4 flex gap-3 mb-4">
-                    <div className="w-9 h-9 flex-none flex justify-center items-center">
-                      <MapPin size="20" />
+                    <div className="px-4 flex gap-3 mb-4">
+                      <div className="w-9 h-9 flex-none flex justify-center items-center">
+                        <Clock size="20" />
+                      </div>
+                      <div className="flex-grow flex gap-2">
+                        <Field>
+                          <Input 
+                            type="date"
+                            value={form.appointment_providers.lesson[0].start_time?.split(' ')[0]}
+                            onChange={(e) => updateAppointmentProvider('lesson', 0, 'start_time_y', e.target.value)}
+                          />
+                        </Field>
+                        <Field>
+                          <Input 
+                            type="time"
+                            value={form.appointment_providers.lesson[0].start_time?.split(' ')[1]}
+                            onChange={(e) => updateAppointmentProvider('lesson', 0, 'start_time_h', e.target.value)}
+                            className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                          />
+                        </Field>
+                        <Field>
+                          <Input 
+                            type="time"
+                            name="visit_time"
+                            value={form.appointment_providers.lesson[0].end_time?.split(' ')[1]}
+                            onChange={(e) => updateAppointmentProvider('lesson', 0, 'end_time_h', e.target.value)}
+                            className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                          />
+                        </Field>
+                      </div>
                     </div>
-                    <div className="flex-grow">
-                      <Field>
-                        <NativeSelect className="w-full" value={form.service_id} onChange={(e) => updateField('service_id', e.target.value)}>
-                          <NativeSelectOption value=""></NativeSelectOption>
-                          {form.services.map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
-                        </NativeSelect>
-                      </Field>
-                    </div>
-                  </div>
-                  <div className="px-4 flex gap-3 mb-4">
-                    <div className="w-9 h-9 flex-none flex justify-center items-center">
-                      <Clock size="20" />
-                    </div>
-                    <div className="flex-grow flex gap-2">
-                      <Field>
-                        <Input 
-                          type="date"
-                          name="visit_time"
-                          value={form.visit_time}
-                          onChange={(e) => updateField('visit_time', e.target.value)}
-                        />
-                      </Field>
-                      <Field>
-                        <Input 
-                          type="time"
-                          name="visit_time"
-                          value={form.visit_time}
-                          onChange={(e) => updateField('visit_time', e.target.value)}
-                          className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                        />
-                      </Field>
-                      <Field>
-                        <Input 
-                          type="time"
-                          name="visit_time"
-                          value={form.visit_time}
-                          onChange={(e) => updateField('visit_time', e.target.value)}
-                          className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                        />
-                      </Field>
-                    </div>
-                  </div>
+                  </div>)}
 
                 </div>
 
@@ -235,7 +268,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                       <Checkbox id="show-lessons" />
                     </div>
                     <div className="flex-grow flex items-center h-9">
-                      <Label htmlFor="show-lessons">Zwiedzanie wystaw</Label>
+                      <Label htmlFor="show-lessons" className="text-muted-foreground">Zwiedzanie wystaw</Label>
                     </div>
                   </div>
                 </div>

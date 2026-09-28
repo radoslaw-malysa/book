@@ -78,6 +78,8 @@ class CrudAction
       $payload = $this->$table->getRow(['id' => $id]);
     }
 
+    //echo '<pre>'; print_r($payload); echo '</pre>'; exit;
+
     return $this->json->render($response, $payload);
   }
 

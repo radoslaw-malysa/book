@@ -44,6 +44,47 @@ class AppointmentProvidersRepository extends Repository
   }
 
   /**
+   * Edit appointment dialog
+   */
+  public function getGrouppedByType($appointment_id)
+  {
+    $appointment_providers = [];
+
+    $query = "select ap.*, se.service_type 
+    from {$this->model} ap left join {$this->tables->services} se on ap.service_id = se.id 
+    where ap.appointment_id = '{$appointment_id}' 
+    order by ap.start_time ";
+
+    $st = $this->connection->prepare($query);
+    $st->execute();
+    $rows = $st->fetchAll();
+
+    foreach ($rows as $row) {
+      $appointment_providers[$row['service_type']][] = $row;
+    }
+
+    // fill with empty placeholders to edit dialog
+    $placeholders = [
+      'lesson' => 2,
+      'tour' => 2,
+      'cinema' => 1,
+      'blockade' => 2
+    ];
+
+    foreach ($placeholders as $type => $type_count) {
+      $services_count = (isset($appointment_providers[$type])) ? count($appointment_providers[$type]) : 0;
+
+      if ($services_count < $type_count) {
+        for ($i = 0; $i < $type_count - $services_count; $i++) {
+          $appointment_providers[$type][] = $this->getNew($type);
+        }
+      }
+    }
+
+    return $appointment_providers;
+  }
+
+  /**
    * CRUD update appointment
    */
   public function updateAppointment($appointment_id, $data) 
@@ -74,11 +115,12 @@ class AppointmentProvidersRepository extends Repository
 
   public function getNew()
   {
-    return [[
+    return [
       'appointment_id' => 0,
+      'service_id' => 0,
       'provider_id' => 0,
       'start_time' => '',
       'end_time' => ''
-    ]];
+    ];
   }
 }
