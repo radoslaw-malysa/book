@@ -50,7 +50,7 @@ const ViewDay = ({data, date, selectedId, onEdit}: ViewWeekProps) => {
         </div>
         {data.providers.map((prov) => (<div key={prov.id} className="flex flex-col font-semibold basis-1 flex-grow not-last:border-r relative">
           {data.hours.map((h) => (
-              <div key={h} className="c-h" onClick={() => onEdit({visit_time: `${day}T${h}`, provider_id: prov.id})}></div>
+              <div key={h} className="c-h" onClick={() => onEdit({start_time: `${day} ${h}`, provider_id: prov.id})}></div>
             ))}
           {<DayProviderAppointments day={day} provider_id={prov.id} />}
         </div>))}

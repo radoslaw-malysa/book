@@ -46,21 +46,24 @@ class AppointmentProvidersRepository extends Repository
   /**
    * Edit appointment dialog
    */
-  public function getGrouppedByType($appointment_id)
+  public function getGrouppedByType($params = [])
   {
     $appointment_providers = [];
+    $appointment_id = $params['id'] ?? 0;
 
-    $query = "select ap.*, se.service_type 
-    from {$this->model} ap left join {$this->tables->services} se on ap.service_id = se.id 
-    where ap.appointment_id = '{$appointment_id}' 
-    order by ap.start_time ";
+    if ($appointment_id) {
+      $query = "select ap.*, se.service_type 
+      from {$this->model} ap left join {$this->tables->services} se on ap.service_id = se.id 
+      where ap.appointment_id = '{$appointment_id}' 
+      order by ap.start_time ";
 
-    $st = $this->connection->prepare($query);
-    $st->execute();
-    $rows = $st->fetchAll();
+      $st = $this->connection->prepare($query);
+      $st->execute();
+      $rows = $st->fetchAll();
 
-    foreach ($rows as $row) {
-      $appointment_providers[$row['service_type']][] = $row;
+      foreach ($rows as $row) {
+        $appointment_providers[$row['service_type']][] = $row;
+      }
     }
 
     // fill with empty placeholders to edit dialog
@@ -76,7 +79,18 @@ class AppointmentProvidersRepository extends Repository
 
       if ($services_count < $type_count) {
         for ($i = 0; $i < $type_count - $services_count; $i++) {
-          $appointment_providers[$type][] = $this->getNew($type);
+          // fil params only for first row
+          if ($services_count == 0 && $i == 0) {
+            $appointment_providers[$type][] = $this->getNew([
+              'appointment_id' => $appointment_id ?? 0,
+              'provider_id' => $params['provider_id'] ?? 0,
+              'start_time' => $params['start_time'] ?? ''
+            ]);
+          } else {
+            $appointment_providers[$type][] = $this->getNew([
+              'appointment_id' => $appointment_id ?? 0
+            ]);
+          }
         }
       }
     }
@@ -113,13 +127,13 @@ class AppointmentProvidersRepository extends Repository
     }
   }
 
-  public function getNew()
+  public function getNew($params = [])
   {
     return [
-      'appointment_id' => 0,
+      'appointment_id' => $params['appointment_id'] ?? 0,
       'service_id' => 0,
-      'provider_id' => 0,
-      'start_time' => '',
+      'provider_id' => $params['provider_id'] ?? 0,
+      'start_time' => $params['start_time'] ?? '',
       'end_time' => ''
     ];
   }

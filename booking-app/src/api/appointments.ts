@@ -80,12 +80,12 @@ export const getAppointments = async (filters: AppointmentFilters = {}): Promise
   return response.json() as Promise<ApiItemsData>;
 };
 
-export const getAppointment = async (id: number | {visit_time: string, provider_id: number} | null): Promise<Appointment> => {
+export const getAppointment = async (id: number | {start_time: string, provider_id: number} | null): Promise<Appointment> => {
   // new appointment on calendar
   if (typeof id === 'object' && id !== null) {
-    const { visit_time, provider_id } = id;
+    const { start_time, provider_id } = id;
     const params = new URLSearchParams();
-    params.set("visit_time", visit_time);
+    params.set("start_time", start_time);
     params.set("provider_id", provider_id.toString());
     const query = params.toString();
 

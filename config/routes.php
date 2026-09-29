@@ -32,8 +32,8 @@ return function (App $app) {
         $app->get('/calendar/week', CalendarAction::class); // combobox
         $app->get('/calendar/day', CalendarAction::class . ":day"); // combobox
         
-        //$app->get('/{table}/{id}', CrudAction::class . ":fakePostRow");
-        $app->get('/{table}/{id}', CrudAction::class . ":getRow");
+        $app->get('/{table}/{id}', CrudAction::class . ":fakePostRow");
+        //$app->get('/{table}/{id}', CrudAction::class . ":getRow");
         $app->get('/{table}', CrudAction::class . ":getTable");
         $app->post('/{table}/{id}', CrudAction::class . ":postRow");
         $app->post('/{table}', CrudAction::class . ":postRow");

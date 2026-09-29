@@ -92,23 +92,7 @@ class AppointmentsRepository extends Repository
   }
 
   public function getRow($params=[])
-  { 
-    /*$json = '{"id":0,"service_id":"2","customer_id":0,"salon_id":1,"visit_time":"2026-09-28 08:00","admission":0,"guide":0,"cinema":0,"kulturalna_szkola":0,"kultura_za_zl":0,"pax":"20","notes":"test nr 2","state":"pending","total_price":"","sell_price":"","sell_doc":"","create_time":"","create_ip":"","update_time":"","update_ip":"","appointment_providers":[{"appointment_id":0,"provider_id":1,"start_time":"2026-09-28 08:00","end_time":"2026-09-28T10:30"}],"services":[{"id":1,"name":"Rezerwacja sali"},{"id":2,"name":"Spacer po wystawie i warsztaty plastyczne"},{"id":3,"name":"Nowe Horyzonty Edukacji Filmowej"},{"id":4,"name":"Warsztaty ruchowo-plastyczne podczas spaceru po wystawie"},{"id":5,"name":"Seanse filmowe z bieżącego repertuaru"},{"id":6,"name":"Warsztaty sensoryczno-plastyczne „Bajki z pieca”"},{"id":7,"name":"Filmowe pokazy specjalne"}],"providers":[{"id":1,"name":"Sala edukacyjna 1"},{"id":2,"name":"Sala wystawowa"}],"customer":{"id":0,"customer_type":"","name":"","address":"","email":"","phone":"","contact_name":"","contact_phone":"","contact_email":"","pax_care":0,"accept_processing":0,"accept_regulations":0,"accept_kultura_zl":0}}';
-    $params = json_decode($json, true);
-    $test = [];
-  
-    if (!isset($params['state']) || !$params['state']) { $test[] = ['error' => 2, 'message' => 'Ustaw status rezerwacji']; }
-    if (!isset($params['visit_time']) || !$params['visit_time'] || !isValidDateTime($params['visit_time'])) { $test[] = ['error' => 2, 'message' => 'Wypełnij datę wizyty.']; }
-    if (isset($params['appointment_providers'][0]['provider_id']) && $params['appointment_providers'][0]['provider_id']) { 
-      
-      if (!$params['appointment_providers'][0]['start_time']) { echo 'dupa'; $test[] = ['error' => 2, 'message' => 'Wypełnij czas rozpoczęcia bookingu sali.']; } else { echo 'zzzz'; }
-      if (!isValidDateTime($params['appointment_providers'][0]['start_time'])) { $test[] = ['error' => 2, 'message' => 'Nieprawidłowy czas rozpoczęcia zajęć w sali.']; } else { echo 'xxxxx'; }
-      if (!$params['appointment_providers'][0]['end_time']) { $test[] = ['error' => 2, 'message' => 'Wypełnij czas zakończenia zajęć w sali.']; }
-      if (!isValidDateTime($params['appointment_providers'][0]['end_time'])) { $test[] = ['error' => 2, 'message' => 'Nieprawidłowy czas zakończenia zajęć w sali.']; }
-    }
-    print_r($test);
-    exit;*/
-  
+  {   
     $is_new = (!isset($params['id']) || $params['id'] == 0);
 
     if ($is_new) {
@@ -122,7 +106,7 @@ class AppointmentsRepository extends Repository
     $data['sell_price'] = $data['sell_price'] ? $data['sell_price'] : '';
 
     // appointment_providers
-    $data['appointment_providers'] = (!$is_new) ? $this->appointment_providers->getGrouppedByType((int)$params['id']) : $this->appointment_providers->getNew();
+    $data['appointment_providers'] = $this->appointment_providers->getGrouppedByType($params);
 
     // services select
     $data['services'] = $this->services->getGrouppedByType();
@@ -150,14 +134,32 @@ class AppointmentsRepository extends Repository
   public function postRow($params=[])
   {
     if (!isset($params['state']) || !$params['state']) { return ['error' => 2, 'message' => 'Ustaw status rezerwacji']; }
-    if (!isset($params['visit_time']) || !$params['visit_time'] || !isValidDateTime($params['visit_time'])) { return ['error' => 2, 'message' => 'Wypełnij prawidłową datę wizyty.']; }
-    if (isset($params['appointment_providers'][0]['appointment_id'])) { 
-      if (!$params['appointment_providers'][0]['start_time']) { return ['error' => 2, 'message' => 'Wypełnij czas rozpoczęcia bookingu sali.']; }
-      if (!isValidDateTime($params['appointment_providers'][0]['start_time'])) { return ['error' => 2, 'message' => 'Nieprawidłowy czas rozpoczęcia zajęć w sali.']; }
-      if (!$params['appointment_providers'][0]['end_time']) { return ['error' => 2, 'message' => 'Wypełnij czas zakończenia zajęć w sali.']; }
-      if (!isValidDateTime($params['appointment_providers'][0]['end_time'])) { return ['error' => 2, 'message' => 'Nieprawidłowy czas zakończenia zajęć w sali.']; }
-    }
     
+    if ($params['lesson'] == 1) { 
+      if (!$params['appointment_providers']['lesson'][0]['service_id']) { return ['error' => 2, 'message' => 'Wybierz warsztaty.']; }
+      if (!$params['appointment_providers']['lesson'][0]['provider_id']) { return ['error' => 2, 'message' => 'Wybierz salę dla warszatów']; }
+      if (!$params['appointment_providers']['lesson'][0]['start_time']) { return ['error' => 2, 'message' => 'Wypełnij czas rozpoczęcia rezerwacji sali.']; }
+      if (!isValidDateTime($params['appointment_providers']['lesson'][0]['start_time'])) { return ['error' => 2, 'message' => 'Nieprawidłowy czas rozpoczęcia zajęć w sali.']; }
+      if (!$params['appointment_providers']['lesson'][0]['end_time']) { return ['error' => 2, 'message' => 'Wypełnij czas zakończenia zajęć w sali.']; }
+      if (!isValidDateTime($params['appointment_providers']['lesson'][0]['end_time'])) { return ['error' => 2, 'message' => 'Nieprawidłowy czas zakończenia zajęć w sali.']; }
+    }
+    if ($params['tour'] == 1) { 
+      if (!$params['appointment_providers']['tour'][0]['service_id']) { return ['error' => 2, 'message' => 'Wybierz rodzaj zwiedzania.']; }
+      if (!$params['appointment_providers']['tour'][0]['provider_id']) { return ['error' => 2, 'message' => 'Wybierz salę.']; }
+      if (!$params['appointment_providers']['tour'][0]['start_time']) { return ['error' => 2, 'message' => 'Wypełnij czas rozpoczęcia rezerwacji sali.']; }
+      if (!isValidDateTime($params['appointment_providers']['tour'][0]['start_time'])) { return ['error' => 2, 'message' => 'Nieprawidłowy czas rozpoczęcia zajęć w sali.']; }
+      if (!$params['appointment_providers']['tour'][0]['end_time']) { return ['error' => 2, 'message' => 'Wypełnij czas zakończenia zajęć w sali.']; }
+      if (!isValidDateTime($params['appointment_providers']['tour'][0]['end_time'])) { return ['error' => 2, 'message' => 'Nieprawidłowy czas zakończenia zajęć w sali.']; }
+    }
+    if ($params['blockade'] == 1) { 
+      if (!$params['appointment_providers']['blockade'][0]['service_id']) { return ['error' => 2, 'message' => 'Wybierz rodzaj blokady sali.']; }
+      if (!$params['appointment_providers']['blockade'][0]['provider_id']) { return ['error' => 2, 'message' => 'Wybierz salę.']; }
+      if (!$params['appointment_providers']['blockade'][0]['start_time']) { return ['error' => 2, 'message' => 'Wypełnij początek blokady sali.']; }
+      if (!isValidDateTime($params['appointment_providers']['blockade'][0]['start_time'])) { return ['error' => 2, 'message' => 'Nieprawidłowy czas rozpoczęcia blokady sali.']; }
+      if (!$params['appointment_providers']['blockade'][0]['end_time']) { return ['error' => 2, 'message' => 'Wypełnij koniec blokady sali.']; }
+      if (!isValidDateTime($params['appointment_providers']['blockade'][0]['end_time'])) { return ['error' => 2, 'message' => 'Nieprawidłowy czas zakończenia blokady sali.']; }
+    }
+
     $id = (int)$params['id'];
 
     // customer first: 1-1 relation
@@ -165,17 +167,21 @@ class AppointmentsRepository extends Repository
       $params['customer_id'] = $this->customers->updateCustomer($params['customer']);
     }
 
+    // visit_date
+
+
+
     $data = [
       'service_id' => $params['service_id'] ?? 0,
       'customer_id' => $params['customer_id'] ?? 0,
-      'visit_time' => $params['visit_time'] ?? NULL,
-      'lesson' => $params['lesson'] ?? 0,
-      'tour' => $params['tour'] ?? 0,
-      'cinema' => $params['cinema'] ?? 0,
-      'blockade' => $params['blockade'] ?? 0,
-      'kulturalna_szkola' => $params['kulturalna_szkola'] ?? 0,
-      'kultura_za_zl' => $params['kultura_za_zl'] ?? 0,
-      'pax' => $params['pax'] ?? 0,
+      'visit_time' => (isset($params['visit_time']) && $params['visit_time']) ? $params['visit_time'] : NULL,
+      'lesson' => (isset($params['lesson']) && $params['lesson']) ? (int)$params['lesson'] : 0,
+      'tour' => (isset($params['tour']) && $params['tour']) ? (int)$params['tour'] : 0,
+      'cinema' => (isset($params['cinema']) && $params['cinema']) ? (int)$params['cinema'] : 0,
+      'blockade' => (isset($params['blockade']) && $params['blockade']) ? (int)$params['blockade'] : 0,
+      'kulturalna_szkola' => (isset($params['kulturalna_szkola']) && $params['kulturalna_szkola']) ? (int)$params['kulturalna_szkola'] : 0,
+      'kultura_za_zl' => (isset($params['kultura_za_zl']) && $params['kultura_za_zl']) ? (int)$params['kultura_za_zl'] : 0,
+      'pax' => (isset($params['pax']) && $params['pax']) ? (int)$params['pax'] : 0,
       'notes' => $params['notes'] ?? '',
       'total_price' => $params['total_price'] ? $params['total_price'] : 0,
       'sell_price' => $params['sell_price'] ? $params['sell_price'] : 0,
