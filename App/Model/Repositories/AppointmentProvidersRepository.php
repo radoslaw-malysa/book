@@ -107,24 +107,30 @@ class AppointmentProvidersRepository extends Repository
       $updated = [];
 
       foreach ($data as $item) {
-        $to_update_data = [
-          'provider_id' => $item['provider_id'],
-          'start_time' => $item['start_time'],
-          'end_time' => $item['end_time']
-        ];
+        if (isset($item['service_id']) && $item['service_id'] && isset($item['provider_id']) && $item['provider_id']) {
+          $to_update_data = [
+            'service_id' => $item['service_id'],
+            'provider_id' => $item['provider_id'],
+            'start_time' => $item['start_time'],
+            'end_time' => $item['end_time'],
+            'notes' => $item['notes']
+          ];
 
-        if (isset($item['id']) && $item['id'] > 0 ) {
-          $this->where('id', $item['id'])->update($to_update_data);
-          $updated[] = $item['id'];
-        } else {
-          $to_update_data['appointment_id'] = $appointment_id;
-          $updated[] = $this->insert($to_update_data);
+          if (isset($item['id']) && $item['id'] > 0 ) {
+            $this->where('id', $item['id'])->update($to_update_data);
+            $updated[] = $item['id'];
+          } else {
+            $to_update_data['appointment_id'] = $appointment_id;
+            $updated[] = $this->insert($to_update_data);
+          }
         }
       }
 
       // delete not existing id in new dataset
       $this->where('appointment_id', $appointment_id)->where('id', 'NOT IN', $updated)->delete();
     }
+
+    return true;
   }
 
   public function getNew($params = [])

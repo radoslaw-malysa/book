@@ -132,9 +132,7 @@ class AppointmentsRepository extends Repository
   }
 
   public function postRow($params=[])
-  {
-    if (!isset($params['state']) || !$params['state']) { return ['error' => 2, 'message' => 'Ustaw status rezerwacji']; }
-    
+  {    
     if ($params['lesson'] == 1) { 
       if (!$params['appointment_providers']['lesson'][0]['service_id']) { return ['error' => 2, 'message' => 'Wybierz warsztaty.']; }
       if (!$params['appointment_providers']['lesson'][0]['provider_id']) { return ['error' => 2, 'message' => 'Wybierz salę dla warszatów']; }
@@ -168,7 +166,7 @@ class AppointmentsRepository extends Repository
     }
 
     // visit_date
-
+    
 
 
     $data = [
@@ -199,8 +197,44 @@ class AppointmentsRepository extends Repository
     }
 
     // appointment_providers
-    if (isset($params['appointment_providers'])) {
-      $this->appointment_providers->updateAppointment($id, $params['appointment_providers']);
+    if ($id && isset($params['appointment_providers'])) {
+      $appointment_providers = [];
+
+      // duplicate attributes from first row
+      if (isset($params['lesson']) && $params['lesson']) {
+        if ($params['appointment_providers']['lesson'][1]['provider_id'] > 0) {
+          $params['appointment_providers']['lesson'][1]['service_id'] = $params['appointment_providers']['lesson'][0]['service_id'];
+          $params['appointment_providers']['lesson'][1]['start_time'] = $params['appointment_providers']['lesson'][0]['start_time'];
+          $params['appointment_providers']['lesson'][1]['end_time'] = $params['appointment_providers']['lesson'][0]['end_time'];
+        } else {
+          unset($params['appointment_providers']['lesson'][1]);
+        }
+        array_push($appointment_providers, ...$params['appointment_providers']['lesson']);
+      }
+
+      if (isset($params['tour']) && $params['tour']) {
+        if (isset($params['appointment_providers']['tour'][1]['provider_id']) && $params['appointment_providers']['tour'][1]['provider_id'] > 0) {
+          $params['appointment_providers']['tour'][1]['service_id'] = $params['appointment_providers']['tour'][0]['service_id'];
+          $params['appointment_providers']['tour'][1]['start_time'] = $params['appointment_providers']['tour'][0]['start_time'];
+          $params['appointment_providers']['tour'][1]['end_time'] = $params['appointment_providers']['tour'][0]['end_time'];
+        } else {
+          unset($params['appointment_providers']['tour'][1]);
+        }
+        array_push($appointment_providers, ...$params['appointment_providers']['tour']);
+      }
+
+      if (isset($params['blockade']) && $params['blockade']) {
+        if (isset($params['appointment_providers']['blockade'][1]['provider_id']) && $params['appointment_providers']['blockade'][1]['provider_id'] > 0) {
+          $params['appointment_providers']['blockade'][1]['service_id'] = $params['appointment_providers']['blockade'][0]['service_id'];
+          $params['appointment_providers']['blockade'][1]['start_time'] = $params['appointment_providers']['blockade'][0]['start_time'];
+          $params['appointment_providers']['blockade'][1]['end_time'] = $params['appointment_providers']['blockade'][0]['end_time'];
+        } else {
+          unset($params['appointment_providers']['blockade'][1]);
+        }
+        array_push($appointment_providers, ...$params['appointment_providers']['blockade']);
+      }
+
+      $this->appointment_providers->updateAppointment($id, $appointment_providers);
     }
 
     return $data;

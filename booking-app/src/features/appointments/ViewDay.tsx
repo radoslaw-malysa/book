@@ -39,7 +39,7 @@ const ViewDay = ({data, date, selectedId, onEdit}: ViewWeekProps) => {
   return (<div>
     <div className="flex flex-wrap border-b bg-linear-to-t from-white to-muted">
       <div className="border-r w-12"></div>
-      {data.providers.map((prov) => (<div key={prov.id} className="flex justify-center pt-5 pb-2 text-base font-semibold basis-1 flex-grow not-last:border-r">{prov.name}</div>))}
+      {data.providers.map((prov) => (<div key={prov.id} className="flex justify-center pt-5 pb-2 text-sm font-semibold basis-1 flex-grow not-last:border-r">{prov.name}</div>))}
     </div>
     <ScrollArea className="c-height-d w-full">
       <div className="flex flex-wrap">

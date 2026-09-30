@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 25, 2026 at 01:16 PM
+-- Generation Time: Sep 30, 2026 at 02:04 PM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.30
 
@@ -56,11 +56,7 @@ CREATE TABLE `book_appointments` (
 --
 
 INSERT INTO `book_appointments` (`id`, `service_id`, `customer_id`, `salon_id`, `visit_time`, `lesson`, `tour`, `cinema`, `blockade`, `kulturalna_szkola`, `kultura_za_zl`, `pax`, `state`, `total_price`, `sell_price`, `sell_doc`, `notes`, `create_time`, `create_ip`, `update_time`, `update_ip`) VALUES
-(1, 1, 1, 1, '2026-09-22 09:00:00', 0, 0, 0, 1, 0, 0, 0, 'confirmed', 100.00, 0.00, '', '', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1'),
-(2, 3, 2, 1, '2026-09-23 10:00:00', 1, 0, 1, 0, 1, 1, 25, 'pending', 100.00, 0.00, '', 'ta rezerwacja jest moja', '2026-09-06 19:59:14', '', '2026-09-06 19:59:14', '127.0.0.1'),
-(3, 2, 5, 1, '2026-09-25 08:00:00', 0, 0, 0, 0, 0, 0, 20, 'pending', 0.00, 0.00, '', 'test nr 2', '2026-09-17 16:05:18', '127.0.0.1', '2026-09-17 16:05:18', '127.0.0.1'),
-(4, 3, 6, 1, '2026-09-25 11:00:00', 0, 0, 1, 0, 0, 0, 20, 'confirmed', 0.00, 0.00, '', '', '2026-09-22 09:15:18', '127.0.0.1', '2026-09-22 09:15:18', '127.0.0.1'),
-(5, 1, 7, 1, '2026-09-25 09:00:00', 0, 0, 0, 0, 0, 0, 0, 'confirmed', 0.00, 0.00, '', 'Sprzątanie sali', '2026-09-22 09:17:45', '127.0.0.1', '2026-09-22 09:17:45', '127.0.0.1');
+(3, 0, 3, 1, NULL, 1, 0, 0, 0, 0, 0, 0, 'pending', 0.00, 0.00, '', '', '2026-09-30 16:03:50', '127.0.0.1', '2026-09-30 16:03:50', '127.0.0.1');
 
 -- --------------------------------------------------------
 
@@ -74,19 +70,17 @@ CREATE TABLE `book_appointment_providers` (
   `service_id` smallint UNSIGNED NOT NULL DEFAULT '0',
   `provider_id` int UNSIGNED NOT NULL DEFAULT '0',
   `start_time` datetime DEFAULT NULL,
-  `end_time` datetime DEFAULT NULL
+  `end_time` datetime DEFAULT NULL,
+  `notes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
 
 --
 -- Dumping data for table `book_appointment_providers`
 --
 
-INSERT INTO `book_appointment_providers` (`id`, `appointment_id`, `service_id`, `provider_id`, `start_time`, `end_time`) VALUES
-(1, 1, 1, 1, '2026-09-22 09:00:00', '2026-09-23 16:00:00'),
-(2, 2, 0, 2, '2026-09-23 10:00:00', '2026-09-23 11:45:00'),
-(3, 3, 2, 1, '2026-09-25 08:00:00', '2026-09-25 10:30:00'),
-(4, 4, 0, 1, '2026-09-25 11:00:00', '2026-09-25 12:45:00'),
-(5, 5, 0, 2, '2026-09-25 09:00:00', '2026-09-25 11:00:00');
+INSERT INTO `book_appointment_providers` (`id`, `appointment_id`, `service_id`, `provider_id`, `start_time`, `end_time`, `notes`) VALUES
+(5, 3, 3, 2, '2026-09-30 09:00:00', '2026-09-30 11:00:00', NULL),
+(6, 3, 3, 3, '2026-09-30 09:00:00', '2026-09-30 11:00:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -167,11 +161,7 @@ CREATE TABLE `book_customers` (
 --
 
 INSERT INTO `book_customers` (`id`, `customer_type`, `name`, `address`, `email`, `phone`, `contact_name`, `contact_phone`, `contact_email`, `pax_care`, `accept_processing`, `accept_regulations`, `accept_kultura_zl`) VALUES
-(1, NULL, 'Elektrownia', '', '', '', '', '', '', 0, 0, 0, 0),
-(2, 'primary', 'Szkoła Podstawowa nr 30', 'Graniczna 17/9', 'radek.malysa@gmail.com', '222', 'Joanna Kowalska', '997', 'radek.malysa@gmail.com', 1, 1, 0, 0),
-(5, 'post_primary', 'Liceum Ogólnokształcące', '', '', '', '', '', '', 0, 0, 0, 0),
-(6, 'primary', 'Szkoła Testowa', '', '', '', '', '', '', 0, 0, 0, 0),
-(7, 'other', 'Radek', '', '', '', '', '', '', 0, 0, 0, 0);
+(3, NULL, '', '', '', '', '', '', '', 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -218,7 +208,6 @@ CREATE TABLE `book_providers_services` (
 --
 
 INSERT INTO `book_providers_services` (`provider_id`, `service_id`, `custom_price`, `custom_duration`) VALUES
-(1, 0, NULL, NULL),
 (1, 8, NULL, NULL),
 (1, 9, NULL, NULL),
 (2, 6, NULL, NULL),
@@ -285,7 +274,8 @@ INSERT INTO `book_services` (`id`, `service_type`, `name`, `description`, `price
 (9, 'lesson', 'Seanse filmowe z bieżącego repertuaru', '', 16.00, 0, 0, 0, 0, 1, '2026-09-22 09:30:11', '127.0.0.1', '2026-09-22 09:30:11', '127.0.0.1'),
 (10, 'lesson', 'Warsztaty plastyczne oraz spacer po wystawie', '', 20.00, 70, 0, 10, 25, 1, '2026-09-22 09:38:27', '127.0.0.1', '2026-09-22 09:38:27', '127.0.0.1'),
 (11, 'tour', 'Zwiedzanie wystaw', 'Bez przewodnika', 0.00, 0, 0, 0, 0, 1, '2026-09-24 12:31:05', '', '2026-09-24 12:31:05', '127.0.0.1'),
-(12, 'tour', 'Zwiedzanie wystaw z przewodnikiem', '', 0.00, 0, 0, 0, 0, 1, '2026-09-24 12:31:05', '', '2026-09-24 12:31:05', '127.0.0.1');
+(12, 'tour', 'Zwiedzanie wystaw z przewodnikiem', '', 0.00, 0, 0, 0, 0, 1, '2026-09-24 12:31:05', '', '2026-09-24 12:31:05', '127.0.0.1'),
+(13, 'cinema', 'Kino', '', 0.00, 0, 0, 0, 0, 1, '2026-09-28 10:10:48', '127.0.0.1', '2026-09-28 10:10:48', '127.0.0.1');
 
 -- --------------------------------------------------------
 
@@ -475,13 +465,13 @@ ALTER TABLE `book_working_hours`
 -- AUTO_INCREMENT for table `book_appointments`
 --
 ALTER TABLE `book_appointments`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `book_appointment_providers`
 --
 ALTER TABLE `book_appointment_providers`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `book_categories`
@@ -493,7 +483,7 @@ ALTER TABLE `book_categories`
 -- AUTO_INCREMENT for table `book_customers`
 --
 ALTER TABLE `book_customers`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `book_providers`
@@ -511,7 +501,7 @@ ALTER TABLE `book_salons`
 -- AUTO_INCREMENT for table `book_services`
 --
 ALTER TABLE `book_services`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `book_service_schedule`

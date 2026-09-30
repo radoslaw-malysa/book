@@ -627,6 +627,8 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                   </div>
                 </div>
 
+                <Separator />
+
                 <div className="px-4 flex gap-3 mb-2 mt-4">
                   <div className="w-9 flex-none flex"></div>
                   <div className="flex-grow">
@@ -674,6 +676,8 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                     </div>
                   </div>
                 </div>
+
+                <Separator />
 
                 <div className="px-4 flex gap-3 mb-2 mt-4">
                   <div className="w-9 flex-none flex"></div>
