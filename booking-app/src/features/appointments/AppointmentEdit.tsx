@@ -137,6 +137,14 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
       setForm((current) => (current ? { ...current, appointment_providers: newState } : current));
     }
   }
+
+  const toggleCinemaHandler = (checked: boolean) => {
+    updateField('cinema', checked ? 1 : 0);
+    const cinemaServiceId = form.services.cinema[0].id;
+    if (checked && cinemaServiceId) {
+      updateAppointmentProvider('cinema', 0, 'service_id', cinemaServiceId);
+    }
+  }
   
   return (
     <Sheet 
@@ -346,7 +354,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                 <div className="py-2">
                   <label htmlFor="show-cinema" className="px-4 flex gap-3 cursor-pointer">
                     <div className="w-9 h-9 flex-none flex justify-center items-center">
-                      <Checkbox id="show-cinema" value="1" checked={form.cinema == 1} onCheckedChange={(checked) => updateField('cinema', checked ? 1 : 0)} />
+                      <Checkbox id="show-cinema" value="1" checked={form.cinema == 1} onCheckedChange={toggleCinemaHandler} />
                     </div>
                     <div className={`flex-grow flex items-center h-9 font-semibold ${form.cinema == 1 ? '' : 'text-muted-foreground'}`}>
                       Kino
@@ -366,7 +374,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                         />
                       </div>
                     </div>
-                    <div className="px-4 flex gap-3 mb-4">
+                    {/*<div className="px-4 flex gap-3 mb-4">
                       <div className="w-9 h-9 flex-none flex justify-center items-center">
                         <Clock size="20" />
                       </div>
@@ -396,7 +404,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                           />
                         </Field>
                       </div>
-                    </div>
+                    </div>*/}
                   </div>)}
                 </div>
 

@@ -107,13 +107,13 @@ class AppointmentProvidersRepository extends Repository
       $updated = [];
 
       foreach ($data as $item) {
-        if (isset($item['service_id']) && $item['service_id'] && isset($item['provider_id']) && $item['provider_id']) {
+        if ((isset($item['service_id']) && $item['service_id'] && isset($item['provider_id']) && $item['provider_id']) || (isset($item['notes']) && $item['notes'])) {
           $to_update_data = [
-            'service_id' => $item['service_id'],
-            'provider_id' => $item['provider_id'],
-            'start_time' => $item['start_time'],
-            'end_time' => $item['end_time'],
-            'notes' => $item['notes']
+            'service_id' => $item['service_id'] ?? 0,
+            'provider_id' => $item['provider_id'] ?? 0,
+            'start_time' => (isset($item['start_time']) && $item['start_time']) ? $item['start_time'] : NULL,
+            'end_time' => (isset($item['end_time']) && $item['end_time']) ? $item['end_time'] : NULL,
+            'notes' => $item['notes'] ?? ''
           ];
 
           if (isset($item['id']) && $item['id'] > 0 ) {

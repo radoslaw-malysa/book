@@ -167,10 +167,21 @@ class AppointmentsRepository extends Repository
 
     // visit_date
     
+    // service_id
+    $service_id = 0;
+    if ($params['lesson'] == 1) {
+      $service_id = $params['appointment_providers']['lesson'][0]['service_id'] ?? 0;
+    } elseif ($params['tour'] == 1) {
+      $service_id = $params['appointment_providers']['tour'][0]['service_id'] ?? 0;
+    } elseif ($params['blockade'] == 1) {
+      $service_id = $params['appointment_providers']['blockade'][0]['service_id'] ?? 0;
+    } elseif ($params['cinema'] == 1) {
+      $service_id = $params['appointment_providers']['cinema'][0]['service_id'] ?? 0;
+    }
 
 
     $data = [
-      'service_id' => $params['service_id'] ?? 0,
+      'service_id' => $service_id ?? 0,
       'customer_id' => $params['customer_id'] ?? 0,
       'visit_time' => (isset($params['visit_time']) && $params['visit_time']) ? $params['visit_time'] : NULL,
       'lesson' => (isset($params['lesson']) && $params['lesson']) ? (int)$params['lesson'] : 0,
@@ -232,6 +243,10 @@ class AppointmentsRepository extends Repository
           unset($params['appointment_providers']['blockade'][1]);
         }
         array_push($appointment_providers, ...$params['appointment_providers']['blockade']);
+      }
+
+      if (isset($params['cinema']) && $params['cinema']) {
+        array_push($appointment_providers, ...$params['appointment_providers']['cinema']);
       }
 
       $this->appointment_providers->updateAppointment($id, $appointment_providers);

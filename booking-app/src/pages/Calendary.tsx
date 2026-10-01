@@ -56,7 +56,7 @@ const Calendary = () => {
     setFilters((current) => ({ ...current, date: d }))
   }
   
-  const [view, setView] = useState<'week' | 'day'>('week');
+  const [view, setView] = useState<'week' | 'day'>('day');
   const [selectedId, setSelectedId] = useState<number | {} | null>(null); 
 
   const dateString = `${filters.date.getFullYear()}-${String(filters.date.getMonth()+1).padStart(2,"0")}-${String(filters.date.getDate()).padStart(2,"0")}`
@@ -134,7 +134,7 @@ const Calendary = () => {
           {data.days.map((item) => (
             <button onClick={() => changeDayHandler(item.date)} type="button" key={item.week_day} className="cursor-pointer basis-xl not-last:border-r flex gap-0.5 flex-col items-center py-1.5 text-center transition-colors hover:bg-muted/50 ">
               <div className="text-muted-foreground text-xs">{item.week_day}</div>
-              <div className={`flex size-8 items-center justify-center rounded-full font-medium text-sm transition-colors ${view==='day' && dateString == item.date ? 'bg-foreground text-background' : ''}`}>{parseInt(item.date?.substring(8))}</div>
+              <div className={`flex size-8 items-center justify-center rounded-full font-medium text-lg transition-colors ${view==='day' && dateString == item.date ? 'bg-foreground text-background' : ''}`}>{parseInt(item.date?.substring(8))}</div>
             </button>
           ))}
           </div>

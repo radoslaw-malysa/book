@@ -18,6 +18,11 @@ https://www.youtube.com/watch?v=ZxGEJMSrmdE
 
 https://www.shadcn.io/blocks/calendar-weekly-planner
 
+
+## cool
+https://intui.eu/realizacje/dziennik-literacki/
+
+
 EmmaSwan077 str
 viktoriakiss
 moonlight_88888
