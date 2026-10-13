@@ -12,7 +12,7 @@ import Calendary, { loader as calendarLoader } from "@/pages/Calendary";
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/booking',
     element: <Navigate to='/booking/calendar' replace />
   },
   {

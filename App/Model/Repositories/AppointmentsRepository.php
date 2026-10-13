@@ -179,7 +179,6 @@ class AppointmentsRepository extends Repository
       $service_id = $params['appointment_providers']['cinema'][0]['service_id'] ?? 0;
     }
 
-
     $data = [
       'service_id' => $service_id ?? 0,
       'customer_id' => $params['customer_id'] ?? 0,
