@@ -2,6 +2,7 @@ import { Button } from "./ui/button"
 import { Calendar } from "./ui/calendar"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Separator } from "./ui/separator"
+import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group"
 
 const DateCalendar = () => {
   return (<Card className="ring-0 shadow-none">
@@ -12,9 +13,17 @@ const DateCalendar = () => {
       <div className="flex flex-col gap-12 items-center">
         <Calendar mode="single" />
         <Separator />
-        <div className="grid grid-cols-1 lg:grid-cols-3">
-          <Button variant="secondary" size="lg">10:00</Button>
-        </div>
+        <ToggleGroup variant="outline" defaultValue={["10:00"]}>
+          <ToggleGroupItem value="10:00" aria-label="Toggle all">
+            10:00
+          </ToggleGroupItem>
+          <ToggleGroupItem value="12:00" aria-label="Toggle missed">
+            12:00
+          </ToggleGroupItem>
+          <ToggleGroupItem value="14:00" aria-label="Toggle missed">
+            14:00
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
     </CardContent>
   </Card>)

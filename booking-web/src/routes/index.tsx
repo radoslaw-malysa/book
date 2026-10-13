@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
-import Booking, { loader as bookingLoader } from "./Booking";
-import BookingLayout from "@/layouts/BookingLayout";
+import Booking from "./Booking";
+import BookingLayout, { loader as bookingLoader } from "@/layouts/BookingLayout";
+import Client from "./Client";
 
 export const router = createBrowserRouter([
   {
@@ -10,11 +11,15 @@ export const router = createBrowserRouter([
   {
     path: "rezerwacja",
     Component: BookingLayout,
+    loader: bookingLoader,
     children: [
       {
         index: true,
-        Component: Booking,
-        loader: bookingLoader
+        Component: Booking
+      },
+      {
+        path: 'dane',
+        Component: Client
       },
     ]
   }

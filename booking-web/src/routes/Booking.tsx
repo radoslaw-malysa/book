@@ -38,7 +38,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 const Booking = () => {
-  const { message } = useLoaderData() as BookingResponse;
+  // const { message } = useLoaderData() as BookingResponse;
 
   return (<>
     {false && <Steps step={1} />}
