@@ -34,7 +34,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 const BookingLayout = () => {
   const { message } = useLoaderData() as BookingResponse;
 
-  return (<div className="h-svh flex flex-col justify-between">
+  return (<div className="min-h-svh flex flex-col justify-between gap-8">
     <section className="flex-none h-14 lg:h-22 flex items-center w-full sticky top-0 bg-background z-1">
       <div className="w-9/10 max-w-8xl mx-auto flex items-center justify-between">
         <a href="/" className="inline-block">
@@ -47,7 +47,7 @@ const BookingLayout = () => {
       </div>
     </section>
     <Outlet />
-    <footer className="lg:h-22"></footer>
+    <footer className="lg:h-22">&nbsp;</footer>
   </div>)
 }
 

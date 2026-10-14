@@ -1,16 +1,22 @@
+import { useNavigate } from "react-router"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Checkbox } from "./ui/checkbox"
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTitle } from "./ui/field"
 
 const Calculation = () => {
-  return (<Card>
+  let navigate = useNavigate();
+  const nextHandler = () => {
+    navigate("/rezerwacja/dane");
+  }
+
+  return (<Card className="sticky lg:top-24">
       <CardHeader>
         <CardTitle>Twoja rezerwacja</CardTitle>
       </CardHeader>
       <CardContent>
 
-        <FieldGroup>
+        <FieldGroup className="gap-4">
 
           <FieldLabel>
             <Field orientation="horizontal">
@@ -60,7 +66,7 @@ const Calculation = () => {
             </Field>
           </FieldLabel>
 
-          <Button>Dalej</Button>
+          <Button onClick={nextHandler}>Dalej</Button>
 
         </FieldGroup>
 
