@@ -8,7 +8,7 @@ import { Item, ItemContent, ItemDescription, ItemHeader, ItemMedia, ItemTitle } 
 import { getBooking, type BookingResponse, type ProductFilters } from "@/services/booking"; 
 import { InboxIcon } from "lucide-react";
 import { useState } from "react";
-import { useLoaderData, type LoaderFunctionArgs } from "react-router";
+import { useLoaderData, useNavigate, type LoaderFunctionArgs } from "react-router";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -38,7 +38,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 const Booking = () => {
+  let navigate = useNavigate();
   // const { message } = useLoaderData() as BookingResponse;
+
+  const nextHandler = () => {
+    navigate("/rezerwacja/dane");
+  }
 
   return (<>
     {false && <Steps step={1} />}
@@ -48,7 +53,7 @@ const Booking = () => {
           <DateCalendar />
         </div>
         <div>
-          <Calculation />
+          <Calculation nextHandler={nextHandler} />
         </div>
       </div>
     </section>

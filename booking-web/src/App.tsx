@@ -1,9 +1,12 @@
 import { RouterProvider } from "react-router"
 import { router } from "./routes"
+import { BookingProvider } from "./context/BookingContext"
 
 const  App = () => {
   return (
-    <RouterProvider router={router} />
+    <BookingProvider>
+      <RouterProvider router={router} />
+    </BookingProvider>
   )
 }
 

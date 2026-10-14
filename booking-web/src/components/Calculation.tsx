@@ -1,14 +1,23 @@
-import { useNavigate } from "react-router"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Checkbox } from "./ui/checkbox"
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTitle } from "./ui/field"
 
-const Calculation = () => {
-  let navigate = useNavigate();
-  const nextHandler = () => {
-    navigate("/rezerwacja/dane");
-  }
+interface CalculationProps {
+  nextHandler: () => void
+}
+
+const Calculation = ({nextHandler}: CalculationProps) => {
+  
+  const handleAppointmentChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+
+    // Jeśli pole jest typu number (np. group_pax), konwertujemy string na liczbę
+    const parsedValue = type === 'number' ? Number(value) : value;
+
+    updateAppointment({ [name]: parsedValue } as Partial<Appointment>);
+  };
+
 
   return (<Card className="sticky lg:top-24">
       <CardHeader>
