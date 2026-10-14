@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/toast"
 import { useBooking } from "@/context/BookingContext"
+import { OctagonAlert } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "react-router"
 
@@ -34,7 +35,13 @@ const initialErrors = {
   pax_care: false,
   accept_processing: false,
   accept_regulations: false,
-  accept_kultura_zl: false
+  accept_kultura_zl: false,
+  ages: false
+}
+
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }
 
 const Client = () => {
@@ -57,6 +64,8 @@ const Client = () => {
     // validacja
     if (!value && !errors[name]) {
       setErrors((prev) => { return {...prev, [name]: true}});
+    } else if (type === 'email') {
+      setErrors((prev) => { return {...prev, [name]: !validateEmail(value)}});
     } else if (value && errors[name]) {
       setErrors((prev) => { return {...prev, [name]: false}})
     }
@@ -71,6 +80,19 @@ const Client = () => {
       setErrors((prev) => { return {...prev, [name]: true}});
     } else if (value && errors[name]) {
       setErrors((prev) => { return {...prev, [name]: false}})
+    }
+  }
+
+  const handleAgeCheck = (name: String, checked: Boolean) => {
+    const value = checked ? 1 : 0;
+    updateClient({ [name]: value } as Partial<Client>);
+
+    if (value === 1) {
+      setErrors((prev) => { return {...prev, ages: false}})
+    } else {
+      const newClient = client;
+      newClient[name] = value;
+      setErrors((prev) => { return {...prev, ages: !(newClient.age_1 || newClient.age_2 || newClient.age_3 || newClient.age_4 || newClient.age_5 || newClient.age_6 || newClient.age_7)}});
     }
   }
 
@@ -95,15 +117,17 @@ const Client = () => {
     newErrors.zip = !client.zip;
     newErrors.city = !client.city;
     newErrors.phone = !client.phone;
-    newErrors.email = !client.email;
+    newErrors.email = !validateEmail(client.email);
     newErrors.contact_name = !client.contact_name;
     newErrors.contact_phone = !client.contact_phone;
-    newErrors.contact_email = !client.contact_email;
+    newErrors.contact_email = !validateEmail(client.contact_email);
     newErrors.pax_care = !client.pax_care;
     newErrors.accept_processing = !client.accept_processing;
     newErrors.accept_regulations = !client.accept_regulations;
     newErrors.accept_kultura_zl = !client.accept_kultura_zl;
+    newErrors.ages = !(client.age_1 || client.age_2 || client.age_3 || client.age_4 || client.age_5 || client.age_6 || client.age_7)
 
+    console.log(validateEmail(client.email))
 
     //setErrors(newErrors);
     setErrors(() => { return {...newErrors}});
@@ -167,7 +191,7 @@ const Client = () => {
                     onChange={handleClientChange} 
                     aria-invalid={errors.name}
                     autoComplete="off" />
-                  {errors.name && <FieldDescription className="text-destructive">Wypełnij nazwę szkoły</FieldDescription>}
+                  {errors.name && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij nazwę szkoły</FieldDescription>}
                 </Field>
 
                 <Field data-invalid={errors.address}>
@@ -180,7 +204,7 @@ const Client = () => {
                     onChange={handleClientChange}
                     aria-invalid={errors.address}
                     autoComplete="off" />
-                  {errors.address && <FieldDescription className="text-destructive">Wypełnij ulicę i nr domu</FieldDescription>}
+                  {errors.address && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij ulicę i nr domu</FieldDescription>}
                 </Field>
 
                 <div className="grid grid-cols-3 gap-4">
@@ -194,7 +218,7 @@ const Client = () => {
                       onChange={handleClientChange}
                       aria-invalid={errors.zip}
                       autoComplete="off" />
-                    {errors.zip && <FieldDescription className="text-destructive">Wypełnij kod pocztowy</FieldDescription>}
+                    {errors.zip && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij kod</FieldDescription>}
                   </Field>
                   <Field data-invalid={errors.city} className="col-span-2">
                     <FieldLabel htmlFor="city">Miejscowość</FieldLabel>
@@ -206,7 +230,7 @@ const Client = () => {
                       onChange={handleClientChange}
                       aria-invalid={errors.city}
                       autoComplete="off" />
-                    {errors.city && <FieldDescription className="text-destructive">Wypełnij miejscowość</FieldDescription>}
+                    {errors.city && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij miejscowość</FieldDescription>}
                   </Field>
                 </div>
 
@@ -220,7 +244,7 @@ const Client = () => {
                     onChange={handleClientChange}
                     aria-invalid={errors.phone}
                     autoComplete="off" />
-                  {errors.phone && <FieldDescription className="text-destructive">Wypełnij telefon do szkoły</FieldDescription>}
+                  {errors.phone && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij telefon do szkoły</FieldDescription>}
                 </Field>
 
                 <Field data-invalid={errors.email}>
@@ -233,7 +257,7 @@ const Client = () => {
                     onChange={handleClientChange}
                     aria-invalid={errors.email}
                     autoComplete="off" />
-                  {errors.email && <FieldDescription className="text-destructive">Wypełnij e-mail do szkoły</FieldDescription>}
+                  {errors.email && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj prawidłowy e-mail</FieldDescription>}
                 </Field>
 
                 <Field data-invalid={errors.contact_name}>
@@ -246,7 +270,7 @@ const Client = () => {
                     onChange={handleClientChange}
                     aria-invalid={errors.contact_name}
                     autoComplete="off" />
-                  {errors.contact_name && <FieldDescription className="text-destructive">Podaj imię i nazwisko osoby kontaktowej</FieldDescription>}
+                  {errors.contact_name && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj imię i nazwisko osoby kontaktowej</FieldDescription>}
                 </Field>
 
                 <Field data-invalid={errors.contact_phone}>
@@ -259,7 +283,7 @@ const Client = () => {
                     onChange={handleClientChange}
                     aria-invalid={errors.contact_phone}
                     autoComplete="off" />
-                  {errors.contact_phone && <FieldDescription className="text-destructive">Wypełnij telefon do kontaktu</FieldDescription>}
+                  {errors.contact_phone && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij telefon do kontaktu</FieldDescription>}
                 </Field>
 
                 <Field data-invalid={errors.contact_email}>
@@ -272,7 +296,7 @@ const Client = () => {
                     onChange={handleClientChange}
                     aria-invalid={errors.contact_email}
                     autoComplete="off" />
-                  {errors.contact_email && <FieldDescription className="text-destructive">Wypełnij e-mail do kontaktu</FieldDescription>}
+                  {errors.contact_email && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj prawidłowy e-mail do kontaktu</FieldDescription>}
                 </Field>
 
                 <Field data-invalid={errors.pax_care}>
@@ -285,7 +309,7 @@ const Client = () => {
                     onChange={handleClientChange}
                     aria-invalid={errors.pax_care}
                     autoComplete="off" />
-                  {errors.pax_care && <FieldDescription className="text-destructive">Podaj liczbę opiekunów</FieldDescription>}
+                  {errors.pax_care && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj liczbę opiekunów</FieldDescription>}
                 </Field>
 
                 <Field>
@@ -303,12 +327,13 @@ const Client = () => {
               <div className="font-heading text-lg font-semibold tracking-wider uppercase mt-12 mb-8">Grupa wiekowa uczestników</div>
 
               <FieldGroup className="gap-3">
-                {AgeGroups.map((age) => (<Field key={age.id} orientation="horizontal">
+                {AgeGroups.map((age) => (<Field key={age.id} orientation="horizontal" data-invalid={errors.ages}>
                   <Checkbox
                     id={age.id}
                     name={age.id}
                     checked={client[age.id] === 1}
-                    onCheckedChange={(checked) => handleClientCheck(age.id, checked)}
+                    onCheckedChange={(checked) => handleAgeCheck(age.id, checked)}
+                    aria-invalid={errors.ages}
                   />
                   <FieldLabel
                     htmlFor={age.id}
@@ -317,6 +342,7 @@ const Client = () => {
                     {age.title}
                   </FieldLabel>
                 </Field>))}
+                {errors.ages && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Zaznacz grupy wiekowe uczestników</FieldDescription>}
               </FieldGroup>
 
               <div className="font-heading text-lg font-semibold tracking-wider uppercase mt-12 mb-8">Twoje zgody</div>
@@ -366,7 +392,10 @@ const Client = () => {
                     <span>Zapoznałam(em) się z treścią i akceptuję <a href="https://www.mcswelektrownia.pl/pl/kulturalna-szkola-na-mazowszu/14451" target="_blank" className="font-semibold underline">Zasady uczestnictwa w programie "Kulturalna Szkoła na Mazowszu"</a></span>
                   </FieldLabel>
                 </Field>
+                {(errors.accept_processing || errors.accept_regulations || errors.accept_kultura_zl) && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Potrzebujemy Twojej zgody</FieldDescription>}
               </FieldGroup>
+
+              
 
 
             </CardContent>

@@ -46,7 +46,7 @@ class BookingAction
   public function __invoke(Request $request, Response $response, $args) {
     $query_params = $request->getQueryParams();
 
-    $payload = ['message' => 'ok'];
+    $payload = ['message' => 'ok', 'service' => ['id' => 1, 'name' => 'Lekcja malowania']];
     
     return $this->json->render($response, $payload);
   }

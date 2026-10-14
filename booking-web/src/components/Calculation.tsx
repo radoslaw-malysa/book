@@ -1,5 +1,6 @@
+import { useNavigate } from "react-router"
 import { Button } from "./ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Checkbox } from "./ui/checkbox"
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTitle } from "./ui/field"
 
@@ -8,7 +9,8 @@ interface CalculationProps {
 }
 
 const Calculation = ({nextHandler}: CalculationProps) => {
-  
+  const navigate = useNavigate();
+
   const handleAppointmentChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
 
@@ -18,10 +20,12 @@ const Calculation = ({nextHandler}: CalculationProps) => {
     updateAppointment({ [name]: parsedValue } as Partial<Appointment>);
   };
 
-
   return (<Card className="sticky lg:top-24">
       <CardHeader>
         <CardTitle>Twoja rezerwacja</CardTitle>
+        <CardAction>
+          <Button size="xs" variant="secondary" onClick={() => navigate(-1)}>Zmień</Button>
+        </CardAction>
       </CardHeader>
       <CardContent>
 

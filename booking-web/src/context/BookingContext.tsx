@@ -51,15 +51,28 @@ const initialAppointment: Appointment = {
 };
 
 const initialClient: Client = {
+  customer_type: '',
   name: '',
   address: '',
   zip: '',
   city: '',
   phone: '',
   email: '',
+  contact_name: '',
+  contact_phone: '',
+  contact_email: '',
+  pax_care: 0,
   notes: '',
-  consent_processing: 0,
-  consent_statute: 0,
+  accept_processing: 0,
+  accept_regulations: 0,
+  accept_kultura_zl: 0,
+  age_1: 0,
+  age_2: 0,
+  age_3: 0,
+  age_4: 0,
+  age_5: 0,
+  age_6: 0,
+  age_7: 0
 };
 
 // 4. Create the Context (with undefined as initial value to catch out-of-bounds usage)
