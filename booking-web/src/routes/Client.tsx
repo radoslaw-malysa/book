@@ -121,7 +121,7 @@ const Client = () => {
     newErrors.contact_name = !client.contact_name;
     newErrors.contact_phone = !client.contact_phone;
     newErrors.contact_email = !validateEmail(client.contact_email);
-    newErrors.pax_care = !client.pax_care;
+    newErrors.pax_care = !client.pax_care && client.pax_care != 0;
     newErrors.accept_processing = !client.accept_processing;
     newErrors.accept_regulations = !client.accept_regulations;
     newErrors.accept_kultura_zl = !client.accept_kultura_zl;

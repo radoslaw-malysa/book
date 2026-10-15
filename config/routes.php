@@ -15,7 +15,7 @@ use Slim\App;
 return function (App $app) {
 
     // web frontend
-    $app->any('/rezerwacja', BookingAction::class);
+    $app->any('/booking', BookingAction::class);
 
     // admin
     $app->any('/login', AuthAction::class);

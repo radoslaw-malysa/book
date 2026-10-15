@@ -18,7 +18,7 @@ export interface BookingFilters {
   service_id?: number;
 }
 
-export async function getBooking(
+export async function getBooking_(
   filters: BookingFilters = {}
 ): Promise<BookingResponse> {
   const queryString = buildQueryString(filters);
@@ -53,25 +53,17 @@ const getBookingResponse = async (response: Response): Promise<BookingResponse> 
   return response.json() as Promise<Appointment>;
 };
 
-export const getBooking_ = async (filters: BookingFilters = {}): Promise<Appointment> => {
-  // new appointment on calendar
-  if (typeof id === 'object' && id !== null) {
-    const { start_time, provider_id } = id;
-    const params = new URLSearchParams();
-    params.set("start_time", start_time);
-    params.set("provider_id", provider_id.toString());
-    const query = params.toString();
+export const getBooking = async (filters: BookingFilters = {}): Promise<BookingResponse> => {
+  const queryString = buildQueryString(filters);
+  const url = `${API_URL}/booking${queryString}`;
 
-    return getAppointmentsResponse(await fetch(`${appointmentsUrl}/0?${query}`));
-  }
-
-  return getAppointmentsResponse(await fetch(`${appointmentsUrl}/${id}`));
+  return getBookingResponse(await fetch(url));
 }
 
-export const postBooking = async (item: Appointment): Promise<BookingResponse | ErrorMessage> =>
+export const postBooking = async (data: Appointment): Promise<BookingResponse | ErrorMessage> =>
   getBookingResponse(
-    await fetch(`${appointmentsUrl}/${item.id}`, {
+    await fetch(`${API_URL}/booking`, {
       method: "POST",
-      body: toFormData({json_data: JSON.stringify(item)}),
+      body: toFormData({json_data: JSON.stringify(data)}),
     }),
   );
