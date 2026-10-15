@@ -1,15 +1,18 @@
 import Calculation from "@/components/Calculation";
 import DateCalendar from "@/components/DateCalendar";
 import Steps from "@/components/Steps";
-import { useLoaderData, useNavigate, type LoaderFunctionArgs } from "react-router";
+import { useLoaderData, useNavigate, useSearchParams, type LoaderFunctionArgs } from "react-router";
 import { getBooking, type BookingResponse, type BookingFilters } from "@/services/booking"; 
+import { useBooking, type Appointment, type Client } from "@/context/BookingContext";
+import { useEffect } from "react";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-
+  
   // Extract and parse search params
   const filters: BookingFilters = {
-    service_id: url.searchParams.get("service_id") ?? undefined
+    service_id: url.searchParams.get("service_id") ?? undefined,
+    date: url.searchParams.get("date") ?? undefined
   };
 
   const data = await getBooking(filters);
@@ -19,19 +22,46 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 const Booking = () => {
   let navigate = useNavigate();
-  const { service } = useLoaderData() as BookingResponse;
+  const [searchParams] = useSearchParams();
+  const { service, service_id, visit_date } = useLoaderData() as BookingResponse;
+  const { appointment, updateAppointment } = useBooking();
+
+  // set service_id from link
+  useEffect(() => {
+    updateAppointment({ service_id: service_id } as Partial<Appointment>);
+  }, [service_id]);
+
+  const handleDateChange = (value: string) => {
+    updateAppointment({ visit_date: value } as Partial<Appointment>);
+
+    const nextSearchParams = new URLSearchParams();
+    const sid = searchParams.get('service_id');
+    if (sid) { nextSearchParams.set("service_id", sid); }
+
+    nextSearchParams.set("date", value);
+
+    if (nextSearchParams.toString() !== searchParams.toString()) {
+      navigate({ search: nextSearchParams.toString() }, { replace: true });
+    }
+  }
+
+  const handleAppointmentChange = (name: String, value: string | number) => {
+    updateAppointment({ [name]: value } as Partial<Appointment>);
+  }
   
 
   const nextHandler = () => {
     navigate("/rezerwacja/dane");
   }
 
+  console.log(appointment)
+
   return (<>
     {false && <Steps step={1} />}
     <section>
       <div className="w-9/10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
-          <DateCalendar />
+          <DateCalendar visitDate={appointment.visit_date} setVisitDate={handleDateChange} visitTime={appointment.visit_time} setVisitTime={(val) => handleAppointmentChange('visit_time', val)} />
         </div>
         <div>
           <Calculation nextHandler={nextHandler} />

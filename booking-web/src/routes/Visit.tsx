@@ -114,10 +114,10 @@ const Visit = () => {
               <li>W przypadku braku potwierdzenia lekcja uznana zostaje za odwołaną.</li>
             </ul>
           </CardContent>
-          <CardFooter className="justify-between">
-            <Button variant="destructive" size="lg" onClick={() => setCancelOpen(true)}><Trash  data-icon="inline-start" /> Anuluj rezerwację</Button>
+          <CardFooter className="flex-col xl:flex-row gap-2 justify-between">
+            <Button variant="destructive" size="lg" className="w-full xl:w-auto" onClick={() => setCancelOpen(true)}><Trash  data-icon="inline-start" /> Anuluj rezerwację</Button>
             <div className="px-2">lub</div>
-            <Button size="lg" onClick={() => setConfirmOpen(true)}><Check data-icon="inline-start" /> Potwierdź rezerwację</Button>
+            <Button size="lg" className="w-full xl:w-auto" onClick={() => setConfirmOpen(true)}><Check data-icon="inline-start" /> Potwierdź rezerwację</Button>
           </CardFooter>
         </Card>
 

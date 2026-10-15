@@ -9,7 +9,8 @@ export interface Service {
 export interface BookingResponse {
   message: string;
   service: Service;
-  total: number;
+  service_id: number;
+  visit_date: string;
   token?: string;
   // optional pagination fields depending on your API
   skip?: number;
@@ -17,7 +18,8 @@ export interface BookingResponse {
 }
 
 export interface BookingFilters {
-  service_id?: number;
+  service_id?: string;
+  date?: string;
 }
 
 export async function getBooking_(

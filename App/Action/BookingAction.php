@@ -50,13 +50,16 @@ class BookingAction
     $query_params = $request->getQueryParams();
 
     $service_id = $query_params['service_id'] ?? 0;
-    $date = $query_params['date'] ?? date("Y-m-d");
+    $visit_date = $query_params['date'] ?? date("Y-m-d");
 
     // service prices
-    $service = $this->services->getServicePrices($service_id, $date);
+    $service = $this->services->getServicePrices($service_id, $visit_date);
 
-
-    $payload = $service;
+    $payload = [
+      'service' => $service,
+      'service_id' => $service_id,
+      'visit_date' => $visit_date
+    ];
     
     return $this->json->render($response, $payload);
   }

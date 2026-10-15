@@ -1,15 +1,17 @@
 import { useNavigate } from "react-router"
 import { Button } from "./ui/button"
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "./ui/card"
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
 import { Checkbox } from "./ui/checkbox"
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTitle } from "./ui/field"
-import { ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, Clock } from "lucide-react"
+import { useBooking } from "@/context/BookingContext"
 
 interface CalculationProps {
   nextHandler: () => void
 }
 
 const Calculation = ({nextHandler}: CalculationProps) => {
+  const { appointment, updateAppointment } = useBooking();
   const navigate = useNavigate();
 
   const handleAppointmentChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -24,8 +26,9 @@ const Calculation = ({nextHandler}: CalculationProps) => {
   return (<Card className="sticky lg:top-24">
       <CardHeader>
         <CardTitle>Twoja rezerwacja</CardTitle>
+        {appointment.visit_date && <CardDescription className="inline-flex gap-1.5 items-center"><Clock size="16" /><span> {appointment.visit_date}</span> {appointment.visit_time && <span>{appointment.visit_time}</span>}</CardDescription>}
         <CardAction>
-          <Button size="xs" variant="secondary" onClick={() => navigate(-1)}>Zmień</Button>
+          <Button size="lg" variant="secondary" onClick={() => navigate(-1)}><ArrowLeft data-icon="inline-start" /> Zmień</Button>
         </CardAction>
       </CardHeader>
       <CardContent>

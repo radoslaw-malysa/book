@@ -5,7 +5,7 @@ export interface Appointment {
   visit_date: string;
   visit_time: string;
   group_pax: number;
-  id_offer: number;
+  service_id: number;
 }
 
 export interface Client {
@@ -47,7 +47,7 @@ const initialAppointment: Appointment = {
   visit_date: '',
   visit_time: '',
   group_pax: 0,
-  id_offer: 0,
+  service_id: 0,
 };
 
 const initialClient: Client = {
