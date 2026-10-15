@@ -10,6 +10,7 @@ import { useBooking } from "@/context/BookingContext"
 import { OctagonAlert } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "react-router"
+import { postBooking } from "@/services/booking";
 
 const AgeGroups = [
   { id: 'age_1', title: 'przedszkole' },
@@ -109,7 +110,6 @@ const Client = () => {
 
   const validateForm = (): boolean => {
     const newErrors = errors;
-    let errorsCount = 0;
 
     newErrors.customer_type = !client.customer_type;
     newErrors.name = !client.name;
@@ -127,8 +127,6 @@ const Client = () => {
     newErrors.accept_kultura_zl = !client.accept_kultura_zl;
     newErrors.ages = !(client.age_1 || client.age_2 || client.age_3 || client.age_4 || client.age_5 || client.age_6 || client.age_7)
 
-    console.log(validateEmail(client.email))
-
     //setErrors(newErrors);
     setErrors(() => { return {...newErrors}});
 
@@ -141,15 +139,29 @@ const Client = () => {
       })
     }
 
-    return (errorsCount === 0)
+    return !hasAnyError
   }
 
-  const nextHandler = () => {
+  const nextHandler = async () => {
     if (!validateForm()) {
       return;
     }
 
-    navigate("/rezerwacja/dane");
+    const response = await postBooking(client);
+    if ("token" in response && response.token !== undefined) {
+      navigate(`/rezerwacja/przed-wizyta/${response.token}`);
+    } else if ("message" in response && response.message !== undefined) {
+      toast.add({
+        type: "error",
+        title: "Błąd!",
+        description: response.message,
+      })
+    } else {
+      toast.add({
+        type: "error",
+        description: 'Operacja nie powiodła się. Rezerwacja nie została zapisana.',
+      })
+    }
   }
 
   return (<>
@@ -162,7 +174,7 @@ const Client = () => {
             </CardHeader>
             <CardContent>
               <FieldGroup className="gap-7">
-                <RadioGroup onValueChange={(value) => handleClientRadio('customer_type', value)} defaultValue={client.customer_type}>
+                <RadioGroup onValueChange={(value) => handleClientRadio('customer_type', value)} value={client.customer_type}>
                   <FieldLabel htmlFor="primary">
                     <Field orientation="horizontal" data-invalid={errors.customer_type}>
                       <FieldContent>

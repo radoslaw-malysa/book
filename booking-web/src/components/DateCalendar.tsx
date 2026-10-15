@@ -11,7 +11,10 @@ const DateCalendar = () => {
     </CardHeader>
     <CardContent>
       <div className="flex flex-col gap-12 items-center">
-        <Calendar mode="single" />
+        <Calendar 
+          mode="single" 
+          className="p-0 [--cell-size:--spacing(10)] md:[--cell-size:--spacing(14)]"
+        />
         <Separator />
         <ToggleGroup variant="outline" defaultValue={["10:00"]}>
           <ToggleGroupItem value="10:00" aria-label="Toggle all">

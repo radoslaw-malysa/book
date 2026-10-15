@@ -1,4 +1,5 @@
-import { API_URL, buildQueryString, type ErrorMessage } from "./api";
+import { API_URL, buildQueryString, toFormData, type ErrorMessage } from "./api";
+import type { Client } from "@/context/BookingContext";
 
 export interface Service {
   id: number;
@@ -9,6 +10,7 @@ export interface BookingResponse {
   message: string;
   service: Service;
   total: number;
+  token?: string;
   // optional pagination fields depending on your API
   skip?: number;
   limit?: number;
@@ -50,20 +52,34 @@ const getBookingResponse = async (response: Response): Promise<BookingResponse> 
     throw new Error(`Unable to load appointment: ${response.status}`);
   }
 
-  return response.json() as Promise<Appointment>;
+  return response.json() as Promise<BookingResponse>;
 };
 
 export const getBooking = async (filters: BookingFilters = {}): Promise<BookingResponse> => {
   const queryString = buildQueryString(filters);
   const url = `${API_URL}/booking${queryString}`;
-
   return getBookingResponse(await fetch(url));
 }
 
-export const postBooking = async (data: Appointment): Promise<BookingResponse | ErrorMessage> =>
+export const postBooking = async (data: Client): Promise<BookingResponse | ErrorMessage> =>
   getBookingResponse(
     await fetch(`${API_URL}/booking`, {
       method: "POST",
       body: toFormData({json_data: JSON.stringify(data)}),
     }),
   );
+
+export const getBeforeVisit = async (token: string | undefined): Promise<BookingResponse> => {
+  const url = `${API_URL}/booking/before-visit/${token}`;
+  return getBookingResponse(await fetch(url));
+}
+
+export const getConfirmBooking = async (token: string | undefined): Promise<BookingResponse> => {
+  const url = `${API_URL}/booking/confirm/${token}`;
+  return getBookingResponse(await fetch(url));
+}
+
+export const getCancelBooking = async (token: string | undefined): Promise<BookingResponse> => {
+  const url = `${API_URL}/booking/cancel/${token}`;
+  return getBookingResponse(await fetch(url));
+}

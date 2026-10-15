@@ -43,10 +43,61 @@ class BookingAction
     $this->providers = $providers;
   }
 
+  /**
+   * Get offer data for new reservation
+   */
   public function __invoke(Request $request, Response $response, $args) {
     $query_params = $request->getQueryParams();
 
-    $payload = ['message' => 'ok', 'service' => ['id' => 1, 'name' => 'Lekcja malowania']];
+    $service_id = $query_params['service_id'] ?? 0;
+    $date = $query_params['date'] ?? date("Y-m-d");
+
+    // service prices
+    $service = $this->services->getServicePrices($service_id, $date);
+
+
+    $payload = $service;
+    
+    return $this->json->render($response, $payload);
+  }
+
+  /**
+   * Save new reservation
+   */
+  public function postBooking(Request $request, Response $response, $args) {
+  
+    $payload = ['message' => 'ok', 'token' => 'XXX'];
+    
+    return $this->json->render($response, $payload);
+  }
+
+  /**
+   * Get reservation for "Before visit" page
+   */
+  public function getBeforeVisit(Request $request, Response $response, $args) {
+    $token = $args['token'] ?? '';
+
+    $payload = ['message' => 'ok', 'token' => $token];
+    
+    return $this->json->render($response, $payload);
+  }
+
+  /**
+   * Reservation confirmation
+   */
+  public function getConfirmBooking(Request $request, Response $response, $args) {
+  
+    $payload = ['message' => 'ok', 'token' => 'XXX'];
+    
+    return $this->json->render($response, $payload);
+  }
+
+  /**
+   * Reservation cancellation 
+   */
+  public function getCancelBooking(Request $request, Response $response, $args) {
+  
+    $payload = ['message' => 'ok', 'token' => 'XXX'];
     
     return $this->json->render($response, $payload);
   }

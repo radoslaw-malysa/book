@@ -3,6 +3,7 @@ import { Button } from "./ui/button"
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Checkbox } from "./ui/checkbox"
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTitle } from "./ui/field"
+import { ArrowRight } from "lucide-react"
 
 interface CalculationProps {
   nextHandler: () => void
@@ -79,7 +80,7 @@ const Calculation = ({nextHandler}: CalculationProps) => {
             </Field>
           </FieldLabel>
 
-          <Button onClick={nextHandler}>Dalej</Button>
+          <Button onClick={nextHandler} size="lg">Dalej <ArrowRight data-icon="inline-end" /></Button>
 
         </FieldGroup>
 

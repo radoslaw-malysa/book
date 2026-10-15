@@ -15,6 +15,9 @@ use App\Model\Repositories\ProvidersServicesRepository;
  */
 class ServicesRepository extends Repository
 {
+  protected static $admission_service_id = 11;
+  protected static $guide_service_id = 12;
+
   public function __construct(PDO $connection, Tables $tables, CategoriesRepository $categories, ServiceScheduleRepository $service_schedule, CategoriesServicesRepository $categories_services, ProvidersServicesRepository $providers_services)
   {
     $this->connection = $connection;
@@ -183,5 +186,50 @@ class ServicesRepository extends Repository
     ];
 
     return $new_row;
+  }
+
+  /* BOOKING */
+
+  public function getServicePrices($lesson_id, $date)
+  {
+    $offer = [];
+
+    // lesson
+    if ($lesson_id) {
+      $query = "select * from {$this->model} where id=:id";
+      $st = $this->connection->prepare($query);
+      $st->bindParam(':id', $lesson_id, PDO::PARAM_INT);
+      $st->execute();
+      $offer['lesson'] = $st->fetch(\PDO::FETCH_ASSOC);
+    } else {
+      $offer['lesson'] = [];
+    }
+
+    // tour/admission
+    $query = "select * from {$this->model} where id='" . self::$admission_service_id . "'";
+    $st = $this->connection->prepare($query);
+    $st->execute();
+    $offer['admission'] = $st->fetch(\PDO::FETCH_ASSOC);
+
+    // guide
+    $query = "select * from {$this->model} where id='" . self::$guide_service_id . "'";
+    $st = $this->connection->prepare($query);
+    $st->execute();
+    $offer['guide'] = $st->fetch(\PDO::FETCH_ASSOC);
+
+    // kultura_zl
+    $offer['preferential'] = [
+      'price'=> 1.00
+    ];
+
+    // admission free in saturday
+    if (date('w', strtotime($date)) == 6) {
+      $offer['admission']['price'] = 0.00;
+    }
+
+    
+
+
+    return $offer;
   }
 }

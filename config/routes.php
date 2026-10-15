@@ -15,7 +15,11 @@ use Slim\App;
 return function (App $app) {
 
     // web frontend
-    $app->any('/booking', BookingAction::class);
+    $app->get('/booking', BookingAction::class);
+    $app->post('/booking', BookingAction::class . ":postBooking");
+    $app->get('/booking/before-visit/{token}', BookingAction::class . ":getBeforeVisit"); // get reservation data
+    $app->get('/booking/confirm/{token}', BookingAction::class . ":getConfirmBooking");
+    $app->get('/booking/cancel/{token}', BookingAction::class . ":getCancelBooking");
 
     // admin
     $app->any('/login', AuthAction::class);
