@@ -74,3 +74,10 @@ One-liners
 
 // UTC
 d.toISOString().slice(0, 10)
+
+
+
+
+
+
+bg-muted/60 has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted/80 border-none

@@ -43,8 +43,12 @@ export interface BookingContextType {
 }
 
 // 3. Set up the initial default states
+const datePl = new Date().toLocaleDateString('pl-PL');
+const [d,m,y] = datePl.split('.');
+const initialVisitDate = `${y}-${m}-${d}`;
+
 const initialAppointment: Appointment = {
-  visit_date: '',
+  visit_date: initialVisitDate,
   visit_time: '',
   group_pax: 0,
   service_id: 0,

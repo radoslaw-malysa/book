@@ -23,7 +23,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 const Booking = () => {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { service, service_id, visit_date } = useLoaderData() as BookingResponse;
+  const { service, service_id, visit_date, schedule, kulturalna_szkola } = useLoaderData() as BookingResponse;
   const { appointment, updateAppointment } = useBooking();
 
   // set service_id from link
@@ -54,17 +54,17 @@ const Booking = () => {
     navigate("/rezerwacja/dane");
   }
 
-  console.log(appointment)
+  //console.log(appointment)
 
   return (<>
     {false && <Steps step={1} />}
     <section>
       <div className="w-9/10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
-          <DateCalendar visitDate={appointment.visit_date} setVisitDate={handleDateChange} visitTime={appointment.visit_time} setVisitTime={(val) => handleAppointmentChange('visit_time', val)} />
+          <DateCalendar visitDate={appointment.visit_date} setVisitDate={handleDateChange} visitTime={appointment.visit_time} setVisitTime={(val) => handleAppointmentChange('visit_time', val)} schedule={schedule} />
         </div>
         <div>
-          <Calculation nextHandler={nextHandler} />
+          <Calculation service={service} kulturalna_szkola={kulturalna_szkola} nextHandler={nextHandler} />
         </div>
       </div>
     </section>

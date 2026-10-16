@@ -17,12 +17,15 @@ use \App\Model\Repositories\ProvidersRepository;
 use \App\Support\JsonRenderer;
 
 //define('RESERVATION_TIME_INTERVAL', 30); //dlugosc slotu czasowego, odstepy czasowe do wyboru
-define('RESERVATION_TIME_START', '08:00:00'); //godzina otwarcia muzeum
-define('RESERVATION_TIME_END', '18:00:00'); //godzina zamkniecia muzeum
+//define('RESERVATION_TIME_START', '08:00:00'); //godzina otwarcia muzeum
+//define('RESERVATION_TIME_END', '18:00:00'); //godzina zamkniecia muzeum
 
 class BookingAction
 {
   protected $json;
+  static $settings = [
+    'phone_reservation' => ''
+  ];
   
   public function __construct(
     JsonRenderer $json, 
@@ -55,10 +58,25 @@ class BookingAction
     // service prices
     $service = $this->services->getServicePrices($service_id, $visit_date);
 
+    // preferential programs
+    $kulturalna_szkola = 1;
+
+    // free rooms
+    $schedule = [
+      ['start_time' => '09:00', 'free' => 1],
+      ['start_time' => '11:00', 'free' => 1],
+      ['start_time' => '12:00', 'free' => 0]
+    ];
+
+    // disabled dates
+
+
     $payload = [
       'service' => $service,
       'service_id' => $service_id,
-      'visit_date' => $visit_date
+      'visit_date' => $visit_date,
+      'schedule' => $schedule,
+      'kulturalna_szkola' => $kulturalna_szkola
     ];
     
     return $this->json->render($response, $payload);

@@ -12,9 +12,8 @@ export interface BookingResponse {
   service_id: number;
   visit_date: string;
   token?: string;
-  // optional pagination fields depending on your API
-  skip?: number;
-  limit?: number;
+  schedule: [];
+  kulturalna_szkola: number;
 }
 
 export interface BookingFilters {

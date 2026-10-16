@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { X } from "lucide-react"
+import { Phone, X } from "lucide-react"
 import { Outlet } from "react-router"
 import { useLoaderData, type LoaderFunctionArgs } from "react-router";
 import { getBooking, type BookingResponse, type BookingFilters } from "@/services/booking"; 
@@ -33,7 +33,11 @@ const BookingLayout = () => {
       </div>
     </section>
     <Outlet />
-    <footer className="lg:h-22">&nbsp;</footer>
+    <footer className="lg:h-22 flex items-center w-full sticky bottom-0">
+      <div className="w-9/10 max-w-8xl mx-auto flex items-center gap-2 text-muted-foreground text-sm">
+        <Phone size="18" /> 884 320 030
+      </div>
+    </footer>
   </div>)
 }
 

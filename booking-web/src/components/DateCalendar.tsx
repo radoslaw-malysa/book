@@ -10,16 +10,18 @@ interface DateCalendarProps {
   setVisitDate: (value: string) => void;
   visitTime: string;
   setVisitTime: (value: string) => void;
+  schedule: [];
 }
 
-const DateCalendar = ({visitDate, setVisitDate, visitTime, setVisitTime}: DateCalendarProps) => {
+const DateCalendar = ({visitDate, setVisitDate, visitTime, setVisitTime, schedule}: DateCalendarProps) => {
   const [date, setDate] = useState(new Date(visitDate));
 
-  useEffect(() => {
-    const datePl = date.toLocaleDateString('pl-PL');
+  const handleDateChange = (val) => {
+    const datePl = val.toLocaleDateString('pl-PL');
     const [d,m,y] = datePl.split('.');
     setVisitDate(`${y}-${m}-${d}`);
-  }, [date]);
+    setDate(val);
+  }
 
   const handleTimeChange = (val) => {
     setVisitTime(val[0]);
@@ -31,25 +33,23 @@ const DateCalendar = ({visitDate, setVisitDate, visitTime, setVisitTime}: DateCa
     </CardHeader>
     <CardContent>
       <div className="flex flex-col gap-12 items-center">
+
+        <div class="flex flex-col items-center gap-8 lg:gap-10">
         <Calendar 
           mode="single" 
           locale={pl}
           selected={date}
-          onSelect={setDate}
+          onSelect={handleDateChange}
           className="p-0 [--cell-size:--spacing(10)] md:[--cell-size:--spacing(14)] md:[--text-xs:0.875rem]"
         />
-        <Separator />
-        <ToggleGroup variant="outline" value={[visitTime]} onValueChange={handleTimeChange} size="lg">
-          <ToggleGroupItem value="10:00" aria-label="Godzina 10:00" className="aria-pressed:bg-foreground aria-pressed:text-background">
-            10:00
-          </ToggleGroupItem>
-          <ToggleGroupItem value="12:00" aria-label="Toggle missed" className="aria-pressed:bg-foreground aria-pressed:text-background">
-            12:00
-          </ToggleGroupItem>
-          <ToggleGroupItem value="14:00" aria-label="Toggle missed" className="aria-pressed:bg-foreground aria-pressed:text-background">
-            14:00
-          </ToggleGroupItem>
-        </ToggleGroup>
+        <Separator className="mb-2" />
+        {schedule && <ToggleGroup variant="outline" value={[visitTime]} onValueChange={handleTimeChange} size="lg">
+          {schedule.map((item) => <ToggleGroupItem key={item.start_time} value={item.start_time} aria-label={"Wybierz godzinę " + item.start_time} className="aria-pressed:bg-foreground aria-pressed:text-background" disabled={item.free !== 1}>
+            {item.start_time}
+          </ToggleGroupItem>)}
+        </ToggleGroup>}
+        </div>
+
       </div>
     </CardContent>
   </Card>)
