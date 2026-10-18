@@ -131,6 +131,110 @@ class AppointmentsRepository extends Repository
     return $data;
   }
 
+  public function getCalculation($appointment)
+  {
+    $prices = $this->services->getServicePrices($lesson_id, $date, $tour_id);
+
+
+  }
+
+  /**
+   * Save web reservation
+   */
+  public function postBooking($params=[])
+  {
+    // validation
+    if (!isset($params['client']) || !$params['client']) { return ['error' => 1, 'message' => 'Brak danych klienta']; }
+    if (!isset($params['appointment']) || !$params['appointment']) { return ['error' => 1, 'message' => 'Brak danych rezerwacji']; }
+    //if (!isset($appointment['visit_date']) || !$appointment['visit_date']) { return ['error' => 1, 'message' => 'Brak daty wizyty']; }
+    //if (!isset($appointment['visit_time']) || !$appointment['visit_time']) { return ['error' => 1, 'message' => 'Brak godziny wizyty']; }
+
+    // client
+    $customer = $params['client'];
+    
+    try {
+      $customer_id = $this->customers->insert([
+        'customer_type' => (isset($customer['customer_type']) && $customer['customer_type']) ? $customer['customer_type'] : NULL,
+        'name' => $customer['name'] ?? '',
+        'address' => $customer['address'] ?? '',
+        'zip' => $customer['zip'] ?? '',
+        'city' => $customer['city'] ?? '',
+        'email' => $customer['email'] ?? '',
+        'phone' => $customer['phone'] ?? '',
+        'contact_name' => $customer['contact_name'] ?? '',
+        'contact_phone' => $customer['contact_phone'] ?? '',
+        'contact_email' => $customer['contact_email'] ?? '',
+        'pax_care' => $customer['pax_care'] ?? 0,
+        'notes' => $customer['notes'] ?? '',
+        'accept_processing' => $customer['accept_processing'] ?? 0,
+        'accept_regulations' => $customer['accept_regulations'] ?? 0,
+        'accept_kultura_zl' => $customer['accept_kultura_zl'] ?? 0
+      ]);
+    } catch(Exception $e) {
+      $message = $e->getMessage();
+      return ['error' => 1, 'message' => $message ?? 'Nie udało się dodać klienta'];
+    }
+
+    // appointment
+    $appointment = $params['appointment'];
+    $lesson = $appointment['lesson'] ?? [];
+    $guide = $appointment['guide'] ?? [];
+
+    if (isset($lesson['id'])) {
+      $service_id = $lesson['id'];
+    } elseif (isset($guide['id'])) {
+      $service_id = $guide['id'];
+    }
+    
+    $appointment_data = [
+      'service_id' => $service_id ?? 0,
+      'customer_id' => $customer_id ?? 0,
+      'visit_date' => (isset($appointment['visit_date']) && $appointment['visit_date']) ? $appointment['visit_date'] : NULL,
+      'visit_time' => (isset($appointment['visit_time']) && $appointment['visit_time']) ? $appointment['visit_time'] : NULL,
+      'lesson' => (isset($lesson['id'])) ? 1 : 0,
+      'tour' => (isset($guide)) ? 1 : 0,
+      'cinema' => 0,
+      'blockade' => 0,
+      'kulturalna_szkola' => (isset($appointment['kulturalna_szkola']) && $appointment['kulturalna_szkola']) ? 1 : 0,
+      'kultura_za_zl' => (isset($appointment['kultura_za_zl']) && $appointment['kultura_za_zl']) ? 1 : 0,
+      'pax' => (isset($appointment['pax']) && $appointment['pax']) ? (int)$appointment['pax'] : 0,
+      'notes' => $customer['notes'] ?? '',
+      'total_price' => $params['total_price'] ? $params['total_price'] : 0,
+      'sell_price' => $params['sell_price'] ? $params['sell_price'] : 0,
+      'sell_doc' => '',
+      'state' => 'pending',
+      'create_ip' => $_SERVER['REMOTE_ADDR'],
+      'update_ip' => $_SERVER['REMOTE_ADDR']
+    ];
+
+    $id_appointment = $this->insert($appointment_data);
+
+
+    // appointment_providers (rooms)
+    if (isset($lesson['id'])) {
+      // lesson duration
+      $lesson_duration = $lesson['duration']; // lepiej byloby pobrac z bazy
+      $start_datetime = $appointment['visit_date'] . ' ' . $appointment['visit_time'];
+      $end_datetime = date('Y-m-d H:i:s', strtotime($start_datetime . ' +' . $lesson_duration . ' minutes'));
+
+      // rooms needed for lesson
+      $lesson_providers = $this->services->getServiceProviders($lesson['id']);
+      print_r($lesson_providers);
+      //$appoin
+      //foreach ($lesson_providers)
+
+      // appointments
+      //visit_date, visit_time
+
+      //customers
+      //zip, city, notes
+    }
+
+
+    // $calculation = $this->getCalculation($appointment_data);
+
+  }
+
   public function postRow($params=[])
   {    
     if ($params['lesson'] == 1) { 

@@ -34,7 +34,7 @@ const DateCalendar = ({visitDate, setVisitDate, visitTime, setVisitTime, schedul
     <CardContent>
       <div className="flex flex-col gap-12 items-center">
 
-        <div class="flex flex-col items-center gap-8 lg:gap-10">
+        <div className="flex flex-col items-center gap-8 lg:gap-10">
         <Calendar 
           mode="single" 
           locale={pl}

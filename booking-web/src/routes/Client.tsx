@@ -11,6 +11,7 @@ import { OctagonAlert } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "react-router"
 import { postBooking } from "@/services/booking";
+import CalculationRead from "@/components/CarculationRead"
 
 const AgeGroups = [
   { id: 'age_1', title: 'przedszkole' },
@@ -46,7 +47,7 @@ const validateEmail = (email) => {
 }
 
 const Client = () => {
-  const { client, updateClient } = useBooking();
+  const { client, updateClient, appointment } = useBooking();
   let navigate = useNavigate();
   const [errors, setErrors] = useState(initialErrors)
 
@@ -135,7 +136,7 @@ const Client = () => {
     if (hasAnyError) {
       toast.add({
         type: "error",
-        description: "Wypełnij wszystkie wymagane pola.",
+        title: "Wypełnij wszystkie wymagane pola.",
       })
     }
 
@@ -147,19 +148,18 @@ const Client = () => {
       return;
     }
 
-    const response = await postBooking(client);
+    const response = await postBooking({client: client, appointment: appointment});
     if ("token" in response && response.token !== undefined) {
       navigate(`/rezerwacja/przed-wizyta/${response.token}`);
     } else if ("message" in response && response.message !== undefined) {
       toast.add({
         type: "error",
-        title: "Błąd!",
-        description: response.message,
+        title: response.message,
       })
     } else {
       toast.add({
         type: "error",
-        description: 'Operacja nie powiodła się. Rezerwacja nie została zapisana.',
+        title: 'Operacja nie powiodła się. Rezerwacja nie została zapisana.',
       })
     }
   }
@@ -414,7 +414,7 @@ const Client = () => {
           </Card>
         </div>
         <div>
-          <Calculation nextHandler={nextHandler} />
+          <CalculationRead nextHandler={nextHandler} />
         </div>
       </div>
     </section>

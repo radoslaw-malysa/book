@@ -6,6 +6,11 @@ export interface Appointment {
   visit_time: string;
   group_pax: number;
   service_id: number;
+  lesson: object | null;
+  admission: object | null;
+  guide: object | null;
+  kultura_za_zl: number;
+  pax: number;
 }
 
 export interface Client {
@@ -52,6 +57,11 @@ const initialAppointment: Appointment = {
   visit_time: '',
   group_pax: 0,
   service_id: 0,
+  lesson: null,
+  admission: null,
+  guide: null,
+  kultura_za_zl: 0,
+  pax: 5
 };
 
 const initialClient: Client = {

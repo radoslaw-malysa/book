@@ -86,10 +86,36 @@ class BookingAction
    * Save new reservation
    */
   public function postBooking(Request $request, Response $response, $args) {
-  
-    $payload = ['message' => 'ok', 'token' => 'XXX'];
+    $data = $request->getParsedBody();
+
+    // json string in body
+    if (isset($data['json_data'])) {
+      $data = json_decode($data['json_data'], true);
+    }
+    
+    if ($data) {
+      $status = $this->appointments->postBooking($data);
+
+      if (isset($status['error'])) {
+        return $this->json->render($response, $status);
+      }
+
+      $payload = ['message' => 'ok', 'token' => 'XXX'];
+    } else {
+      $payload = ['error' => 1, 'message' => 'Nie udało się zapisać rezerwacji. Brak danych rezerwacji.'];
+    }
     
     return $this->json->render($response, $payload);
+  }
+
+  public function testBooking(Request $request, Response $response, $args) {
+    $data = '{"client":{"customer_type":"primary","name":"sadsada","address":"Graniczna 17","zip":"26-604","city":"Radom","phone":"radek.malysa@gmail.com","email":"radek.malysa@gmail.com","contact_name":"Radek Małysa","contact_phone":"3434","contact_email":"radek.malysa@gmail.com","pax_care":"1","notes":"to są uwagi","accept_processing":1,"accept_regulations":1,"accept_kultura_zl":1,"age_1":0,"age_2":0,"age_3":0,"age_4":1,"age_5":0,"age_6":0,"age_7":0},"appointment":{"visit_date":"2026-10-18","visit_time":"11:00","group_pax":0,"service_id":"2","lesson":{"id":2,"name":"Spacer po wystawie i warsztaty plastyczne","price":"20.00","duration":60,"pax_min":5,"pax_max":25},"admission":null,"guide":{"id":12,"service_type":"tour","name":"Zwiedzanie wystaw z przewodnikiem","description":"","price":"10.00","duration":0,"online":0,"pax_min":5,"pax_max":0,"state":1,"create_time":"2026-09-24 12:31:05","create_ip":"","update_time":"2026-09-24 12:31:05","update_ip":"127.0.0.1"},"kultura_za_zl":1,"pax":25}}';
+
+    $data = json_decode($data, true);
+
+    $status = $this->appointments->postBooking($data);
+
+    return $this->json->render($response, $status);
   }
 
   /**

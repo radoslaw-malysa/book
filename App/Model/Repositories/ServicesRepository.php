@@ -196,7 +196,7 @@ class ServicesRepository extends Repository
 
     // lesson
     if ($lesson_id) {
-      $query = "select * from {$this->model} where id=:id";
+      $query = "select id, name, price, duration, pax_min, pax_max from {$this->model} where id=:id";
       $st = $this->connection->prepare($query);
       $st->bindParam(':id', $lesson_id, PDO::PARAM_INT);
       $st->execute();
@@ -231,5 +231,13 @@ class ServicesRepository extends Repository
 
 
     return $offer;
+  }
+
+  /**
+   * Get providers (rooms) needed for lesson
+   */
+  public function getServiceProviders($service_id)
+  {
+    return $this->providers_services->where('service_id', $service_id)->get(['provider_id']);
   }
 }

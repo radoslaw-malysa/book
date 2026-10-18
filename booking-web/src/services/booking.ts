@@ -1,5 +1,5 @@
 import { API_URL, buildQueryString, toFormData, type ErrorMessage } from "./api";
-import type { Client } from "@/context/BookingContext";
+import type { Appointment, Client } from "@/context/BookingContext";
 
 export interface Service {
   id: number;
@@ -14,6 +14,13 @@ export interface BookingResponse {
   token?: string;
   schedule: [];
   kulturalna_szkola: number;
+  client: Client;
+  appointment: Appointment;
+}
+
+interface BookingPostData {
+  client: Client;
+  appointment: Appointment;
 }
 
 export interface BookingFilters {
@@ -21,7 +28,7 @@ export interface BookingFilters {
   date?: string;
 }
 
-export async function getBooking_(
+/*export async function getBooking_(
   filters: BookingFilters = {}
 ): Promise<BookingResponse> {
   const queryString = buildQueryString(filters);
@@ -46,7 +53,7 @@ export async function getBooking_(
 
   const data: BookingResponse = await response.json();
   return data;
-}
+}*/
 
 const getBookingResponse = async (response: Response): Promise<BookingResponse> => {
   if (!response.ok) {
@@ -62,9 +69,9 @@ export const getBooking = async (filters: BookingFilters = {}): Promise<BookingR
   return getBookingResponse(await fetch(url));
 }
 
-export const postBooking = async (data: Client): Promise<BookingResponse | ErrorMessage> =>
+export const postBooking = async (data: BookingPostData): Promise<BookingResponse | ErrorMessage> =>
   getBookingResponse(
-    await fetch(`${API_URL}/booking`, {
+    await fetch(`${API_URL}/booking?t=1`, {
       method: "POST",
       body: toFormData({json_data: JSON.stringify(data)}),
     }),

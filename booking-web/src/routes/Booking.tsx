@@ -26,13 +26,13 @@ const Booking = () => {
   const { service, service_id, visit_date, schedule, kulturalna_szkola } = useLoaderData() as BookingResponse;
   const { appointment, updateAppointment } = useBooking();
 
-  // set service_id from link
+  // set service_id (lesson) from link
   useEffect(() => {
-    updateAppointment({ service_id: service_id } as Partial<Appointment>);
+    updateAppointment({ service_id: service_id, lesson: service.lesson } as Partial<Appointment>);
   }, [service_id]);
 
   const handleDateChange = (value: string) => {
-    updateAppointment({ visit_date: value } as Partial<Appointment>);
+    updateAppointment({ visit_date: value, visit_time: '' } as Partial<Appointment>);
 
     const nextSearchParams = new URLSearchParams();
     const sid = searchParams.get('service_id');

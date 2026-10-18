@@ -16,6 +16,7 @@ return function (App $app) {
 
     // web frontend
     $app->get('/booking', BookingAction::class);
+    $app->get('/booking/test', BookingAction::class . ":testBooking");
     $app->post('/booking', BookingAction::class . ":postBooking");
     $app->get('/booking/before-visit/{token}', BookingAction::class . ":getBeforeVisit"); // get reservation data
     $app->get('/booking/confirm/{token}', BookingAction::class . ":getConfirmBooking");
