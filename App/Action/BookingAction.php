@@ -100,7 +100,15 @@ class BookingAction
         return $this->json->render($response, $status);
       }
 
-      $payload = ['message' => 'ok', 'token' => 'XXX'];
+      if (isset($status['id']) && $status['id']) {
+        $token = $this->appointments->getToken($status['id']);
+
+        $payload = ['token' => $token];
+      } else {
+        $payload = ['error' => 2, 'message' => 'Nie udało się zapisać rezerwacji.'];
+      }
+
+      
     } else {
       $payload = ['error' => 1, 'message' => 'Nie udało się zapisać rezerwacji. Brak danych rezerwacji.'];
     }
@@ -113,9 +121,29 @@ class BookingAction
 
     $data = json_decode($data, true);
 
-    $status = $this->appointments->postBooking($data);
+    if ($data) {
+      $status = $this->appointments->postBooking($data);
 
-    return $this->json->render($response, $status);
+      if (isset($status['error'])) {
+        return $this->json->render($response, $status);
+      }
+
+      if (isset($status['id']) && $status['id']) {
+        $token = $this->appointments->getToken($status['id']);
+
+        $payload = ['token' => $token];
+      } else {
+        $payload = ['error' => 2, 'message' => 'Nie udało się zapisać rezerwacji.'];
+      }
+
+      
+    } else {
+      $payload = ['error' => 1, 'message' => 'Nie udało się zapisać rezerwacji. Brak danych rezerwacji.'];
+    }
+    
+    return $this->json->render($response, $payload);
+
+    
   }
 
   /**
@@ -124,7 +152,17 @@ class BookingAction
   public function getBeforeVisit(Request $request, Response $response, $args) {
     $token = $args['token'] ?? '';
 
-    $payload = ['message' => 'ok', 'token' => $token];
+    if (!$token) {
+      return $this->json->render($response, ['error' => 33, 'message' => 'Token rezerwacji nieprawidłowy']);
+    }
+
+    // reservation
+    $appointment = $this->appointments->getByToken($token);
+
+    $payload = [
+      'token' => $token,
+      'appointment' => $appointment
+    ];
     
     return $this->json->render($response, $payload);
   }
@@ -133,8 +171,27 @@ class BookingAction
    * Reservation confirmation
    */
   public function getConfirmBooking(Request $request, Response $response, $args) {
-  
-    $payload = ['message' => 'ok', 'token' => 'XXX'];
+    $token = $args['token'] ?? '';
+
+    if (!$token) {
+      return $this->json->render($response, ['error' => 35, 'message' => 'Token rezerwacji nieprawidłowy']);
+    }
+
+    // reservation
+    $appointment = $this->appointments->getByToken($token);
+
+    if (isset($appointment['state']) && $appointment['state'] == 'pending') {
+      $status = $this->appointments->confirm($appointment['id']);
+
+      if (isset($status['success'])) {
+        $appointment['state'] = 'confirmed';
+      }
+    }
+
+    $payload = [
+      'token' => $token,
+      'appointment' => $appointment
+    ];
     
     return $this->json->render($response, $payload);
   }
@@ -143,8 +200,27 @@ class BookingAction
    * Reservation cancellation 
    */
   public function getCancelBooking(Request $request, Response $response, $args) {
-  
-    $payload = ['message' => 'ok', 'token' => 'XXX'];
+    $token = $args['token'] ?? '';
+
+    if (!$token) {
+      return $this->json->render($response, ['error' => 35, 'message' => 'Token rezerwacji nieprawidłowy']);
+    }
+
+    // reservation
+    $appointment = $this->appointments->getByToken($token);
+
+    if (isset($appointment['state']) && $appointment['state'] == 'pending') {
+      $status = $this->appointments->cancel($appointment['id']);
+
+      if (isset($status['success'])) {
+        $appointment['state'] = 'cancelled';
+      }
+    }
+
+    $payload = [
+      'token' => $token,
+      'appointment' => $appointment
+    ];
     
     return $this->json->render($response, $payload);
   }

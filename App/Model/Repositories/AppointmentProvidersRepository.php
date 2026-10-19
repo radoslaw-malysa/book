@@ -143,4 +143,19 @@ class AppointmentProvidersRepository extends Repository
       'end_time' => ''
     ];
   }
+
+  /**
+   * Booking
+   */
+  public function getServicesWniosek($appointment_id)
+  {
+    $query = "select se.service_type, se.name 
+    from {$this->model} ap left join {$this->tables->services} se on ap.service_id = se.id 
+    where ap.appointment_id='" . $appointment_id . "'
+    group by se.service_type, se.name";
+    
+    $st = $this->connection->prepare($query);
+    $st->execute();
+    return $st->fetchAll();
+  }
 }

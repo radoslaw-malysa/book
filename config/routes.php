@@ -5,6 +5,8 @@ use App\Action\CrudAction;
 use App\Action\AuthAction;
 use App\Action\CalendarAction;
 use App\Action\BookingAction;
+use App\Action\PdfAction;
+use App\Action\EmailAction;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -21,6 +23,8 @@ return function (App $app) {
     $app->get('/booking/before-visit/{token}', BookingAction::class . ":getBeforeVisit"); // get reservation data
     $app->get('/booking/confirm/{token}', BookingAction::class . ":getConfirmBooking");
     $app->get('/booking/cancel/{token}', BookingAction::class . ":getCancelBooking");
+    $app->get('/booking/zgloszenie-pdf/{token}', PdfAction::class . ":zgloszenie");
+    $app->get('/booking/email-confirmation-admin/{token}', EmailAction::class . ":confirmationAdmin");
 
     // admin
     $app->any('/login', AuthAction::class);

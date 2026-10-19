@@ -150,7 +150,7 @@ const Client = () => {
 
     const response = await postBooking({client: client, appointment: appointment});
     if ("token" in response && response.token !== undefined) {
-      navigate(`/rezerwacja/przed-wizyta/${response.token}`);
+      navigate(`/rezerwacja/przed-wizyta/${response.token}?first=1`);
     } else if ("message" in response && response.message !== undefined) {
       toast.add({
         type: "error",
