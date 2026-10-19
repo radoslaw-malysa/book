@@ -25,7 +25,7 @@ class Mailer
     
     try {
       //Server settings
-      // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+      //$mail->SMTPDebug = SMTP::DEBUG_SERVER;
       $mail->isSMTP();
       $mail->Host       = MailerConfig::ADMIN_HOST;
       $mail->SMTPAuth   = true;
@@ -83,7 +83,7 @@ class Mailer
       $mail->Body = $body;
       if (isset($params['alt_body']) && $params['alt_body']) { $mail->AltBody = $params['alt_body']; }
       
-      $mail->AddEmbeddedImage("images/routetrade_logo_v.png", "logo", "routetrade_logo_v.png");
+      $mail->AddEmbeddedImage("images/logo.svg", "logo", "logo.svg");
       // $mail->addStringAttachment(file_get_contents("https://carteam.pl/images/envelope.png"), "envelope");
       
       if ($mail->send()) {

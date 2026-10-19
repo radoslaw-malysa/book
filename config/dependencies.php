@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use DI\ContainerBuilder;
-// use Slim\Views\PhpRenderer;
+use Slim\Views\PhpRenderer;
 use \App\Support\JsonRenderer;
 use Psr\Container\ContainerInterface;
 use App\Model\Repositories\Tables;
@@ -13,13 +13,14 @@ return static function (ContainerBuilder $containerBuilder, array $settings) {
     $containerBuilder->addDefinitions([
         'settings' => $settings,
         
-        /* PhpRenderer::class => function (ContainerInterface $container) {
+        PhpRenderer::class => function (ContainerInterface $container) {
             $settings = $container->get('settings');
+            
             return new PhpRenderer($settings['view_path'], [
                 'upl' => $settings['upl'],
                 'thumbs' => $settings['thumbs']
             ]);
-        }, */
+        },
 
         JsonRenderer::class => function () {
             return new JsonRenderer();
@@ -44,9 +45,9 @@ return static function (ContainerBuilder $containerBuilder, array $settings) {
             return new Tables($container->get('settings')['db_prefix']);
         },
 
-        Lang::class => function() {
+        /*Lang::class => function() {
             return new Lang($_SESSION['lang'] ?? 'pl');
-        }
+        }*/
         
     ]);
 };

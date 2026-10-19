@@ -17,6 +17,7 @@ use \App\Model\Repositories\ProvidersRepository;
 use Slim\Views\PhpRenderer;
 use \App\Support\JsonRenderer;
 use \App\Model\Mailer\Mailer;
+use \App\Model\Mailer\MailerConfig;
 
 //define('RESERVATION_TIME_INTERVAL', 30); //dlugosc slotu czasowego, odstepy czasowe do wyboru
 //define('RESERVATION_TIME_START', '08:00:00'); //godzina otwarcia muzeum
@@ -25,6 +26,8 @@ use \App\Model\Mailer\Mailer;
 class EmailAction
 {
   protected $json;
+
+  private const NOTIFICATION_EMAIL = 'rm@pawelec.info'; // informacje o potwierdzeniach rezerwacji przez klientów
   
   public function __construct(
     PhpRenderer $view,
@@ -57,18 +60,26 @@ class EmailAction
 
     $appointment = $this->appointments->getByToken($token);
 
-    if (isset($appointment['id'])) {
+    if (isset($appointment['id']) || true) {
       
 
-      $this->mailer->send([
-        'address' => $addresses,
+      if ($this->mailer->send([
+        'address' => MailerConfig::NOTIFICATION_EMAIL,
         'address_name' => null,
         'reply_email' => null,
-        'subject' => 'Auction canceled. Shipment From: ' . ($route_stops[0]['city'] ?? '') . ' ' . ($route_stops[0]['country_code'] ?? '') . ', To: ' . ($route_stops[$end]['city'] ?? '') . ' ' . ($route_stops[$end]['country_code'] ?? ''),
-        'body' => $body,
+        'subject' => 'Potwierdzona rezerwacja nr ' . $appointment['id'] ?? '',
+        'body' => $this->view->fetch('email_confirmation_admin.php', [
+          'appointment' => $appointment,
+          //'customer' => $this->customers->where('id', $appointment['customer_id'])->first()
+        ]),
         'alt_body' => ''
-      ]);
+      ])) {
+        echo 'poszlo';
+      } else {
+        echo 'nie poszlo';
+      }
     }
+    
 
     echo 'ok'; exit;
   }
