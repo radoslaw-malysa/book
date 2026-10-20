@@ -1,6 +1,6 @@
 import Calculation from "@/components/Calculation";
 import { useLoaderData, useNavigate, useSearchParams, type LoaderFunctionArgs } from "react-router";
-import { getBeforeVisit, getCancelBooking, getConfirmBooking, type BookingResponse } from "@/services/booking"; 
+import { getBeforeVisit, getCancelBooking, getConfirmBooking, getConfirmEmail, getNewAppEmail, type BookingResponse } from "@/services/booking"; 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Check, FileText, Printer, Trash, Trash2Icon } from "lucide-react";
@@ -8,6 +8,7 @@ import { toast } from "@/components/ui/toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useEffect, useState } from "react";
 import { API_URL } from "@/services/api";
+import CalculationRead from "@/components/CarculationRead";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const token = params.token;
@@ -25,20 +26,23 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 const Visit = () => {
   let navigate = useNavigate();
-  const { token, appointment } = useLoaderData() as BookingResponse;
+  const { token, appointment, calculation } = useLoaderData() as BookingResponse;
   const [searchParams] = useSearchParams();
   const [cancelOpen, setCancelOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [firstVisit, setFirstVisit] = useState(false);
 
   useEffect(() => {
-    setFirstVisit(searchParams.get('first') !== null)
-  }, [searchParams]);
+    const isFirst = searchParams.get('first') !== null;
+    if (isFirst && token) { getNewAppEmail(token); }
+    setFirstVisit(isFirst);
+  }, [searchParams, token]);
 
   const handleConfirm = async () => {
     const response = await getConfirmBooking(token);
 
     if ("token" in response && response.token !== undefined) {
+      getConfirmEmail(token); // email to admin
       navigate(`/rezerwacja/przed-wizyta/${response.token}`);
     } else if ("message" in response && response.message !== undefined) {
       toast.add({
@@ -152,7 +156,7 @@ const Visit = () => {
 
       </div>
       <div>
-        {/*<Calculation nextHandler={nextHandler} />*/}
+        <CalculationRead appointment={appointment} calculation={calculation} nextHandler={nextHandler} />
       </div>
     </div>
 

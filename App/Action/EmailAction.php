@@ -53,6 +53,43 @@ class EmailAction
   }
 
   /**
+   * Email to customer about new reservation
+   */
+  public function newAppointment(Request $request, Response $response, $args) {
+    $token = $args['token'] ?? '';
+
+    $appointment = $this->appointments->getByToken($token);
+
+    if (isset($appointment['id']) || true) {
+      $customer = $this->customers->where('id', $appointment['customer_id'])->first(['name']);
+      
+      if ($this->mailer->send([
+        'address' => MailerConfig::NOTIFICATION_EMAIL,
+        'address_name' => null,
+        'reply_email' => null,
+        'subject' => 'Potwierdzona rezerwacja nr ' . $appointment['id'] ?? '',
+        'body' => $this->view->fetch('email_new_appointment.php', [
+          'appointment' => $appointment,
+          'service' => $this->services->where('id', $appointment['service_id'])->first(['name']),
+          'appointment_url' => 'xxx',
+          'confirm_url' => 'xxx',
+          'cancel_url' => 'xxx',
+          'zgloszenie_url' => '',
+          'reservation_phone' => '884 320 030',
+          'reservation_email' => MailerConfig::NOTIFICATION_EMAIL
+        ]),
+        'alt_body' => ''
+      ])) {
+        return $this->json->render($response, ['success' => 1]);
+      } else {
+        return $this->json->render($response, ['error' => 24, 'message' => 'Nie wysłano wiadomości']);
+      }
+    }
+    
+    return $this->json->render($response, ['error' => 24, 'message' => 'Nie znaleziono rezerwacji. Token nieprawidłowy.']);
+  }
+
+  /**
    * Email to admin after customer appointment confirmation
    */
   public function confirmationAdmin(Request $request, Response $response, $args) {
@@ -62,7 +99,6 @@ class EmailAction
 
     if (isset($appointment['id']) || true) {
       
-
       if ($this->mailer->send([
         'address' => MailerConfig::NOTIFICATION_EMAIL,
         'address_name' => null,
@@ -70,19 +106,18 @@ class EmailAction
         'subject' => 'Potwierdzona rezerwacja nr ' . $appointment['id'] ?? '',
         'body' => $this->view->fetch('email_confirmation_admin.php', [
           'appointment' => $appointment,
-          //'customer' => $this->customers->where('id', $appointment['customer_id'])->first()
+          'service' => $this->services->where('id', $appointment['service_id'])->first(['name']),
+          'customer' => $this->customers->where('id', $appointment['customer_id'])->first(['name']),
+          'appointment_url' => 'xxx'
         ]),
         'alt_body' => ''
       ])) {
-        echo 'poszlo';
+        return $this->json->render($response, ['success' => 1]);
       } else {
-        echo 'nie poszlo';
+        return $this->json->render($response, ['error' => 24, 'message' => 'Nie wysłano wiadomości']);
       }
     }
     
-
-    echo 'ok'; exit;
+    return $this->json->render($response, ['error' => 24, 'message' => 'Nie znaleziono rezerwacji. Token nieprawidłowy.']);
   }
-
-
 }

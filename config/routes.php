@@ -25,6 +25,7 @@ return function (App $app) {
     $app->get('/booking/cancel/{token}', BookingAction::class . ":getCancelBooking");
     $app->get('/booking/zgloszenie-pdf/{token}', PdfAction::class . ":zgloszenie");
     $app->get('/booking/email-confirmation-admin/{token}', EmailAction::class . ":confirmationAdmin");
+    $app->get('/booking/email-new-appointment/{token}', EmailAction::class . ":newAppointment");
 
     // admin
     $app->any('/login', AuthAction::class);

@@ -16,6 +16,7 @@ export interface BookingResponse {
   kulturalna_szkola: number;
   client: Client;
   appointment: Appointment;
+  calculation: [];
 }
 
 interface BookingPostData {
@@ -89,5 +90,15 @@ export const getConfirmBooking = async (token: string | undefined): Promise<Book
 
 export const getCancelBooking = async (token: string | undefined): Promise<BookingResponse> => {
   const url = `${API_URL}/booking/cancel/${token}`;
+  return getBookingResponse(await fetch(url));
+}
+
+export const getConfirmEmail = async (token: string | undefined): Promise<BookingResponse> => {
+  const url = `${API_URL}/booking/email-confirmation-admin/${token}`;
+  return getBookingResponse(await fetch(url));
+}
+
+export const getNewAppEmail = async (token: string | undefined): Promise<BookingResponse> => {
+  const url = `${API_URL}/booking/email-new-appointment/${token}`;
   return getBookingResponse(await fetch(url));
 }

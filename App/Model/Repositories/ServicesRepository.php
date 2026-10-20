@@ -227,8 +227,6 @@ class ServicesRepository extends Repository
       $offer['admission']['price'] = 0.00;
     }
 
-    
-
 
     return $offer;
   }

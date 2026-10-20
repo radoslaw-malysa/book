@@ -161,7 +161,8 @@ class BookingAction
 
     $payload = [
       'token' => $token,
-      'appointment' => $appointment
+      'appointment' => $appointment,
+      'calculation' => $this->appointments->getCalculation($appointment)
     ];
     
     return $this->json->render($response, $payload);

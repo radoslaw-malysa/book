@@ -131,157 +131,7 @@ class AppointmentsRepository extends Repository
     return $data;
   }
 
-  public function getCalculation($appointment)
-  {
-    $prices = $this->services->getServicePrices($lesson_id, $date, $tour_id);
-
-
-  }
-
-  /**
-   * Save web reservation
-   */
-  public function postBooking($params=[])
-  {
-    // validation
-    if (!isset($params['client']) || !$params['client']) { return ['error' => 1, 'message' => 'Brak danych klienta']; }
-    if (!isset($params['appointment']) || !$params['appointment']) { return ['error' => 1, 'message' => 'Brak danych rezerwacji']; }
-    //if (!isset($appointment['visit_date']) || !$appointment['visit_date']) { return ['error' => 1, 'message' => 'Brak daty wizyty']; }
-    //if (!isset($appointment['visit_time']) || !$appointment['visit_time']) { return ['error' => 1, 'message' => 'Brak godziny wizyty']; }
-
-    // client
-    $customer = $params['client'];
-    try {
-      $customer_id = $this->customers->insert([
-        'customer_type' => (isset($customer['customer_type']) && $customer['customer_type']) ? $customer['customer_type'] : NULL,
-        'name' => $customer['name'] ?? '',
-        'address' => $customer['address'] ?? '',
-        'zip' => $customer['zip'] ?? '',
-        'city' => $customer['city'] ?? '',
-        'email' => $customer['email'] ?? '',
-        'phone' => $customer['phone'] ?? '',
-        'contact_name' => $customer['contact_name'] ?? '',
-        'contact_phone' => $customer['contact_phone'] ?? '',
-        'contact_email' => $customer['contact_email'] ?? '',
-        'pax_care' => $customer['pax_care'] ?? 0,
-        'notes' => $customer['notes'] ?? '',
-        'accept_processing' => $customer['accept_processing'] ?? 0,
-        'accept_regulations' => $customer['accept_regulations'] ?? 0,
-        'accept_kultura_zl' => $customer['accept_kultura_zl'] ?? 0
-      ]);
-    } catch(Exception $e) {
-      $message = $e->getMessage();
-      return ['error' => 1, 'message' => $message ?? 'Nie udało się dodać klienta'];
-    }
-    if (!isset($customer_id) || !$customer_id) { return ['error' => 1, 'message' => 'Nie udało się dodać danych klienta']; }
-
-    // appointment
-    $appointment = $params['appointment'];
-    $lesson = $appointment['lesson'] ?? [];
-    $guide = $appointment['guide'] ?? [];
-
-    if (isset($lesson['id'])) {
-      $service_id = $lesson['id'];
-    } elseif (isset($guide['id'])) {
-      $service_id = $guide['id'];
-    }
-    
-    $appointment_data = [
-      'service_id' => $service_id ?? 0,
-      'customer_id' => $customer_id ?? 0,
-      'visit_date' => (isset($appointment['visit_date']) && $appointment['visit_date']) ? $appointment['visit_date'] : NULL,
-      'visit_time' => (isset($appointment['visit_time']) && $appointment['visit_time']) ? $appointment['visit_time'] : NULL,
-      'lesson' => (isset($lesson['id'])) ? 1 : 0,
-      'tour' => (isset($guide)) ? 1 : 0,
-      'cinema' => 0,
-      'blockade' => 0,
-      'kulturalna_szkola' => (isset($appointment['kulturalna_szkola']) && $appointment['kulturalna_szkola']) ? 1 : 0,
-      'kultura_za_zl' => (isset($appointment['kultura_za_zl']) && $appointment['kultura_za_zl']) ? 1 : 0,
-      'pax' => (isset($appointment['pax']) && $appointment['pax']) ? (int)$appointment['pax'] : 0,
-      'notes' => $customer['notes'] ?? '',
-      'total_price' => $params['total_price'] ? $params['total_price'] : 0,
-      'sell_price' => $params['sell_price'] ? $params['sell_price'] : 0,
-      'sell_doc' => '',
-      'state' => 'pending',
-      'create_ip' => $_SERVER['REMOTE_ADDR'],
-      'update_ip' => $_SERVER['REMOTE_ADDR']
-    ];
-
-    $id_appointment = $this->insert($appointment_data);
-    if (!isset($id_appointment) || !$id_appointment) { return ['error' => 1, 'message' => 'Nie udało się dodać rezerwacji']; }
-
-    // appointment_providers (rooms)
-    if (isset($lesson['id'])) {
-      // lesson duration
-      $lesson_duration = $lesson['duration']; // lepiej byloby pobrac z bazy
-      if (!$lesson_duration) { $lesson_duration = 60; }
-
-      $start_datetime = $appointment['visit_date'] . ' ' . $appointment['visit_time'];
-      $end_datetime = date('Y-m-d H:i:s', strtotime($start_datetime . ' +' . $lesson_duration . ' minutes'));
-
-      // rooms needed for lesson
-      $lesson_providers = $this->services->getServiceProviders($lesson['id']);
-      for ($i = 0; $i < count($lesson_providers); $i++) {
-        $lesson_providers[$i]['start_time'] = $start_datetime;
-        $lesson_providers[$i]['end_time'] = $end_datetime;
-      }
-      
-      foreach ($lesson_providers as $lesson_provider) {
-        $this->appointment_providers->insert([
-          'appointment_id' => $id_appointment,
-          'service_id' => $lesson['id'],
-          'provider_id' => $lesson_provider['provider_id'],
-          'start_time' => $lesson_provider['start_time'],
-          'end_time' => $lesson_provider['end_time']
-        ]);
-      }
-    }
-
-
-    // $calculation = $this->getCalculation($appointment_data);
-
-    return ['id' => $id_appointment];
-  }
-
-  public function getToken($appointment_id)
-  {
-    $appo = $this->where('id', $appointment_id)->first(['create_time']);
-
-    return base64_encode($appointment_id . '@' . $appo['create_time']);
-  }
-
-  public function getByToken($token) 
-  {
-    list($id, $create_time) = explode('@', base64_decode($token));
-
-    if (isset($id) && isset($create_time)) {
-      $appointment = $this->where('id', $id)->where('create_time', $create_time)->first();
-
-      return ($appointment) ? $appointment : ['error' => 34, 'message' => 'Brak takiej rezerwacji'];
-    }
-
-    return ['error' => 34, 'message' => 'Token rezerwacji nieprawidłowy'];
-  }
-
-  /**
-   * Confirm appointment by customer
-   */
-  public function confirm($appointment_id)
-  {
-    $this->where('id', $appointment_id)->where('state', 'pending')->update(['state' => 'confirmed']);
-
-    return ['success' => 1];
-  }
-
-  /**
-   * Cancel appointment by customer
-   */
-  public function cancel($appointment_id)
-  {
-    $this->where('id', $appointment_id)->where('state', 'pending')->update(['state' => 'cancelled']);
-
-    return ['success' => 1];
-  }
+  
 
   public function postRow($params=[])
   {    
@@ -434,4 +284,166 @@ class AppointmentsRepository extends Repository
 
     return $new_row;
   }
+
+  // BOOKING
+
+  public function getCalculation($appointment)
+  {
+    // wszsytkie pozycje (może które mają cene > 0)
+    $query = "select id, service_type, name, price, " . (int)$appointment['pax'] . " as quantity, price * " . (int)$appointment['pax'] . " as value
+    from {$this->tables->services} 
+    where id IN(select service_id from {$this->tables->appointment_providers} where appointment_id='" . $appointment['id'] . "' group by service_id)";
+    
+    $st = $this->connection->prepare($query);
+    $st->execute();
+    $prices = $st->fetchAll();
+
+    return $prices;
+  }
+
+  /**
+   * Save web reservation
+   */
+  public function postBooking($params=[])
+  {
+    // validation
+    if (!isset($params['client']) || !$params['client']) { return ['error' => 1, 'message' => 'Brak danych klienta']; }
+    if (!isset($params['appointment']) || !$params['appointment']) { return ['error' => 1, 'message' => 'Brak danych rezerwacji']; }
+    //if (!isset($appointment['visit_date']) || !$appointment['visit_date']) { return ['error' => 1, 'message' => 'Brak daty wizyty']; }
+    //if (!isset($appointment['visit_time']) || !$appointment['visit_time']) { return ['error' => 1, 'message' => 'Brak godziny wizyty']; }
+
+    // client
+    $customer = $params['client'];
+    try {
+      $customer_id = $this->customers->insert([
+        'customer_type' => (isset($customer['customer_type']) && $customer['customer_type']) ? $customer['customer_type'] : NULL,
+        'name' => $customer['name'] ?? '',
+        'address' => $customer['address'] ?? '',
+        'zip' => $customer['zip'] ?? '',
+        'city' => $customer['city'] ?? '',
+        'email' => $customer['email'] ?? '',
+        'phone' => $customer['phone'] ?? '',
+        'contact_name' => $customer['contact_name'] ?? '',
+        'contact_phone' => $customer['contact_phone'] ?? '',
+        'contact_email' => $customer['contact_email'] ?? '',
+        'pax_care' => $customer['pax_care'] ?? 0,
+        'notes' => $customer['notes'] ?? '',
+        'accept_processing' => $customer['accept_processing'] ?? 0,
+        'accept_regulations' => $customer['accept_regulations'] ?? 0,
+        'accept_kultura_zl' => $customer['accept_kultura_zl'] ?? 0
+      ]);
+    } catch(Exception $e) {
+      $message = $e->getMessage();
+      return ['error' => 1, 'message' => $message ?? 'Nie udało się dodać klienta'];
+    }
+    if (!isset($customer_id) || !$customer_id) { return ['error' => 1, 'message' => 'Nie udało się dodać danych klienta']; }
+
+    // appointment
+    $appointment = $params['appointment'];
+    $lesson = $appointment['lesson'] ?? [];
+    $guide = $appointment['guide'] ?? [];
+
+    if (isset($lesson['id'])) {
+      $service_id = $lesson['id'];
+    } elseif (isset($guide['id'])) {
+      $service_id = $guide['id'];
+    }
+    
+    $appointment_data = [
+      'service_id' => $service_id ?? 0,
+      'customer_id' => $customer_id ?? 0,
+      'visit_date' => (isset($appointment['visit_date']) && $appointment['visit_date']) ? $appointment['visit_date'] : NULL,
+      'visit_time' => (isset($appointment['visit_time']) && $appointment['visit_time']) ? $appointment['visit_time'] : NULL,
+      'lesson' => (isset($lesson['id'])) ? 1 : 0,
+      'tour' => (isset($guide)) ? 1 : 0,
+      'cinema' => 0,
+      'blockade' => 0,
+      'kulturalna_szkola' => (isset($appointment['kulturalna_szkola']) && $appointment['kulturalna_szkola']) ? 1 : 0,
+      'kultura_za_zl' => (isset($appointment['kultura_za_zl']) && $appointment['kultura_za_zl']) ? 1 : 0,
+      'pax' => (isset($appointment['pax']) && $appointment['pax']) ? (int)$appointment['pax'] : 0,
+      'notes' => $customer['notes'] ?? '',
+      'total_price' => $params['total_price'] ? $params['total_price'] : 0,
+      'sell_price' => $params['sell_price'] ? $params['sell_price'] : 0,
+      'sell_doc' => '',
+      'state' => 'pending',
+      'create_ip' => $_SERVER['REMOTE_ADDR'],
+      'update_ip' => $_SERVER['REMOTE_ADDR']
+    ];
+
+    $id_appointment = $this->insert($appointment_data);
+    if (!isset($id_appointment) || !$id_appointment) { return ['error' => 1, 'message' => 'Nie udało się dodać rezerwacji']; }
+
+    // appointment_providers (rooms)
+    if (isset($lesson['id'])) {
+      // lesson duration
+      $lesson_duration = $lesson['duration']; // lepiej byloby pobrac z bazy
+      if (!$lesson_duration) { $lesson_duration = 60; }
+
+      $start_datetime = $appointment['visit_date'] . ' ' . $appointment['visit_time'];
+      $end_datetime = date('Y-m-d H:i:s', strtotime($start_datetime . ' +' . $lesson_duration . ' minutes'));
+
+      // rooms needed for lesson
+      $lesson_providers = $this->services->getServiceProviders($lesson['id']);
+      for ($i = 0; $i < count($lesson_providers); $i++) {
+        $lesson_providers[$i]['start_time'] = $start_datetime;
+        $lesson_providers[$i]['end_time'] = $end_datetime;
+      }
+      
+      foreach ($lesson_providers as $lesson_provider) {
+        $this->appointment_providers->insert([
+          'appointment_id' => $id_appointment,
+          'service_id' => $lesson['id'],
+          'provider_id' => $lesson_provider['provider_id'],
+          'start_time' => $lesson_provider['start_time'],
+          'end_time' => $lesson_provider['end_time']
+        ]);
+      }
+    }
+
+
+    // $calculation = $this->getCalculation($appointment_data);
+
+    return ['id' => $id_appointment];
+  }
+
+  public function getToken($appointment_id)
+  {
+    $appo = $this->where('id', $appointment_id)->first(['create_time']);
+
+    return base64_encode($appointment_id . '@' . $appo['create_time']);
+  }
+
+  public function getByToken($token) 
+  {
+    list($id, $create_time) = explode('@', base64_decode($token));
+
+    if (isset($id) && isset($create_time)) {
+      $appointment = $this->where('id', $id)->where('create_time', $create_time)->first();
+
+      return ($appointment) ? $appointment : ['error' => 34, 'message' => 'Brak takiej rezerwacji'];
+    }
+
+    return ['error' => 34, 'message' => 'Token rezerwacji nieprawidłowy'];
+  }
+
+  /**
+   * Confirm appointment by customer
+   */
+  public function confirm($appointment_id)
+  {
+    $this->where('id', $appointment_id)->where('state', 'pending')->update(['state' => 'confirmed']);
+
+    return ['success' => 1];
+  }
+
+  /**
+   * Cancel appointment by customer
+   */
+  public function cancel($appointment_id)
+  {
+    $this->where('id', $appointment_id)->where('state', 'pending')->update(['state' => 'cancelled']);
+
+    return ['success' => 1];
+  }
+
 }
