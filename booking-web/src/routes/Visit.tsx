@@ -8,7 +8,8 @@ import { toast } from "@/components/ui/toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useEffect, useState } from "react";
 import { API_URL } from "@/services/api";
-import CalculationRead from "@/components/CarculationRead";
+import CalculationRead from "@/components/CalculationRead";
+import CalculationVisit from "@/components/CalculationVisit";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const token = params.token;
@@ -156,7 +157,7 @@ const Visit = () => {
 
       </div>
       <div>
-        <CalculationRead appointment={appointment} calculation={calculation} nextHandler={nextHandler} />
+        <CalculationVisit appointment={appointment} calculation={calculation} nextHandler={nextHandler} />
       </div>
     </div>
 

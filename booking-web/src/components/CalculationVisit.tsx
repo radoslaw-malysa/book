@@ -1,8 +1,7 @@
 import { type Appointment } from "@/context/BookingContext";
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card"
-import { Button } from "./ui/button";
+import { Card,  CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
 import { useNavigate } from "react-router";
-import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Separator } from "./ui/separator";
 
 interface CalculationReadProps {
@@ -11,7 +10,7 @@ interface CalculationReadProps {
   nextHandler: () => void;
 }
 
-const CalculationRead = ({appointment, calculation, nextHandler}: CalculationReadProps) => {
+const CalculationVisit = ({appointment, calculation, nextHandler}: CalculationReadProps) => {
   const navigate = useNavigate();
   
 
@@ -39,11 +38,11 @@ const CalculationRead = ({appointment, calculation, nextHandler}: CalculationRea
           </div>
         </div>
 
-        {appointment.kultura_za_zl === 1 && <div className="text-xs text-muted-foreground mt-2">&#42; Preferencyjna cena dla beneficjentów programu "Kulturalna Szkoła na Mazowszu"</div>}
+        {appointment.kulturalna_szkola === 1 && <div className="text-xs text-muted-foreground mt-2">&#42; Preferencyjna cena dla beneficjentów programu "Kulturalna Szkoła na Mazowszu"</div>}
         
       </div>
     </CardContent>
   </Card>)
 }
 
-export default CalculationRead
+export default CalculationVisit

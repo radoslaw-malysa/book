@@ -11,7 +11,7 @@ import { OctagonAlert } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "react-router"
 import { postBooking } from "@/services/booking";
-import CalculationRead from "@/components/CarculationRead"
+import CalculationRead from "@/components/CalculationRead"
 
 const AgeGroups = [
   { id: 'age_1', title: 'przedszkole' },

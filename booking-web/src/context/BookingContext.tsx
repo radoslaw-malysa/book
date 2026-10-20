@@ -9,7 +9,7 @@ export interface Appointment {
   lesson: object | null;
   admission: object | null;
   guide: object | null;
-  kultura_za_zl: number;
+  kulturalna_szkola: number;
   pax: number;
 }
 
@@ -60,7 +60,7 @@ const initialAppointment: Appointment = {
   lesson: null,
   admission: null,
   guide: null,
-  kultura_za_zl: 0,
+  kulturalna_szkola: 0,
   pax: 5
 };
 

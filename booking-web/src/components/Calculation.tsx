@@ -49,7 +49,7 @@ const Calculation = ({service, kulturalna_szkola, nextHandler}: CalculationProps
   if (appointment.guide) {
     totalPrice += appointment.pax * appointment.guide.price
   }
-  if (appointment.kultura_za_zl === 1) {
+  if (appointment.kulturalna_szkola === 1) {
     sellPrice = appointment.pax * 1;
   } else {
     sellPrice = totalPrice;
@@ -117,10 +117,10 @@ const Calculation = ({service, kulturalna_szkola, nextHandler}: CalculationProps
 
           {kulturalna_szkola === 1 && <FieldLabel>
             <Field orientation="horizontal">
-              <Checkbox id="kultura_za_zl" name="kultura_za_zl" checked={appointment.kultura_za_zl === 1} onCheckedChange={(checked) => updateAppointment({ kultura_za_zl: checked ? 1 : null }) } />
+              <Checkbox id="kulturalna_szkola" name="kulturalna_szkola" checked={appointment.kulturalna_szkola === 1} onCheckedChange={(checked) => updateAppointment({ kulturalna_szkola: checked ? 1 : null }) } />
               <FieldContent>
                 <FieldTitle className="normal-case text-sm">Chcę skorzystać z programu “Kulturalna Szkoła na Mazowszu”</FieldTitle>
-                {appointment.kultura_za_zl === 1 && <div>
+                {appointment.kulturalna_szkola === 1 && <div>
                   <div>
                     <OtpInput onComplete={() => console.log('ok')} />
                   </div>
@@ -141,16 +141,15 @@ const Calculation = ({service, kulturalna_szkola, nextHandler}: CalculationProps
           </div>
         </div>
 
-        
         <Separator className="my-8" />
 
         <div className="flex items-center justify-between text-lg font-semibold">
           <div className="uppercase">Razem</div>
-          {appointment.kultura_za_zl === 1 && <div className="flex gap-4">
+          {appointment.kulturalna_szkola === 1 && <div className="flex gap-4">
             <div className="line-through text-muted-foreground">{totalPrice} zł</div>
             <div>{sellPrice} zł</div>
           </div>}
-          {appointment.kultura_za_zl !== 1 && <div className="flex gap-4">
+          {appointment.kulturalna_szkola !== 1 && <div className="flex gap-4">
             <div>{totalPrice} zł</div>
           </div>}
         </div>

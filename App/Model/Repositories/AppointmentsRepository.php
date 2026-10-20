@@ -400,8 +400,19 @@ class AppointmentsRepository extends Repository
       }
     }
 
+    // price calculation
+    $calculation = $this->getCalculation([
+      'id' => $id_appointment,
+      'pax' => $appointment['pax']
+    ]);
 
-    // $calculation = $this->getCalculation($appointment_data);
+    $total_price = array_sum(array_column($calculation, 'value'));
+    $sell_price = (isset($appointment_data['kulturalna_szkola']) && $appointment_data['kulturalna_szkola'] == 1) ? ($appointment_data['pax'] * 1) : $total_price;
+
+    $this->where('id', $id_appointment)->update([
+      'total_price' => $total_price,
+      'sell_price' => $sell_price
+    ]);
 
     return ['id' => $id_appointment];
   }
