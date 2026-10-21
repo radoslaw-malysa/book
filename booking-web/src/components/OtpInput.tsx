@@ -104,9 +104,9 @@ export default function OtpInput({ length = 5, onComplete }) {
         {index == 1 && <div key="s"><Minus /></div>}
         </>
       ))}
-      <button ref={submitRef} type="submit">
+      {/*<button ref={submitRef} type="submit">
         Submit
-      </button>
+      </button>*/}
     </form>
   );
 }

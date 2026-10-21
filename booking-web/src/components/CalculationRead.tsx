@@ -39,6 +39,7 @@ const CalculationRead = ({nextHandler}: CalculationReadProps) => {
     </CardHeader>
     <CardContent>
       <div className="flex flex-col gap-4">
+        <Separator />
 
         {appointment.lesson && <div className="flex w-full items-center gap-3 justify-between py-3">
           <div className="text-sm leading-snug font-medium">{appointment.lesson.name}</div>

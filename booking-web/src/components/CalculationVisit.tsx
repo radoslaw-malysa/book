@@ -1,6 +1,5 @@
 import { type Appointment } from "@/context/BookingContext";
 import { Card,  CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
-import { useNavigate } from "react-router";
 import { Clock } from "lucide-react";
 import { Separator } from "./ui/separator";
 
@@ -11,9 +10,7 @@ interface CalculationReadProps {
 }
 
 const CalculationVisit = ({appointment, calculation, nextHandler}: CalculationReadProps) => {
-  const navigate = useNavigate();
   
-
   return (<Card className="sticky lg:top-24 xshadow-lg">
     <CardHeader>
       <CardTitle>Twoja rezerwacja</CardTitle>
@@ -22,16 +19,19 @@ const CalculationVisit = ({appointment, calculation, nextHandler}: CalculationRe
     <CardContent>
       <div className="flex flex-col gap-4">
 
-        {calculation.map((item) => <div key={item.id} className="flex w-full items-center gap-3 justify-between py-3">
-          <div className="text-sm leading-snug font-medium">{item.name}</div>
-          <div className="text-sm font-semibold">{item.quantity} x {item.price * 1} zł</div>
+        <Separator  />
+
+        {calculation.map((item) => <div key={item.id} className="flex flex-col gap-4">
+          <div className="flex w-full items-center gap-3 justify-between py-3">
+            <div className="text-sm leading-snug font-medium">{item.name}</div>
+            <div className="text-sm font-semibold">{item.quantity} x {item.price * 1} zł</div>
+          </div>
+          <Separator  />
         </div>)}
 
 
-        <Separator  />
-
-        <div className="flex w-full items-center gap-3 justify-between py-3 text-base">
-          <div className="leading-snug font-semibold">Razem</div>
+        <div className="flex w-full items-center gap-3 justify-between py-3 text-base font-semibold">
+          <div className="leading-snug">Razem</div>
           <div className="flex gap-4">
             {appointment.total_price != appointment.sell_price && <div className="line-through text-muted-foreground">{appointment.total_price * 1} zł</div>}
             <div>{appointment.sell_price * 1} zł</div>
