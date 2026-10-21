@@ -81,3 +81,43 @@ d.toISOString().slice(0, 10)
 
 
 bg-muted/60 has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted/80 border-none
+
+
+
+Jesteś profesjonalnym programistą developerem PHP.
+Tworzysz system do rezerwowania szkoleń stacjonarnych.
+Rezerwacje trzymane są w tabeli: 'appointments'.
+Lekcje trzymane są w tabeli: 'services'.
+Sale wykładowe trzymane są w tabeli: 'classrooms'
+
+Konkretne lekcje i sale lekcyjne dla rezerwacji
+
+
+CREATE TABLE lessons (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    base_price DECIMAL(10, 2),
+    base_duration INT, -- in minutes
+);
+
+CREATE TABLE customers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE appointments (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id),
+);
+
+CREATE TABLE appointment_services (
+    appointment_id INT NOT NULL,
+    service_id INT NOT NULL,
+    price_at_booking DECIMAL(10, 2) NOT NULL,
+    duration_at_booking INT NOT NULL,
+    PRIMARY KEY (appointment_id, service_id),
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id),
+    FOREIGN KEY (service_id) REFERENCES services(id)
+);

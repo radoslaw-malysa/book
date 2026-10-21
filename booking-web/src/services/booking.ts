@@ -17,6 +17,7 @@ export interface BookingResponse {
   client: Client;
   appointment: Appointment;
   calculation: [];
+  allowed: number;
 }
 
 interface BookingPostData {
@@ -100,5 +101,10 @@ export const getConfirmEmail = async (token: string | undefined): Promise<Bookin
 
 export const getNewAppEmail = async (token: string | undefined): Promise<BookingResponse> => {
   const url = `${API_URL}/booking/email-new-appointment/${token}`;
+  return getBookingResponse(await fetch(url));
+}
+
+export const getZipValidation = async (zip: string | undefined): Promise<BookingResponse> => {
+  const url = `${API_URL}/booking/zip-validate/${zip}`;
   return getBookingResponse(await fetch(url));
 }

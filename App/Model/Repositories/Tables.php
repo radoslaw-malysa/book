@@ -16,6 +16,7 @@ final class Tables
     public $salons = 'salons';
     public $providers = 'providers';
     public $providers_services = 'providers_services';
+    public $zip_codes = 'zip_codes';
 
     public function __construct($prefix=null)
     {

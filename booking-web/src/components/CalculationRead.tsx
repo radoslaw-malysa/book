@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { useNavigate } from "react-router";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 import { Separator } from "./ui/separator";
+import { Item, ItemContent } from "./ui/item";
 
 interface CalculationReadProps {
   nextHandler: () => void;
@@ -31,30 +32,34 @@ const CalculationRead = ({nextHandler}: CalculationReadProps) => {
 
   return (<Card className="sticky lg:top-24 xshadow-lg">
     <CardHeader>
-      <CardTitle>Twoja rezerwacja</CardTitle>
+      <CardTitle className="text-xl font-semibold">Twoja rezerwacja</CardTitle>
       {appointment.visit_date && <CardDescription className="inline-flex gap-1.5 items-center"><Clock size="16" /><span> {appointment.visit_date}</span> {appointment.visit_time && <span>{appointment.visit_time}</span>}</CardDescription>}
       <CardAction>
         <Button size="lg" variant="secondary" onClick={() => navigate(-1)}><ArrowLeft data-icon="inline-start" /> Zmień</Button>
       </CardAction>
     </CardHeader>
     <CardContent>
-      <div className="flex flex-col gap-4">
-        <Separator />
+      <Item variant="muted">
+        <ItemContent>
+          {appointment.lesson && <div className="flex w-full items-center gap-3 justify-between py-3">
+            <div className="text-sm leading-snug font-medium">{appointment.lesson.name}</div>
+            <div className="text-sm font-semibold">{appointment.pax} x {appointment.lesson.price * 1} zł</div>
+          </div>}
 
-        {appointment.lesson && <div className="flex w-full items-center gap-3 justify-between py-3">
-          <div className="text-sm leading-snug font-medium">{appointment.lesson.name}</div>
-          <div className="text-sm font-semibold">{appointment.pax} x {appointment.lesson.price * 1} zł</div>
-        </div>}
+          {appointment.guide && <Separator />}
+          {appointment.guide && <div className="flex w-full items-center gap-3 justify-between py-3">
+            <div className="text-sm leading-snug font-medium">{appointment.guide.name}</div>
+            <div className="text-sm font-semibold">{appointment.pax} x {appointment.guide.price * 1} zł</div>
+          </div>}
 
-        {appointment.guide && <Separator />}
-        {appointment.guide && <div className="flex w-full items-center gap-3 justify-between py-3">
-          <div className="text-sm leading-snug font-medium">{appointment.guide.name}</div>
-          <div className="text-sm font-semibold">{appointment.pax} x {appointment.guide.price * 1} zł</div>
-        </div>}
+          {(appointment.kulturalna_szkola && appointment.zip_valid) && <Separator />}
+          {(appointment.kulturalna_szkola && appointment.zip_valid) && <div className="flex w-full items-center gap-3 justify-between py-3">
+            <div className="text-sm leading-snug font-medium">Uczestniczę w programie “Kulturalna Szkoła na Mazowszu”</div>
+          </div>}
 
-        <Separator  />
+          <Separator />
 
-        <div className="flex w-full items-center gap-3 justify-between py-3 text-base">
+          <div className="flex w-full items-center gap-3 justify-between py-3 text-base">
           <div className="leading-snug font-semibold">Razem</div>
 
           {appointment.kulturalna_szkola === 1 && <div className="flex gap-4">
@@ -65,6 +70,15 @@ const CalculationRead = ({nextHandler}: CalculationReadProps) => {
             <div>{totalPrice} zł</div>
           </div>}
         </div>
+
+        </ItemContent>
+      </Item>
+
+
+      <div className="flex flex-col gap-4">
+        
+
+        
 
         {appointment.kulturalna_szkola === 1 && <div className="text-xs text-muted-foreground mt-2">&#42; Preferencyjna cena dla beneficjentów programu "Kulturalna Szkoła na Mazowszu"</div>}
 

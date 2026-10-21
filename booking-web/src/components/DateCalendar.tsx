@@ -29,7 +29,7 @@ const DateCalendar = ({visitDate, setVisitDate, visitTime, setVisitTime, schedul
 
   return (<Card className="ring-0 shadow-none">
     <CardHeader>
-      <CardTitle className="text-center">Wybierz datę i godzinę</CardTitle>
+      <CardTitle className="text-center text-xl font-semibold">Wybierz datę i godzinę</CardTitle>
     </CardHeader>
     <CardContent>
       <div className="flex flex-col gap-12 items-center">

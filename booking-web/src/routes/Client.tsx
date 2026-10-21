@@ -170,7 +170,7 @@ const Client = () => {
         <div>
           <Card className="ring-0 shadow-none">
             <CardHeader>
-              <CardTitle>Twoje dane</CardTitle>
+              <CardTitle className="text-xl font-semibold">Twoje dane</CardTitle>
             </CardHeader>
             <CardContent>
               <FieldGroup className="gap-7">
@@ -228,6 +228,7 @@ const Client = () => {
                       type="text"
                       value={client.zip}
                       onChange={handleClientChange}
+                      disabled={!(!appointment.zip_valid || !client.zip)}
                       aria-invalid={errors.zip}
                       autoComplete="off" />
                     {errors.zip && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij kod</FieldDescription>}

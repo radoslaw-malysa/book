@@ -67,7 +67,7 @@ class EmailAction
         'address' => MailerConfig::NOTIFICATION_EMAIL,
         'address_name' => null,
         'reply_email' => null,
-        'subject' => 'Potwierdzona rezerwacja nr ' . $appointment['id'] ?? '',
+        'subject' => 'Twoja rezerwacja nr ' . $appointment['id'] ?? '',
         'body' => $this->view->fetch('email_new_appointment.php', [
           'appointment' => $appointment,
           'service' => $this->services->where('id', $appointment['service_id'])->first(['name']),

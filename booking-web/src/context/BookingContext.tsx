@@ -11,6 +11,7 @@ export interface Appointment {
   guide: object | null;
   kulturalna_szkola: number;
   pax: number;
+  zip_valid: string;
 }
 
 export interface Client {
@@ -61,7 +62,8 @@ const initialAppointment: Appointment = {
   admission: null,
   guide: null,
   kulturalna_szkola: 0,
-  pax: 5
+  pax: 5,
+  zip_valid: ''
 };
 
 const initialClient: Client = {

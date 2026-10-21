@@ -379,14 +379,14 @@ class AppointmentsRepository extends Repository
       $lesson_duration = $lesson['duration']; // lepiej byloby pobrac z bazy
       if (!$lesson_duration) { $lesson_duration = 60; }
 
-      $start_datetime = $appointment['visit_date'] . ' ' . $appointment['visit_time'];
-      $end_datetime = date('Y-m-d H:i:s', strtotime($start_datetime . ' +' . $lesson_duration . ' minutes'));
+      $lesson_start_datetime = $appointment['visit_date'] . ' ' . $appointment['visit_time'];
+      $lesson_end_datetime = date('Y-m-d H:i:s', strtotime($lesson_start_datetime . ' +' . $lesson_duration . ' minutes'));
 
       // rooms needed for lesson
       $lesson_providers = $this->services->getServiceProviders($lesson['id']);
       for ($i = 0; $i < count($lesson_providers); $i++) {
-        $lesson_providers[$i]['start_time'] = $start_datetime;
-        $lesson_providers[$i]['end_time'] = $end_datetime;
+        $lesson_providers[$i]['start_time'] = $lesson_start_datetime;
+        $lesson_providers[$i]['end_time'] = $lesson_end_datetime;
       }
       
       foreach ($lesson_providers as $lesson_provider) {
@@ -396,6 +396,38 @@ class AppointmentsRepository extends Repository
           'provider_id' => $lesson_provider['provider_id'],
           'start_time' => $lesson_provider['start_time'],
           'end_time' => $lesson_provider['end_time']
+        ]);
+      }
+    }
+
+    // providers guide
+    if (isset($guide['id'])) {
+      // tour duration
+      $guide_duration = $guide['duration']; // lepiej byloby pobrac z bazy
+      if (!$guide_duration) { $guide_duration = 60; }
+
+      if (isset($lesson_end_datetime) && $lesson_end_datetime) {
+        $guide_start_datetime = $lesson_end_datetime;
+        $guide_end_datetime = date('Y-m-d H:i:s', strtotime($guide_start_datetime . ' +' . $guide_duration . ' minutes'));
+      } else {
+        $guide_start_datetime = $appointment['visit_date'] . ' ' . $appointment['visit_time'];
+        $guide_end_datetime = date('Y-m-d H:i:s', strtotime($guide_start_datetime . ' +' . $guide_duration . ' minutes'));
+      }
+
+      // rooms needed for guide
+      $guide_providers = $this->services->getServiceProviders($guide['id']);
+      for ($i = 0; $i < count($guide_providers); $i++) {
+        $guide_providers[$i]['start_time'] = $guide_start_datetime;
+        $guide_providers[$i]['end_time'] = $guide_end_datetime;
+      }
+      
+      foreach ($guide_providers as $guide_provider) {
+        $this->appointment_providers->insert([
+          'appointment_id' => $id_appointment,
+          'service_id' => $guide['id'],
+          'provider_id' => $guide_provider['provider_id'],
+          'start_time' => $guide_provider['start_time'],
+          'end_time' => $guide_provider['end_time']
         ]);
       }
     }
@@ -455,6 +487,20 @@ class AppointmentsRepository extends Repository
     $this->where('id', $appointment_id)->where('state', 'pending')->update(['state' => 'cancelled']);
 
     return ['success' => 1];
+  }
+
+  /**
+   * Verify zip code for kulturalna szkola
+   */
+  public function zipValidate($zip)
+  {
+    $query = "select id from {$this->tables->zip_codes} where zip_code = :zip limit 1";
+    $st = $this->connection->prepare($query);
+    $st->bindParam(':zip', $zip, PDO::PARAM_STR);
+    $st->execute();
+    $item = $st->fetch();
+
+    return (isset($item['id']) && $item['id']) ? true : false;
   }
 
 }

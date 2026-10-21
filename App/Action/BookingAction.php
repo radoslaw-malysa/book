@@ -225,4 +225,19 @@ class BookingAction
     
     return $this->json->render($response, $payload);
   }
+
+  /**
+   * Validate zip
+   */
+  public function zipValidate(Request $request, Response $response, $args) {
+    $zip = $args['zip'] ?? '';
+
+    if (!$zip) {
+      return $this->json->render($response, ['error' => 35, 'message' => 'Brak kodu pocztowego w wywołaniu']);
+    }
+    $zip_formatted = (strpos($zip, '-') === false) ? substr_replace($zip, '-', 2, 0) : $zip;
+    $allowed = $this->appointments->zipValidate($zip_formatted);
+    
+    return $this->json->render($response, ['allowed' => ($allowed) ? 1 : 0, 'zip' => $zip_formatted]);
+  }
 }
