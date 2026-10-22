@@ -93,16 +93,26 @@ Sale wykładowe trzymane są w tabeli: 'classrooms'
 Konkretne lekcje i sale lekcyjne dla rezerwacji
 
 
+
+
+
+
+
+CREATE TABLE appointment_services (
+    appointment_id INT NOT NULL,
+    lesson_id INT NOT NULL,
+    
+    price_at_booking DECIMAL(10, 2) NOT NULL,
+    duration_at_booking INT NOT NULL,
+    PRIMARY KEY (appointment_id, service_id),
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id),
+    FOREIGN KEY (lesson_id) REFERENCES lessons(id)
+);
+
 CREATE TABLE lessons (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
-    base_price DECIMAL(10, 2),
-    base_duration INT, -- in minutes
-);
-
-CREATE TABLE customers (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL
+    duration INT NOT NULL, -- in minutes
 );
 
 CREATE TABLE appointments (
@@ -110,14 +120,4 @@ CREATE TABLE appointments (
     customer_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id),
-);
-
-CREATE TABLE appointment_services (
-    appointment_id INT NOT NULL,
-    service_id INT NOT NULL,
-    price_at_booking DECIMAL(10, 2) NOT NULL,
-    duration_at_booking INT NOT NULL,
-    PRIMARY KEY (appointment_id, service_id),
-    FOREIGN KEY (appointment_id) REFERENCES appointments(id),
-    FOREIGN KEY (service_id) REFERENCES services(id)
 );
