@@ -117,15 +117,15 @@ const Client = () => {
     newErrors.address = !client.address;
     newErrors.zip = !client.zip;
     newErrors.city = !client.city;
-    newErrors.phone = !client.phone;
-    newErrors.email = !validateEmail(client.email);
+    newErrors.phone = !client.phone && appointment.kulturalna_szkola === 1;
+    newErrors.email = !validateEmail(client.email) && appointment.kulturalna_szkola === 1;
     newErrors.contact_name = !client.contact_name;
     newErrors.contact_phone = !client.contact_phone;
     newErrors.contact_email = !validateEmail(client.contact_email);
-    newErrors.pax_care = !client.pax_care && client.pax_care != 0;
+    newErrors.pax_care = !client.pax_care && client.pax_care != 0 && appointment.kulturalna_szkola === 1;
     newErrors.accept_processing = !client.accept_processing;
     newErrors.accept_regulations = !client.accept_regulations;
-    newErrors.accept_kultura_zl = !client.accept_kultura_zl;
+    newErrors.accept_kultura_zl = !client.accept_kultura_zl && appointment.kulturalna_szkola === 1;
     newErrors.ages = !(client.age_1 || client.age_2 || client.age_3 || client.age_4 || client.age_5 || client.age_6 || client.age_7)
 
     //setErrors(newErrors);
@@ -164,262 +164,260 @@ const Client = () => {
     }
   }
 
-  return (<>
-    <section>
-      <div className="w-9/10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div>
-          <Card className="ring-0 shadow-none">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold">Twoje dane</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <FieldGroup className="gap-7">
-                <RadioGroup onValueChange={(value) => handleClientRadio('customer_type', value)} value={client.customer_type}>
-                  <FieldLabel htmlFor="primary">
-                    <Field orientation="horizontal" data-invalid={errors.customer_type}>
-                      <FieldContent>
-                        <FieldTitle>Szkoła podstawowa</FieldTitle>
-                      </FieldContent>
-                      <RadioGroupItem value="primary" id="primary" aria-invalid={errors.customer_type} />
-                    </Field>
-                  </FieldLabel>
-                  <FieldLabel htmlFor="post_primary">
-                    <Field orientation="horizontal" data-invalid={errors.customer_type}>
-                      <FieldContent>
-                        <FieldTitle>Szkoła ponadpodstawowa</FieldTitle>
-                      </FieldContent>
-                      <RadioGroupItem value="post_primary" id="post_primary" aria-invalid={errors.customer_type} />
-                    </Field>
-                  </FieldLabel>
-                </RadioGroup>
-
-                <Field data-invalid={errors.name}>
-                  <FieldLabel htmlFor="name">Nazwa szkoły</FieldLabel>
-                  <Input 
-                    id="name"
-                    name="name"
-                    type="text"
-                    value={client.name}
-                    onChange={handleClientChange} 
-                    aria-invalid={errors.name}
-                    autoComplete="off" />
-                  {errors.name && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij nazwę szkoły</FieldDescription>}
-                </Field>
-
-                <Field data-invalid={errors.address}>
-                  <FieldLabel htmlFor="address">Ulica, nr domu</FieldLabel>
-                  <Input 
-                    id="address" 
-                    name="address"
-                    type="text"
-                    value={client.address}
-                    onChange={handleClientChange}
-                    aria-invalid={errors.address}
-                    autoComplete="off" />
-                  {errors.address && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij ulicę i nr domu</FieldDescription>}
-                </Field>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <Field data-invalid={errors.zip}>
-                    <FieldLabel htmlFor="zip">Kod pocztowy</FieldLabel>
-                    <Input 
-                      id="zip" 
-                      name="zip"
-                      type="text"
-                      value={client.zip}
-                      onChange={handleClientChange}
-                      disabled={!(!appointment.zip_valid || !client.zip)}
-                      aria-invalid={errors.zip}
-                      autoComplete="off" />
-                    {errors.zip && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij kod</FieldDescription>}
+  return (<section>
+    <div className="w-9/10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div>
+        <Card className="ring-0 shadow-none">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold">Twoje dane</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <FieldGroup className="gap-7">
+              {appointment.kulturalna_szkola === 1 && <RadioGroup onValueChange={(value) => handleClientRadio('customer_type', value)} value={client.customer_type}>
+                <FieldLabel htmlFor="primary">
+                  <Field orientation="horizontal" data-invalid={errors.customer_type}>
+                    <FieldContent>
+                      <FieldTitle>Szkoła podstawowa</FieldTitle>
+                    </FieldContent>
+                    <RadioGroupItem value="primary" id="primary" aria-invalid={errors.customer_type} />
                   </Field>
-                  <Field data-invalid={errors.city} className="col-span-2">
-                    <FieldLabel htmlFor="city">Miejscowość</FieldLabel>
-                    <Input 
-                      id="city" 
-                      name="city"
-                      type="text"
-                      value={client.city}
-                      onChange={handleClientChange}
-                      aria-invalid={errors.city}
-                      autoComplete="off" />
-                    {errors.city && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij miejscowość</FieldDescription>}
+                </FieldLabel>
+                <FieldLabel htmlFor="post_primary">
+                  <Field orientation="horizontal" data-invalid={errors.customer_type}>
+                    <FieldContent>
+                      <FieldTitle>Szkoła ponadpodstawowa</FieldTitle>
+                    </FieldContent>
+                    <RadioGroupItem value="post_primary" id="post_primary" aria-invalid={errors.customer_type} />
                   </Field>
-                </div>
+                </FieldLabel>
+              </RadioGroup>}
 
-                <Field data-invalid={errors.phone}>
-                  <FieldLabel htmlFor="phone">Telefon do szkoły</FieldLabel>
+              <Field data-invalid={errors.name}>
+                <FieldLabel htmlFor="name">Nazwa szkoły</FieldLabel>
+                <Input 
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={client.name}
+                  onChange={handleClientChange} 
+                  aria-invalid={errors.name}
+                  autoComplete="off" />
+                {errors.name && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij nazwę szkoły</FieldDescription>}
+              </Field>
+
+              <Field data-invalid={errors.address}>
+                <FieldLabel htmlFor="address">Ulica, nr domu</FieldLabel>
+                <Input 
+                  id="address" 
+                  name="address"
+                  type="text"
+                  value={client.address}
+                  onChange={handleClientChange}
+                  aria-invalid={errors.address}
+                  autoComplete="off" />
+                {errors.address && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij ulicę i nr domu</FieldDescription>}
+              </Field>
+
+              <div className="grid grid-cols-3 gap-4">
+                <Field data-invalid={errors.zip}>
+                  <FieldLabel htmlFor="zip">Kod pocztowy</FieldLabel>
                   <Input 
-                    id="phone" 
-                    name="phone"
+                    id="zip" 
+                    name="zip"
                     type="text"
-                    value={client.phone}
+                    value={client.zip}
                     onChange={handleClientChange}
-                    aria-invalid={errors.phone}
+                    disabled={!(!appointment.zip_valid || !client.zip)}
+                    aria-invalid={errors.zip}
                     autoComplete="off" />
-                  {errors.phone && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij telefon do szkoły</FieldDescription>}
+                  {errors.zip && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij kod</FieldDescription>}
                 </Field>
-
-                <Field data-invalid={errors.email}>
-                  <FieldLabel htmlFor="phone">E-mail szkoły</FieldLabel>
+                <Field data-invalid={errors.city} className="col-span-2">
+                  <FieldLabel htmlFor="city">Miejscowość</FieldLabel>
                   <Input 
-                    id="email" 
-                    name="email"
-                    type="email"
-                    value={client.email}
-                    onChange={handleClientChange}
-                    aria-invalid={errors.email}
-                    autoComplete="off" />
-                  {errors.email && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj prawidłowy e-mail</FieldDescription>}
-                </Field>
-
-                <Field data-invalid={errors.contact_name}>
-                  <FieldLabel htmlFor="phone">Osoba do kontaktu</FieldLabel>
-                  <Input 
-                    id="contact_name" 
-                    name="contact_name"
+                    id="city" 
+                    name="city"
                     type="text"
-                    value={client.contact_name}
+                    value={client.city}
                     onChange={handleClientChange}
-                    aria-invalid={errors.contact_name}
+                    aria-invalid={errors.city}
                     autoComplete="off" />
-                  {errors.contact_name && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj imię i nazwisko osoby kontaktowej</FieldDescription>}
+                  {errors.city && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij miejscowość</FieldDescription>}
                 </Field>
+              </div>
 
-                <Field data-invalid={errors.contact_phone}>
-                  <FieldLabel htmlFor="phone">Telefon do kontaktu</FieldLabel>
-                  <Input 
-                    id="contact_phone" 
-                    name="contact_phone"
-                    type="text"
-                    value={client.contact_phone}
-                    onChange={handleClientChange}
-                    aria-invalid={errors.contact_phone}
-                    autoComplete="off" />
-                  {errors.contact_phone && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij telefon do kontaktu</FieldDescription>}
-                </Field>
+              {appointment.kulturalna_szkola === 1 && <Field data-invalid={errors.phone}>
+                <FieldLabel htmlFor="phone">Telefon do szkoły</FieldLabel>
+                <Input 
+                  id="phone" 
+                  name="phone"
+                  type="text"
+                  value={client.phone}
+                  onChange={handleClientChange}
+                  aria-invalid={errors.phone}
+                  autoComplete="off" />
+                {errors.phone && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij telefon do szkoły</FieldDescription>}
+              </Field>}
 
-                <Field data-invalid={errors.contact_email}>
-                  <FieldLabel htmlFor="phone">E-mail do kontaktu</FieldLabel>
-                  <Input 
-                    id="contact_email" 
-                    name="contact_email"
-                    type="email"
-                    value={client.contact_email}
-                    onChange={handleClientChange}
-                    aria-invalid={errors.contact_email}
-                    autoComplete="off" />
-                  {errors.contact_email && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj prawidłowy e-mail do kontaktu</FieldDescription>}
-                </Field>
+              {appointment.kulturalna_szkola === 1 && <Field data-invalid={errors.email}>
+                <FieldLabel htmlFor="phone">E-mail szkoły</FieldLabel>
+                <Input 
+                  id="email" 
+                  name="email"
+                  type="email"
+                  value={client.email}
+                  onChange={handleClientChange}
+                  aria-invalid={errors.email}
+                  autoComplete="off" />
+                {errors.email && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj prawidłowy e-mail</FieldDescription>}
+              </Field>}
 
-                <Field data-invalid={errors.pax_care}>
-                  <FieldLabel htmlFor="phone">Liczba opiekunów</FieldLabel>
-                  <Input 
-                    id="pax_care" 
-                    name="pax_care"
-                    type="number"
-                    value={client.pax_care}
-                    onChange={handleClientChange}
-                    aria-invalid={errors.pax_care}
-                    autoComplete="off" />
-                  {errors.pax_care && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj liczbę opiekunów</FieldDescription>}
-                </Field>
+              <Field data-invalid={errors.contact_name}>
+                <FieldLabel htmlFor="phone">Osoba do kontaktu</FieldLabel>
+                <Input 
+                  id="contact_name" 
+                  name="contact_name"
+                  type="text"
+                  value={client.contact_name}
+                  onChange={handleClientChange}
+                  aria-invalid={errors.contact_name}
+                  autoComplete="off" />
+                {errors.contact_name && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj imię i nazwisko osoby kontaktowej</FieldDescription>}
+              </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="notes">Uwagi, szczególne wymagania, potrzeby</FieldLabel>
-                  <Textarea 
-                    id="notes" 
-                    name="notes"
-                    value={client.notes}
-                    onChange={handleClientChange}
-                    autoComplete="off" />
-                </Field>
+              <Field data-invalid={errors.contact_phone}>
+                <FieldLabel htmlFor="phone">Telefon do kontaktu</FieldLabel>
+                <Input 
+                  id="contact_phone" 
+                  name="contact_phone"
+                  type="text"
+                  value={client.contact_phone}
+                  onChange={handleClientChange}
+                  aria-invalid={errors.contact_phone}
+                  autoComplete="off" />
+                {errors.contact_phone && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Wypełnij telefon do kontaktu</FieldDescription>}
+              </Field>
 
-              </FieldGroup>
+              <Field data-invalid={errors.contact_email}>
+                <FieldLabel htmlFor="phone">E-mail do kontaktu</FieldLabel>
+                <Input 
+                  id="contact_email" 
+                  name="contact_email"
+                  type="email"
+                  value={client.contact_email}
+                  onChange={handleClientChange}
+                  aria-invalid={errors.contact_email}
+                  autoComplete="off" />
+                {errors.contact_email && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj prawidłowy e-mail do kontaktu</FieldDescription>}
+              </Field>
 
-              <div className="font-heading text-lg font-semibold tracking-wider uppercase mt-12 mb-8">Grupa wiekowa uczestników</div>
+              {appointment.kulturalna_szkola === 1 && <Field data-invalid={errors.pax_care}>
+                <FieldLabel htmlFor="phone">Liczba opiekunów</FieldLabel>
+                <Input 
+                  id="pax_care" 
+                  name="pax_care"
+                  type="number"
+                  value={client.pax_care}
+                  onChange={handleClientChange}
+                  aria-invalid={errors.pax_care}
+                  autoComplete="off" />
+                {errors.pax_care && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Podaj liczbę opiekunów</FieldDescription>}
+              </Field>}
 
-              <FieldGroup className="gap-3">
-                {AgeGroups.map((age) => (<Field key={age.id} orientation="horizontal" data-invalid={errors.ages}>
-                  <Checkbox
-                    id={age.id}
-                    name={age.id}
-                    checked={client[age.id] === 1}
-                    onCheckedChange={(checked) => handleAgeCheck(age.id, checked)}
-                    aria-invalid={errors.ages}
-                  />
-                  <FieldLabel
-                    htmlFor={age.id}
-                    className="cursor-pointer"
-                  >
-                    {age.title}
-                  </FieldLabel>
-                </Field>))}
-                {errors.ages && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Zaznacz grupy wiekowe uczestników</FieldDescription>}
-              </FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="notes">Uwagi, szczególne wymagania, potrzeby</FieldLabel>
+                <Textarea 
+                  id="notes" 
+                  name="notes"
+                  value={client.notes}
+                  onChange={handleClientChange}
+                  autoComplete="off" />
+              </Field>
 
-              <div className="font-heading text-lg font-semibold tracking-wider uppercase mt-12 mb-8">Twoje zgody</div>
+            </FieldGroup>
 
-              <FieldGroup className="gap-4">
-                <Field orientation="horizontal" className="items-start" data-invalid={errors.accept_processing}>
-                  <Checkbox
-                    id="accept_processing"
-                    name="accept_processing"
-                    checked={client.accept_processing === 1}
-                    onCheckedChange={(checked) => handleClientCheck('accept_processing', checked)}
-                    aria-invalid={errors.accept_processing}
-                  />
-                  <FieldLabel
-                    htmlFor="accept_processing"
-                  >
-                    <span>Zgadzam się na przetwarzanie moich danych przez Mazowieckie Centrum Sztuki Współczesnej „Elektrownia” w Radomiu, z siedzibą: 26-600 Radom, ul. Mikołaja Kopernika 1, w celu przeprowadzenia rezerwacji. <a href="https://www.mcswelektrownia.pl/pl/polityka-prywatnosci/14819" target="_blank" className="font-semibold underline">Polityka Prywatności</a></span>
-                  </FieldLabel>
-                </Field>
+            <div className="font-heading text-xl font-semibold tracking-wider mt-12 mb-8">Grupa wiekowa uczestników</div>
 
-                <Field orientation="horizontal" className="items-start" data-invalid={errors.accept_regulations}>
-                  <Checkbox
-                    id="accept_regulations"
-                    name="accept_regulations"
-                    checked={client.accept_regulations === 1}
-                    onCheckedChange={(checked) => handleClientCheck('accept_regulations', checked)}
-                    aria-invalid={errors.accept_regulations}
-                  />
-                  <FieldLabel
-                    htmlFor="accept_regulations"
-                  >
-                    <span>Zapoznałam(em) się z treścią i akceptuję zasady <a href="https://www.mcswelektrownia.pl/pl/regulamin-warsztatow-edukacyjnych/14450" target="_blank" className="font-semibold underline">Regulaminu warsztatów edukacyjnych</a></span>
-                  </FieldLabel>
-                </Field>
+            <FieldGroup className="gap-3">
+              {AgeGroups.map((age) => (<Field key={age.id} orientation="horizontal" data-invalid={errors.ages}>
+                <Checkbox
+                  id={age.id}
+                  name={age.id}
+                  checked={client[age.id] === 1}
+                  onCheckedChange={(checked) => handleAgeCheck(age.id, checked)}
+                  aria-invalid={errors.ages}
+                />
+                <FieldLabel
+                  htmlFor={age.id}
+                  className="cursor-pointer"
+                >
+                  {age.title}
+                </FieldLabel>
+              </Field>))}
+              {errors.ages && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Zaznacz grupy wiekowe uczestników</FieldDescription>}
+            </FieldGroup>
 
-                <Field orientation="horizontal" className="items-start" data-invalid={errors.accept_kultura_zl}>
-                  <Checkbox
-                    id="accept_kultura_zl"
-                    name="accept_kultura_zl"
-                    checked={client.accept_kultura_zl === 1}
-                    onCheckedChange={(checked) => handleClientCheck('accept_kultura_zl', checked)}
-                    aria-invalid={errors.accept_kultura_zl}
-                  />
-                  <FieldLabel
-                    htmlFor="accept_kultura_zl"
-                  >
-                    <span>Zapoznałam(em) się z treścią i akceptuję <a href="https://www.mcswelektrownia.pl/pl/kulturalna-szkola-na-mazowszu/14451" target="_blank" className="font-semibold underline">Zasady uczestnictwa w programie "Kulturalna Szkoła na Mazowszu"</a></span>
-                  </FieldLabel>
-                </Field>
-                {(errors.accept_processing || errors.accept_regulations || errors.accept_kultura_zl) && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Potrzebujemy Twojej zgody</FieldDescription>}
-              </FieldGroup>
+            <div className="font-heading text-xl font-semibold tracking-wider mt-12 mb-8">Twoje zgody</div>
 
-              
+            <FieldGroup className="gap-4">
+              <Field orientation="horizontal" className="items-start" data-invalid={errors.accept_processing}>
+                <Checkbox
+                  id="accept_processing"
+                  name="accept_processing"
+                  checked={client.accept_processing === 1}
+                  onCheckedChange={(checked) => handleClientCheck('accept_processing', checked)}
+                  aria-invalid={errors.accept_processing}
+                />
+                <FieldLabel
+                  htmlFor="accept_processing"
+                >
+                  <span>Zgadzam się na przetwarzanie moich danych przez Mazowieckie Centrum Sztuki Współczesnej „Elektrownia” w Radomiu, z siedzibą: 26-600 Radom, ul. Mikołaja Kopernika 1, w celu przeprowadzenia rezerwacji. <a href="https://www.mcswelektrownia.pl/pl/polityka-prywatnosci/14819" target="_blank" className="font-semibold underline">Polityka Prywatności</a></span>
+                </FieldLabel>
+              </Field>
+
+              <Field orientation="horizontal" className="items-start" data-invalid={errors.accept_regulations}>
+                <Checkbox
+                  id="accept_regulations"
+                  name="accept_regulations"
+                  checked={client.accept_regulations === 1}
+                  onCheckedChange={(checked) => handleClientCheck('accept_regulations', checked)}
+                  aria-invalid={errors.accept_regulations}
+                />
+                <FieldLabel
+                  htmlFor="accept_regulations"
+                >
+                  <span>Zapoznałam(em) się z treścią i akceptuję zasady <a href="https://www.mcswelektrownia.pl/pl/regulamin-warsztatow-edukacyjnych/14450" target="_blank" className="font-semibold underline">Regulaminu warsztatów edukacyjnych</a></span>
+                </FieldLabel>
+              </Field>
+
+              {appointment.kulturalna_szkola === 1 && <Field orientation="horizontal" className="items-start" data-invalid={errors.accept_kultura_zl}>
+                <Checkbox
+                  id="accept_kultura_zl"
+                  name="accept_kultura_zl"
+                  checked={client.accept_kultura_zl === 1}
+                  onCheckedChange={(checked) => handleClientCheck('accept_kultura_zl', checked)}
+                  aria-invalid={errors.accept_kultura_zl}
+                />
+                <FieldLabel
+                  htmlFor="accept_kultura_zl"
+                >
+                  <span>Zapoznałam(em) się z treścią i akceptuję <a href="https://www.mcswelektrownia.pl/pl/kulturalna-szkola-na-mazowszu/14451" target="_blank" className="font-semibold underline">Zasady uczestnictwa w programie "Kulturalna Szkoła na Mazowszu"</a></span>
+                </FieldLabel>
+              </Field>}
+              {(errors.accept_processing || errors.accept_regulations || errors.accept_kultura_zl) && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Potrzebujemy Twojej zgody</FieldDescription>}
+            </FieldGroup>
+
+            
 
 
-            </CardContent>
-          </Card>
-        </div>
-        <div>
-          <CalculationRead nextHandler={nextHandler} />
-        </div>
+          </CardContent>
+        </Card>
       </div>
-    </section>
-  </>)
+      <div>
+        <CalculationRead nextHandler={nextHandler} />
+      </div>
+    </div>
+  </section>)
 }
 
 export default Client
