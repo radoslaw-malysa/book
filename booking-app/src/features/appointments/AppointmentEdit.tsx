@@ -171,7 +171,6 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
           updateMutation.mutate(form);
         }}
         >
-          
           <Tabs defaultValue="overview" className="w-full gap-0">
             <div className="px-4 pb-4 border-b">
               <TabsList variant="default" className="w-full primary-tabs ">
@@ -580,7 +579,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                 <div className="px-4 flex gap-3 mb-2 mt-4">
                   <div className="w-9 flex-none flex"></div>
                   <div className="flex-grow">
-                    <Label htmlFor="name" className="leading-snug">Dane klienta</Label>
+                    <Label htmlFor="name" className="leading-snug">Dane szkoły/klienta</Label>
                   </div>
                 </div>
                 <div className="flex flex-col gap-4 mb-4">
@@ -606,6 +605,37 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                       </NativeSelect>
                     </div>
                   </div>
+                  <div className="px-4 flex gap-3">
+                    <div className="w-9 h-9 flex-none"></div>
+                    <div className="flex-grow">
+                      <Input 
+                        name="address"
+                        placeholder="Adres ulica, nr domu"
+                        value={form.customer.address}
+                        onChange={(e) => updateCustomer('address', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="px-4 flex gap-3">
+                    <div className="w-9 h-9 flex-none"></div>
+                    <div className="flex-grow grid grid-cols-3 gap-1">
+                      <Input 
+                        name="zip"
+                        placeholder="Kod poczt."
+                        value={form.customer.zip}
+                        onChange={(e) => updateCustomer('zip', e.target.value)}
+                      />
+                      <Input 
+                        name="city"
+                        placeholder="Miasto"
+                        value={form.customer.city}
+                        onChange={(e) => updateCustomer('city', e.target.value)}
+                        className="col-span-2"
+                      />
+                    </div>
+                  </div>
+
+
                   <div className="px-4 flex gap-3">
                     <div className="w-9 h-9 flex-none flex justify-center items-center">
                       <Phone size="20" />

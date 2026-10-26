@@ -85,28 +85,18 @@ bg-muted/60 has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:b
 
 
 Jesteś profesjonalnym programistą developerem PHP.
-Tworzysz system do rezerwowania szkoleń stacjonarnych.
-Rezerwacje trzymane są w tabeli: 'appointments'.
-Lekcje trzymane są w tabeli: 'services'.
-Sale wykładowe trzymane są w tabeli: 'classrooms'
-
-Konkretne lekcje i sale lekcyjne dla rezerwacji
-
-
-
-
-
-
+Tworzysz system do rezerwowania lekcji stacjonarnych. Oto lista tabel w bazie danych MySQL, które będą używane w tym systemie:
 
 CREATE TABLE appointment_services (
+    id INT PRIMARY KEY AUTO_INCREMENT,
     appointment_id INT NOT NULL,
     lesson_id INT NOT NULL,
-    
-    price_at_booking DECIMAL(10, 2) NOT NULL,
-    duration_at_booking INT NOT NULL,
-    PRIMARY KEY (appointment_id, service_id),
+    classroom_id INT NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
     FOREIGN KEY (appointment_id) REFERENCES appointments(id),
-    FOREIGN KEY (lesson_id) REFERENCES lessons(id)
+    FOREIGN KEY (lesson_id) REFERENCES lessons(id),
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
 CREATE TABLE lessons (
@@ -121,3 +111,38 @@ CREATE TABLE appointments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id),
 );
+
+CREATE TABLE lessons_classrooms (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    lesson_id INT NOT NULL,
+    classroom_id INT NOT NULL,
+    FOREIGN KEY (lesson_id) REFERENCES lessons(id),
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+);
+
+CREATE TABLE lessons_schedules (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    lesson_id INT NOT NULL,
+    day_of_week TINYINT NOT NULL, -- 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    start_time DATETIME NOT NULL,
+    FOREIGN KEY (lesson_id) REFERENCES lessons(id)
+);
+
+W tabeli appointment_services przechowujesz informacje o rezerwacjach lekcji, w tym identyfikatory lekcji, sali lekcyjnej oraz czas rozpoczęcia i zakończenia lekcji. 
+Tabela lessons przechowuje informacje o dostępnych lekcjach, w tym ich nazwę i czas trwania. Tabela appointments przechowuje informacje o rezerwacjach dokonanych przez klientów, w tym identyfikator klienta i datę utworzenia rezerwacji.
+W tabeli lessons_classrooms przechowujesz informacje o tym, które sale są potrzebne do przeprowadzenia danej lekcji, w tym identyfikatory lekcji i sali lekcyjnej. Niektóre lekcje wymagają więcej niż jednej sali lekcyjnej, dlatego w tej tabeli mogą znajdować się wiele rekordów dla jednej lekcji.
+W tabeli lessons_schedules przechowujesz informacje o harmonogramie lekcji, w tym identyfikator lekcji, dzień tygodnia i godzinę rozpoczęcia lekcji.
+Napisz funkcję w PHP która dla parametrów wejściowych: appointment_date_start, appointment_date_end, lesson_id wyświetli listę dostępnych godzin dla danej lekcji w określonym przedziale czasowym, uwzględniając harmonogram lekcji oraz już istniejące rezerwacje. Funkcja powinna zwracać tablicę dostępnych godzin w formacie "HH:MM".
+
+
+Zamiast parametru appointment_date użyjemy dwóch parametrów: appointment_date_start i appointment_date_end, które będą określały przedział czasowy, w którym chcemy sprawdzić dostępność godzin dla danej lekcji. Napisz funkcję w PHP która dla parametrów wejściowych: appointment_date_start, appointment_date_end, lesson_id wyświetli listę dostępnych godzin dla danej lekcji w określonym przedziale czasowym, uwzględniając harmonogram lekcji oraz już istniejące rezerwacje. Funkcja powinna zwracać tablicę dostępnych godzin w formacie "HH:MM".
+
+Nie. W wyniku chciałbym otrzymać dokładną listę dostępnych godzin dla danej lekcji dla każdego dnia w określonym przedziale czasowym, uwzględniając harmonogram lekcji oraz już istniejące rezerwacje. Funkcja powinna zwracać tablicę dostępnych godzin w formacie "HH:MM" dla każdego dnia w przedziale czasowym.
+
+```php
+
+
+
+
+
+

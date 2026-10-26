@@ -36,11 +36,12 @@ class ServicesRepository extends Repository
   {
     $services = [];
 
-    $rows = $this->get(['id','name', 'service_type']);
+    $rows = $this->get(['id','name', 'service_type', 'duration']);
     foreach ($rows as $row) {
       $services[$row['service_type']][] = [
         'id' => $row['id'],
-        'name' => $row['name']
+        'name' => $row['name'] . ' (' . $row['duration'] . 'min.)',
+        'duration' => $row['duration']
       ];
     }
 
