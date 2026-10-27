@@ -54,6 +54,7 @@ class BookingAction
 
     $service_id = $query_params['service_id'] ?? 0;
     $visit_date = $query_params['date'] ?? date("Y-m-d");
+    $visit_time = $query_params['time'] ?? '';
 
     // service prices
     $service = $this->services->getServicePrices($service_id, $visit_date);
@@ -62,24 +63,63 @@ class BookingAction
     $kulturalna_szkola = 1;
 
     // free rooms
-    $schedule = [
-      ['start_time' => '09:00', 'free' => 1],
-      ['start_time' => '11:00', 'free' => 1],
-      ['start_time' => '12:00', 'free' => 0]
-    ];
+    $date_start = date("Y-m-d");
+    $date_stop = date('Y-m-d', strtotime($date_start. ' + 10 days'));
+    $slots = $this->appointment_providers->getAvailableLessonSlotsPerDay($date_start, $date_stop, (int) $service_id);
+    $schedule = ($slots) ? $this->formatSchedule($slots) : [];
 
-    // disabled dates
+    // is trip available
+    if ($visit_time) {
+      $guide_service_id = $this->services::$guide_service_id;
+      $time_start = $visit_time;
+      $is_trip_available = $this->appointment_providers->getTripAvailability($visit_date, $time_start, (int) $guide_service_id);
 
+    } else {
+      $is_trip_available = true;
+    }
 
     $payload = [
       'service' => $service,
       'service_id' => $service_id,
       'visit_date' => $visit_date,
       'schedule' => $schedule,
-      'kulturalna_szkola' => $kulturalna_szkola
+      'kulturalna_szkola' => $kulturalna_szkola,
+      'is_trip_available' => $is_trip_available
     ];
     
     return $this->json->render($response, $payload);
+  }
+
+  /**
+   * Format schedule for react api
+   */
+  private function formatSchedule($schedule)
+  {
+    $schedule_formatted = [];
+    $month_names = ['','sty','lut','mar','kwi','maj','cze','lip','sie','wrz','paź','lis','gru'];
+    $week_names = ['', 'pon','wto','śro','czw','pt','sob','ndz'];
+
+    foreach ($schedule as $day => $day_item) {
+      $slots = [];
+      foreach ($day_item as $hour => $available) {
+        $slots[] = [
+          'time' => $hour,
+          'isAvailable' => ($available == 1) ? true : false
+        ];
+      }
+
+      $date = \DateTimeImmutable::createFromFormat('Y-m-d', $day);
+
+      $schedule_formatted[] = [
+        'date' => $day,
+        'dayName' => $week_names[(int) $date->format('N')] ?? '',
+        'dayOfMonth' => (int) $date->format('j'),
+        'monthName' => $month_names[(int) $date->format('n')] ?? '',
+        'slots' => $slots
+      ];
+    }
+
+    return $schedule_formatted;
   }
 
   /**
@@ -118,11 +158,13 @@ class BookingAction
 
   public function testBooking(Request $request, Response $response, $args) {
     $appointment_date = '2026-10-19';
-    $appointment_date_end = '2026-10-22';
+    $appointment_date_end = '2026-10-28';
     $service_id = 2;
 
     //$slots = $this->appointment_providers->getAvailableLessonSlots($appointment_date, $service_id);
     $slots = $this->appointment_providers->getAvailableLessonSlotsPerDay($appointment_date, $appointment_date_end, $service_id);
+    echo '<pre>'; print_r($slots);
+    print_r($this->formatSchedule($slots));
     exit;
     
   }

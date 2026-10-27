@@ -19,9 +19,10 @@ interface CalculationProps {
   service: {};
   kulturalna_szkola: number;
   nextHandler: () => void;
+  is_trip_available: boolean;
 }
 
-const Calculation = ({service, kulturalna_szkola, nextHandler}: CalculationProps) => {
+const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available}: CalculationProps) => {
   const { appointment, updateAppointment, updateClient } = useBooking();
   const navigate = useNavigate();
   const [zip, setZip] = useState(appointment.zip_valid.replace(/\D/g, ''));
@@ -98,8 +99,6 @@ const Calculation = ({service, kulturalna_szkola, nextHandler}: CalculationProps
   else if (appointment.pax > maxPax) { error = `Grupa może liczyć maksymalnie ${maxPax} osób.`; }
   else if (appointment.pax < minPax) { error = `Grupa może liczyć minimalnie ${minPax} osób.`; }
 
-  
-
   return (<Card className="sticky lg:top-24 xshadow-lg">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">Twoja rezerwacja</CardTitle>
@@ -137,9 +136,10 @@ const Calculation = ({service, kulturalna_szkola, nextHandler}: CalculationProps
 
           {service.guide && <FieldLabel className="cursor-pointer">
             <Field orientation="horizontal">
-              <Checkbox id="guide" name="guide" checked={appointment.guide !== null} onCheckedChange={(checked) => updateAppointment({ guide: checked ? service.guide : null }) } />
+              <Checkbox id="guide" name="guide" checked={appointment.guide !== null} onCheckedChange={(checked) => updateAppointment({ guide: checked ? service.guide : null })} disabled={!is_trip_available} />
               <FieldContent>
                 <FieldTitle className="normal-case text-sm">{service.guide.name}</FieldTitle>
+                {!is_trip_available && <FieldDescription className="leading-[1.25]">Wystawy niedostępne w wybranej godzinie.</FieldDescription>}
               </FieldContent>
               {service.guide.price > 0 && <div className="normal-case text-sm">{service.guide.price * 1} zł/os.</div>}
             </Field>

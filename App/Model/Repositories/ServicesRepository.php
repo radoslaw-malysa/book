@@ -16,7 +16,7 @@ use App\Model\Repositories\ProvidersServicesRepository;
 class ServicesRepository extends Repository
 {
   protected static $admission_service_id = 11;
-  protected static $guide_service_id = 12;
+  public static $guide_service_id = 12;
 
   public function __construct(PDO $connection, Tables $tables, CategoriesRepository $categories, ServiceScheduleRepository $service_schedule, CategoriesServicesRepository $categories_services, ProvidersServicesRepository $providers_services)
   {

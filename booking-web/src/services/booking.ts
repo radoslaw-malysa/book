@@ -14,6 +14,7 @@ export interface BookingResponse {
   token?: string;
   schedule: [];
   kulturalna_szkola: number;
+  is_trip_available: boolean;
   client: Client;
   appointment: Appointment;
   calculation: [];
@@ -28,6 +29,7 @@ interface BookingPostData {
 export interface BookingFilters {
   service_id?: string;
   date?: string;
+  time?: string;
 }
 
 /*export async function getBooking_(

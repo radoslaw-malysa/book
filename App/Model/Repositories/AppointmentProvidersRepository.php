@@ -173,11 +173,11 @@ class AppointmentProvidersRepository extends Repository
         ? new \DateTimeImmutable($appointmentDateEnd . ' 23:59:59')
         : new \DateTimeImmutable($appointmentDateEnd);
     } catch (Exception $e) {
-      throw new InvalidArgumentException("Niepoprawny format daty: {$e->getMessage()}");
+      throw new \InvalidArgumentException("Niepoprawny format daty: {$e->getMessage()}");
     }
 
     if ($start > $end) {
-      throw new InvalidArgumentException("Data początkowa nie może być późniejsza niż data końcowa.");
+      throw new \InvalidArgumentException("Data początkowa nie może być późniejsza niż data końcowa.");
     }
 
 
@@ -245,12 +245,14 @@ class AppointmentProvidersRepository extends Repository
 
     while ($currentDay <= $lastDay) {
       $dateKey = $currentDay->format('Y-m-d');
-      $result[$dateKey] = [];
+      //$result[$dateKey] = []; // line moved down
 
       $dayOfWeek = (int) $currentDay->format('N'); // 'w' 0-sunday
 
       // Sprawdzamy harmonogram dla danego dnia tygodnia
       if (isset($schedulesByDay[$dayOfWeek])) {
+        $result[$dateKey] = []; // moved here - dont show day without schedule
+
         foreach ($schedulesByDay[$dayOfWeek] as $timeStr) {
           [$hour, $minute] = explode(':', $timeStr);
           $slotStart = $currentDay->setTime((int) $hour, (int) $minute);
@@ -278,24 +280,102 @@ class AppointmentProvidersRepository extends Repository
             }
           }
 
-          if (!$hasConflict) {
+          $result[$dateKey][$timeStr] = (!$hasConflict) ? 1 : 0;
+          /*if (!$hasConflict) {
             $result[$dateKey][] = $timeStr;
-          }
+          }*/
         }
       }
 
       $currentDay = $currentDay->modify('+1 day');
     }
 
-    print_r($result); exit;
-
     return $result;
-
-
-    
   }
 
+  /**
+   * Spradza czy oprowadzanie jest dostępne o danej godzinie
+   */
+  public function getTripAvailability(string $appointmentDate, string $appointmentTime, $lessonId): bool
+  {
+    // 2. Pobranie czasu trwania lekcji
+    $stmtLesson = $this->connection->prepare('SELECT duration FROM ' . $this->tables->services . ' WHERE id = :lesson_id');
+    $stmtLesson->execute(['lesson_id' => $lessonId]);
+    $lesson = $stmtLesson->fetch(PDO::FETCH_ASSOC);
 
+    if (!$lesson) {
+      throw new RuntimeException("Nie znaleziono lekcji o ID: {$lessonId}");
+    }
+    $durationMinutes = (int) $lesson['duration'];
+
+    // 3. Pobranie wszystkich sal wymaganych do przeprowadzenia tej lekcji
+    $stmtRooms = $this->connection->prepare('SELECT provider_id FROM ' . $this->tables->providers_services . ' WHERE service_id = :lesson_id');
+    $stmtRooms->execute(['lesson_id' => $lessonId]);
+    $requiredRoomIds = $stmtRooms->fetchAll(PDO::FETCH_COLUMN);
+
+    if (empty($requiredRoomIds)) {
+      // Jeśli lekcja nie ma przypisanych sal, nie może się odbyć (lub brak konfiguracji)
+      return [];
+    }
+
+    // 4. Pobranie godzin rozpoczęcia z harmonogramu dla tego dnia tygodnia
+    // start_time w bazie to DATETIME, więc pobieramy tylko godzinę i minutę
+    // godzina 
+    $potentialSlots = [$appointmentTime];
+
+    // 5. Pobranie istniejących rezerwacji dla wymaganych sal w tym dniu
+    // Sprawdzamy rezerwacje, które mogą nachodzić na ten dzień
+    $dayStart = $appointmentDate . ' 00:00:00';
+    $dayEnd   = $appointmentDate . ' 23:59:59';
+
+    $inPlaceholders = implode(',', array_fill(0, count($requiredRoomIds), '?'));
+    $sqlAppointments = "
+        SELECT service_id, start_time, end_time
+        FROM " . $this->tables->appointment_providers . "
+        WHERE provider_id IN ({$inPlaceholders})
+          AND end_time > ? 
+          AND start_time <= DATE_ADD(?, INTERVAL 1 DAY)
+    ";
+
+    $stmtAppointments = $this->connection->prepare($sqlAppointments);
+    $params = array_merge($requiredRoomIds, [$dayStart, $dayEnd]);
+    $stmtAppointments->execute($params);
+    $existingBookings = $stmtAppointments->fetchAll(PDO::FETCH_ASSOC);
+
+    // 6. Weryfikacja dostępności każdego ze slotów
+    $availableSlots = [];
+
+    foreach ($potentialSlots as $timeStr) {
+      $slotStart = \DateTimeImmutable::createFromFormat('Y-m-d H:i', "{$appointmentDate} {$timeStr}");
+      if (!$slotStart) {
+          continue;
+      }
+      $slotEnd = $slotStart->modify("+{$durationMinutes} minutes");
+
+      $slotStartTs = $slotStart->getTimestamp();
+      $slotEndTs   = $slotEnd->getTimestamp();
+
+      $hasConflict = false;
+
+      // Sprawdzamy, czy którakolwiek z wymaganych sal ma kolizję
+      foreach ($existingBookings as $booking) {
+        $bookingStartTs = strtotime($booking['start_time']);
+        $bookingEndTs   = strtotime($booking['end_time']);
+
+        // Kolizja zachodzi, gdy: (slotStart < bookingEnd) AND (slotEnd > bookingStart)
+        if ($slotStartTs < $bookingEndTs && $slotEndTs > $bookingStartTs) {
+            $hasConflict = true;
+            break; // Znaleziono zajętą salę – ten slot odpada
+        }
+      }
+
+      if (!$hasConflict) {
+        $availableSlots[] = $timeStr;
+      }
+    }
+    return false;
+    return count($availableSlots) > 0;
+  }
 
 
   /**
@@ -306,7 +386,7 @@ class AppointmentProvidersRepository extends Repository
    * @return array<string>         Tablica dostępnych godzin w formacie 'HH:MM'.
    * @throws InvalidArgumentException|RuntimeException
    */
-  function getAvailableLessonSlots(string $appointmentDate, int $lessonId): array
+  /*function getAvailableLessonSlots(string $appointmentDate, int $lessonId): array
   {
     // 1. Walidacja daty i wyznaczenie dnia tygodnia (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
     $dateObj = \DateTimeImmutable::createFromFormat('Y-m-d', $appointmentDate);
@@ -411,7 +491,7 @@ class AppointmentProvidersRepository extends Repository
     }
 
     return $availableSlots;
-  }
+  }*/
 
 
   /**
