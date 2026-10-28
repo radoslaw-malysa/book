@@ -44,6 +44,17 @@ const customerTypes = [
   { value: 'other', label: 'Inny' }
 ];
 
+function addMinutesToDateTime(dateStr, minutesToAdd) {
+  // 1. Convert "Y-m-d H:i:s" to ISO 8601 UTC ("Y-m-dTH:i:sZ")
+  const date = new Date(dateStr.replace(' ', 'T') + 'Z');
+
+  // 2. Add the minutes (JavaScript automatically handles hour/day/month rollovers)
+  date.setUTCMinutes(date.getUTCMinutes() + minutesToAdd);
+
+  // 3. Convert back: "YYYY-MM-DDTHH:mm:ss.sssZ" -> "YYYY-MM-DD HH:mm:ss"
+  return date.toISOString().replace('T', ' ').slice(0, 16);
+}
+
 const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) => {
   const queryClient = useQueryClient();
   const [form, setForm] = useState<Appointment | null>(null);
@@ -146,15 +157,42 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
     }
   }
 
-  const handleLessonChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+  const handleServiceChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+    const serviceType = e.target.name;
     const serviceId = e.target.value;
+    const newState = form?.appointment_providers;
+    console.log(form);
+
     updateAppointmentProvider('lesson', 0, 'service_id', serviceId);
     
     if (serviceId) {
       const res = await getServiceProviders(serviceId);
-      console.log(res);
+
+      if (res.items) {
+        if (res.items[0] !== undefined && res.items[0].provider_id) {
+          newState[serviceType][0].provider_id = res.items[0].provider_id;
+          const serviceIdInt = parseInt(serviceId)
+          const selectedService = form.services[serviceType].find((el) => el.id === serviceIdInt);
+          if (newState[serviceType][0].start_time) {
+            const end = addMinutesToDateTime(newState[serviceType][0].start_time, selectedService.duration);
+            if (end) {
+              newState[serviceType][0].end_time = end;
+            }
+          }
+        } else {
+          newState[serviceType][0].provider_id = '';
+        }
+        
+        if (res.items[1] !== undefined && res.items[1].provider_id) {
+          newState[serviceType][1].provider_id = res.items[1].provider_id;
+        } else {
+          newState[serviceType][1].provider_id = '';
+        }
+        
+      }
     }
     
+    setForm((current) => (current ? { ...current, appointment_providers: newState } : current));
   }
   
   return (
@@ -208,7 +246,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                       <div className="w-9 h-9 flex-none"></div>
                       <div className="flex-grow">
                         <Field>
-                          <NativeSelect className="w-full" value={form.appointment_providers.lesson[0].service_id} onChange={handleLessonChange}>
+                          <NativeSelect name="lesson" className="w-full" value={form.appointment_providers.lesson[0].service_id} onChange={handleServiceChange}>
                             <NativeSelectOption value=""></NativeSelectOption>
                             {form.services['lesson'].map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
                           </NativeSelect>
@@ -265,7 +303,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                           <Input 
                             type="time"
                             name="visit_time"
-                            value={form.appointment_providers.lesson[0].start_time ? form.appointment_providers.lesson[0].end_time.split(' ')[1] : ''}
+                            value={form.appointment_providers.lesson[0].end_time ? form.appointment_providers.lesson[0].end_time.split(' ')[1] : ''}
                             onChange={(e) => updateAppointmentProvider('lesson', 0, 'end_time_h', e.target.value)}
                             className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                           />

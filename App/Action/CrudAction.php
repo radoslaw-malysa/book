@@ -201,8 +201,8 @@ class CrudAction
 
   public function getServiceProviders(Request $request, Response $response, $args) 
   {
-    $providers = $this->services->getServiceProviders($args['id']);
-    return $this->json->render($response, $providers ?? []);
+    $items = $this->services->getServiceProviders($args['id']);
+    return $this->json->render($response, ['items' => $items ?? []]);
   }
 
 }
