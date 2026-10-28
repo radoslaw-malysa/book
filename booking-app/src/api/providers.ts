@@ -59,3 +59,14 @@ export const updateProvider = async (item: Provider): Promise<Provider | ErrorMe
       body: toFormData(item),
     }),
   );
+
+export const getServiceProviders = async (serviceId: number | string): Promise<Provider[]> => {
+
+  const response = await fetch(`${providersUrl}/by-service/${serviceId}`);
+
+  if (!response.ok) {
+    throw new Error(`Unable to load services: ${response.status}`);
+  }
+
+  return response.json() as Promise<Provider[]>;
+}

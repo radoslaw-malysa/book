@@ -46,14 +46,14 @@ const CalculationRead = ({nextHandler}: CalculationReadProps) => {
             <div className="text-sm font-semibold">{appointment.pax} x {appointment.lesson.price * 1} zł</div>
           </div>}
 
-          {appointment.guide && <Separator />}
-          {appointment.guide && <div className="flex w-full items-center gap-3 justify-between py-3">
+          {appointment.guide !== null && <Separator />}
+          {appointment.guide !== null && <div className="flex w-full items-center gap-3 justify-between py-3">
             <div className="text-sm leading-snug font-medium">{appointment.guide.name}</div>
             <div className="text-sm font-semibold">{appointment.pax} x {appointment.guide.price * 1} zł</div>
           </div>}
 
-          {(appointment.kulturalna_szkola && appointment.zip_valid) && <Separator />}
-          {(appointment.kulturalna_szkola && appointment.zip_valid) && <div className="flex w-full items-center gap-3 justify-between py-3">
+          {(appointment.kulturalna_szkola === 1 && appointment.zip_valid) && <Separator />}
+          {(appointment.kulturalna_szkola === 1 && appointment.zip_valid) && <div className="flex w-full items-center gap-3 justify-between py-3">
             <div className="text-sm leading-snug font-medium">Uczestniczę w programie “Kulturalna Szkoła na Mazowszu”</div>
           </div>}
 
@@ -62,11 +62,11 @@ const CalculationRead = ({nextHandler}: CalculationReadProps) => {
           <div className="flex w-full items-center gap-3 justify-between py-3 text-base">
           <div className="leading-snug font-semibold">Razem</div>
 
-          {appointment.kulturalna_szkola === 1 && <div className="flex gap-4">
+          {(appointment.kulturalna_szkola === 1 && appointment.zip_valid) && <div className="flex gap-4">
             <div className="line-through text-muted-foreground">{totalPrice} zł</div>
             <div className="font-semibold">{sellPrice} zł&#42;</div>
           </div>}
-          {appointment.kulturalna_szkola !== 1 && <div className="flex gap-4">
+          {(appointment.kulturalna_szkola !== 1 || appointment.zip_valid === '') && <div className="flex gap-4">
             <div>{totalPrice} zł</div>
           </div>}
         </div>

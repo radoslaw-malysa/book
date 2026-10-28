@@ -1,8 +1,9 @@
 import { type Appointment } from "@/context/BookingContext";
-import { Card,  CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
+import { Card,  CardAction,  CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
 import { Clock } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { Item, ItemContent } from "./ui/item";
+import { Badge } from "./ui/badge";
 
 interface CalculationReadProps {
   appointment: Appointment;
@@ -10,12 +11,20 @@ interface CalculationReadProps {
   nextHandler: () => void;
 }
 
+const stateName = {
+  pending: 'Niepotwierdzona',
+  confirmed: 'Potwierdzona',
+  cancelled: 'Anulowana',
+  completed: 'Zamknięta'
+};
+
 const CalculationVisit = ({appointment, calculation, nextHandler}: CalculationReadProps) => {
   
   return (<Card className="sticky lg:top-24 xshadow-lg">
     <CardHeader>
-      <CardTitle className="text-xl font-semibold flex justify-between"><span>Twoja rezerwacja</span><span>Nr {appointment.id}</span></CardTitle>
+      <CardTitle className="text-xl font-semibold flex justify-between"><span>Rezerwacja nr {appointment.id}</span></CardTitle>
       {appointment.visit_date && <CardDescription className="inline-flex gap-1.5 items-center"><Clock size="16" /><span> {appointment.visit_date}</span> {appointment.visit_time && <span>{appointment.visit_time}</span>}</CardDescription>}
+      <CardAction><Badge className="py-3">{stateName[appointment.state]}</Badge></CardAction>
     </CardHeader>
     <CardContent>
       <Item variant="muted">
@@ -28,10 +37,10 @@ const CalculationVisit = ({appointment, calculation, nextHandler}: CalculationRe
             <Separator  />
           </div>)}
 
-          {appointment.kulturalna_szkola && <div className="flex w-full items-center gap-3 justify-between py-3">
+          {appointment.kulturalna_szkola === 1 && <div className="flex w-full items-center gap-3 justify-between py-3">
             <div className="text-sm leading-snug font-medium">Uczestniczę w programie “Kulturalna Szkoła na Mazowszu”</div>
           </div>}
-          {appointment.kulturalna_szkola && <Separator />}
+          {appointment.kulturalna_szkola === 1 && <Separator />}
 
           <div className="flex w-full items-center gap-3 justify-between py-3 text-base font-semibold">
             <div className="leading-snug">Razem</div>

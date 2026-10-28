@@ -64,15 +64,18 @@ class BookingAction
 
     // free rooms
     $date_start = date("Y-m-d");
-    $date_stop = date('Y-m-d', strtotime($date_start. ' + 10 days'));
+    $date_stop = date('Y-m-d', strtotime($date_start. ' + 20 days'));
     $slots = $this->appointment_providers->getAvailableLessonSlotsPerDay($date_start, $date_stop, (int) $service_id);
     $schedule = ($slots) ? $this->formatSchedule($slots) : [];
 
     // is trip available
     if ($visit_time) {
       $guide_service_id = $this->services::$guide_service_id;
-      $time_start = $visit_time;
-      $is_trip_available = $this->appointment_providers->getTripAvailability($visit_date, $time_start, (int) $guide_service_id);
+      $lesson_duration = ($service['lesson']['duration']) ? (int) $service['lesson']['duration'] : 0;
+      $time_start = date('H:i', strtotime("$visit_time +$lesson_duration minutes")); // trip starts after lesson duration
+      
+      $trip_slots = $this->appointment_providers->getAvailableLessonSlots($visit_date, (int) $guide_service_id, $time_start);
+      $is_trip_available = is_array($trip_slots) && count($trip_slots) > 0;
 
     } else {
       $is_trip_available = true;

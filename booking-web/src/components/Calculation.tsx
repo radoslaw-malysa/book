@@ -93,11 +93,12 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
 
   // next enabled
   let error = '';
+  let paxError = '';
   if (!appointment.visit_date) { error = 'Wybierz datę wizyty'; }
   else if (!appointment.visit_time) { error = 'Wybierz godzinę wizyty'; }
   else if (!appointment.lesson && !appointment.guide) { error = 'Co chcesz zarezerwować? Wybierz coś z oferty.'; }
-  else if (appointment.pax > maxPax) { error = `Grupa może liczyć maksymalnie ${maxPax} osób.`; }
-  else if (appointment.pax < minPax) { error = `Grupa może liczyć minimalnie ${minPax} osób.`; }
+  else if (appointment.pax > maxPax) { error = `Grupa może liczyć maksymalnie ${maxPax} osób.`; paxError = `Maksymalnie ${maxPax} osób`; }
+  else if (appointment.pax < minPax) { error = `Grupa może liczyć minimalnie ${minPax} osób.`; paxError = `Minimum ${minPax} osób`; }
 
   return (<Card className="sticky lg:top-24 xshadow-lg">
       <CardHeader>
@@ -176,7 +177,7 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
                 </div>
                 <div className="text-xs">
                   {loading && <div>Sprawdzam...</div>}
-                  {zipInvalid && <div className="text-destructive">Nie znaleziono kodu w mazowieckim</div>}
+                  {zipInvalid && <div className="text-destructive">Nie znaleziono kodu w woj. mazowieckim</div>}
                   {appointment.zip_valid && <div className="text-green-600">Kod prawidłowy</div>}
                 </div>
               </Field>}
@@ -188,10 +189,13 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
 
         <div className="my-8 grid grid-cols-2 gap-2 lg:gap-16">
           <Label htmlFor="pax">Liczba uczestników</Label>
-          <div className="flex gap-2">
-            <Button variant="secondary" size="icon" onClick={() => updateAppointment({pax: appointment.pax > minPax ? appointment.pax - 1 : minPax})}><Minus /></Button>
-            <Input id="pax" name="pax" type="number"  min={minPax} max={maxPax} className="text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="0" value={appointment.pax} onChange={handleAppointmentChange} />
-            <Button variant="secondary" size="icon" onClick={() => updateAppointment({pax: appointment.pax < maxPax ? appointment.pax + 1 : appointment.pax})}><Plus /></Button>
+          <div>
+            <div className="flex gap-2">
+              <Button variant="secondary" size="icon" onClick={() => updateAppointment({pax: appointment.pax > minPax ? appointment.pax - 1 : minPax})}><Minus /></Button>
+              <Input id="pax" name="pax" type="number" min={minPax} max={maxPax} aria-invalid={paxError !== ''} className="text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="0" value={appointment.pax} onChange={handleAppointmentChange} />
+              <Button variant="secondary" size="icon" onClick={() => updateAppointment({pax: appointment.pax < maxPax ? appointment.pax + 1 : appointment.pax})}><Plus /></Button>
+            </div>
+            {paxError !== '' && <div className="text-destructive text-center pt-2">{paxError}</div>}
           </div>
         </div>
 

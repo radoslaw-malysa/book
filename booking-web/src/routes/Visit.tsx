@@ -90,28 +90,28 @@ const Visit = () => {
       <div className="flex flex-col gap-12">
         {firstVisit && <Card className="shadow-none">
           <CardHeader>
-            <CardTitle>Rezerwacja przebiegła pomyślnie</CardTitle>
+            <CardTitle className="text-lg font-semibold">Rezerwacja przebiegła pomyślnie</CardTitle>
             <CardDescription>Dziękujemy. Otrzymaliśmy Twoje zgłoszenie. <br />Postępuj dalej zgodnie z poniższymi wskazówkami.</CardDescription>
           </CardHeader>
         </Card>}
 
         {appointment.state === 'cancelled' && <Card className="shadow-none">
           <CardHeader>
-            <CardTitle>Rezerwacja anulowana</CardTitle>
+            <CardTitle className="text-lg font-semibold">Rezerwacja anulowana</CardTitle>
             <CardDescription>Rezerwacja została anulowana.</CardDescription>
           </CardHeader>
         </Card>}
 
         {appointment.state === 'confirmed' && <Card className="shadow-none">
           <CardHeader>
-            <CardTitle>Rezerwacja potwierdzona</CardTitle>
+            <CardTitle className="text-lg font-semibold">Rezerwacja potwierdzona</CardTitle>
             <CardDescription>Dziękujemy! Oczekujemy na Państa wizytę w zaplanowanym terminie: <strong>{appointment.visit_date} {appointment.visit_time.substring(0, 5)}</strong></CardDescription>
           </CardHeader>
         </Card>}
 
         {appointment.state !== 'cancelled' && appointment.kulturalna_szkola === 1 && <Card className="shadow-none bg-muted">
           <CardHeader>
-            <CardTitle>Zgłoszenie szkoły do Programu "Kulturalna Szkoła na Mazowszu"</CardTitle>
+            <CardTitle className="text-lg font-semibold">Zgłoszenie szkoły do Programu "Kulturalna Szkoła na Mazowszu"</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 text-left leading-[1.5] text-base">
@@ -128,7 +128,7 @@ const Visit = () => {
 
         {appointment.state === 'pending' && <Card className="shadow-none bg-muted">
           <CardHeader>
-            <CardTitle>Potwierdź rezerwację</CardTitle>
+            <CardTitle className="text-lg font-semibold">Potwierdź rezerwację</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 text-left leading-[1.5] text-base">
@@ -146,7 +146,7 @@ const Visit = () => {
 
         {appointment.state !== 'cancelled' && <Card className="shadow-none">
           <CardHeader>
-            <CardTitle>Płatność</CardTitle>
+            <CardTitle className="text-lg font-semibold">Płatność</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 text-left leading-[1.5] text-base">
@@ -156,7 +156,7 @@ const Visit = () => {
         </Card>}
 
       </div>
-      <div>
+      <div className="order-first lg:order-last">
         <CalculationVisit appointment={appointment} calculation={calculation} nextHandler={nextHandler} />
       </div>
     </div>

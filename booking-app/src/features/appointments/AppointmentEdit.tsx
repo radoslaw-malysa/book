@@ -12,11 +12,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AtSign, BadgePercent, Clock, ContactRound, Flag, ListChecks, Mail, MapPin, MessageCircleWarning, PersonStanding, Phone, Printer, UserRound } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import './appointment_edit.css';
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
-import type { Provider } from "@/api/providers";
+import { getServiceProviders, type Provider } from "@/api/providers";
 
 interface ItemEditDialogProps {
   itemId: number | null;
@@ -145,6 +145,17 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
       updateAppointmentProvider('cinema', 0, 'service_id', cinemaServiceId);
     }
   }
+
+  const handleLessonChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+    const serviceId = e.target.value;
+    updateAppointmentProvider('lesson', 0, 'service_id', serviceId);
+    
+    if (serviceId) {
+      const res = await getServiceProviders(serviceId);
+      console.log(res);
+    }
+    
+  }
   
   return (
     <Sheet 
@@ -197,7 +208,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                       <div className="w-9 h-9 flex-none"></div>
                       <div className="flex-grow">
                         <Field>
-                          <NativeSelect className="w-full" value={form.appointment_providers.lesson[0].service_id} onChange={(e) => updateAppointmentProvider('lesson', 0, 'service_id', e.target.value)}>
+                          <NativeSelect className="w-full" value={form.appointment_providers.lesson[0].service_id} onChange={handleLessonChange}>
                             <NativeSelectOption value=""></NativeSelectOption>
                             {form.services['lesson'].map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
                           </NativeSelect>
@@ -485,91 +496,6 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
 
                 <Separator />
 
-                <div className="flex flex-col gap-2 mb-4 mt-4">
-                  <div className="px-4 flex gap-3">
-                    <div className="w-9 flex-none"></div>
-                    <div className="flex-grow">
-                      <Label htmlFor="pax" className="leading-snug">Liczba uczestników</Label>
-                    </div>
-                  </div>
-                  <div className="px-4 flex gap-3">
-                    <div className="w-9 h-9 flex-none flex justify-center items-center">
-                      <PersonStanding size="20" />
-                    </div>
-                    <div className="flex-grow">
-                      <InputGroup>
-                        <InputGroupInput 
-                          type="number"
-                          id="pax"
-                          name="pax"
-                          placeholder="Liczba uczestników"
-                          value={form.pax}
-                          onChange={(event) => updateField('pax', event.target.value)}
-                        />
-                        <InputGroupAddon align="inline-end">
-                          osób
-                        </InputGroupAddon>
-                      </InputGroup>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="px-4 flex gap-3 mb-4">
-                  <div className="w-9 h-9 flex-none flex justify-center items-center">
-                    <BadgePercent size="20" />
-                  </div>
-                  <div className="flex-grow pt-2">
-                    <FieldGroup className="gap-2">
-                      <Field orientation="horizontal">
-                        <Checkbox 
-                          id="kulturalna_szkola" 
-                          value="1" 
-                          name="kulturalna_szkola" 
-                          checked={form.kulturalna_szkola == 1}
-                          onCheckedChange={(val) => updateField('kulturalna_szkola', val)}
-                        />
-                        <FieldLabel htmlFor="kulturalna_szkola">Kulturalna Szkoła na Mazowszu</FieldLabel>
-                      </Field>
-                      <Field orientation="horizontal">
-                        <Checkbox 
-                          id="kultura_za_zl" 
-                          value="1" 
-                          name="kultura_za_zl" 
-                          checked={form.kultura_za_zl == 1}
-                          onCheckedChange={(val) => updateField('kultura_za_zl', val)}
-                        />
-                        <FieldLabel htmlFor="kultura_za_zl">Kultura za zł (wsparcie osób z niepełnospr.)</FieldLabel>
-                      </Field>
-                    </FieldGroup>
-                  </div>
-                </div>
-
-                <div className="px-4 flex gap-3 mb-4">
-                  <div className="w-9 h-9 flex-none flex justify-center items-center">
-                    <MessageCircleWarning size="20" />
-                  </div>
-                  <div className="flex-grow">
-                    <Textarea 
-                      id="notes"
-                      placeholder="Uwagi"
-                      value={form.notes}
-                      onChange={(event) => updateField('notes', event.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="px-4 flex gap-3 mb-4">
-                  <div className="w-9 h-9 flex-none flex justify-center items-center">
-                    <Flag size="20" />
-                  </div>
-                  <div className="flex-grow">
-                    <NativeSelect id="state" className="w-full" value={form.state} onChange={(e) => updateField('state', e.target.value)}>
-                      <NativeSelectOption value=""></NativeSelectOption>
-                      {states.map((st) => (<NativeSelectOption key={st.value} value={st.value}>{st.label}</NativeSelectOption>))}
-                    </NativeSelect>
-                  </div>
-                </div>
-
               </div>
             </TabsContent>
 
@@ -789,7 +715,75 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
 
             <TabsContent value="prices">
               <div className="h-tab no-scrollbar overflow-y-auto">
-                <div className="mb-4 mt-4 text-center">[ - - - Kalkulacja ceny - - - ]</div>
+                
+
+
+                <div className="flex flex-col gap-2 mb-4 mt-4">
+                  <div className="px-4 flex gap-3">
+                    <div className="w-9 flex-none"></div>
+                    <div className="flex-grow">
+                      <Label htmlFor="pax" className="leading-snug">Liczba uczestników</Label>
+                    </div>
+                  </div>
+                  <div className="px-4 flex gap-3">
+                    <div className="w-9 h-9 flex-none flex justify-center items-center">
+                      <PersonStanding size="20" />
+                    </div>
+                    <div className="flex-grow">
+                      <InputGroup>
+                        <InputGroupInput 
+                          type="number"
+                          id="pax"
+                          name="pax"
+                          placeholder="Liczba uczestników"
+                          value={form.pax}
+                          onChange={(event) => updateField('pax', event.target.value)}
+                        />
+                        <InputGroupAddon align="inline-end">
+                          osób
+                        </InputGroupAddon>
+                      </InputGroup>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="px-4 flex gap-3 mb-4">
+                  <div className="w-9 h-9 flex-none flex justify-center items-center">
+                    <BadgePercent size="20" />
+                  </div>
+                  <div className="flex-grow pt-2">
+                    <FieldGroup className="gap-2">
+                      <Field orientation="horizontal">
+                        <Checkbox 
+                          id="kulturalna_szkola" 
+                          value="1" 
+                          name="kulturalna_szkola" 
+                          checked={form.kulturalna_szkola == 1}
+                          onCheckedChange={(val) => updateField('kulturalna_szkola', val)}
+                        />
+                        <FieldLabel htmlFor="kulturalna_szkola">Kulturalna Szkoła na Mazowszu</FieldLabel>
+                      </Field>
+                      <Field orientation="horizontal">
+                        <Checkbox 
+                          id="kultura_za_zl" 
+                          value="1" 
+                          name="kultura_za_zl" 
+                          checked={form.kultura_za_zl == 1}
+                          onCheckedChange={(val) => updateField('kultura_za_zl', val)}
+                        />
+                        <FieldLabel htmlFor="kultura_za_zl">Kultura za zł (wsparcie osób z niepełnospr.)</FieldLabel>
+                      </Field>
+                    </FieldGroup>
+                  </div>
+                </div>
+
+                
+
+                
+
+
+
+
 
                 <div className="flex flex-col gap-4 mb-4">
                   <div className="px-4 flex gap-3">
@@ -838,6 +832,36 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                     </div>
                   </div>
 
+                </div>
+
+
+                
+                <div className="px-4 flex gap-3 mb-4">
+                  <div className="w-9 h-9 flex-none flex justify-center items-center">
+                    <MessageCircleWarning size="20" />
+                  </div>
+                  <div className="flex-grow">
+                    <Textarea 
+                      id="notes"
+                      placeholder="Uwagi"
+                      value={form.notes}
+                      onChange={(event) => updateField('notes', event.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="px-4 flex gap-3 mb-4">
+                  <div className="w-9 h-9 flex-none flex justify-center items-center">
+                    <div className="w-9 flex-none flex justify-center items-center">
+                      <div className={`size-4 rounded-full ${stateColors[form.state]}`}></div>
+                    </div>
+                  </div>
+                  <div className="flex-grow">
+                    <NativeSelect id="state" className="w-full" value={form.state} onChange={(e) => updateField('state', e.target.value)}>
+                      <NativeSelectOption value=""></NativeSelectOption>
+                      {states.map((st) => (<NativeSelectOption key={st.value} value={st.value}>{st.label}</NativeSelectOption>))}
+                    </NativeSelect>
+                  </div>
                 </div>
               </div>
               

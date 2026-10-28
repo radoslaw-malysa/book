@@ -43,6 +43,7 @@ return function (App $app) {
         $app->get('/calendar/week', CalendarAction::class); // combobox
         $app->get('/calendar/day', CalendarAction::class . ":day"); // combobox
         
+        $app->get('/providers/by-service/{id}', CrudAction::class . ":getServiceProviders"); // handle service change in appointment edit dialog
         //$app->get('/{table}/{id}', CrudAction::class . ":fakePostRow");
         $app->get('/{table}/{id}', CrudAction::class . ":getRow");
         $app->get('/{table}', CrudAction::class . ":getTable");

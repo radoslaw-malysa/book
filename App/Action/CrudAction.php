@@ -199,4 +199,10 @@ class CrudAction
     return $this->json->render($response, ['error' => '403', 'message' => 'Not admin']);
   }
 
+  public function getServiceProviders(Request $request, Response $response, $args) 
+  {
+    $providers = $this->services->getServiceProviders($args['id']);
+    return $this->json->render($response, $providers ?? []);
+  }
+
 }

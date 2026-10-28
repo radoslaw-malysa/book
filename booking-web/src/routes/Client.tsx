@@ -112,7 +112,7 @@ const Client = () => {
   const validateForm = (): boolean => {
     const newErrors = errors;
 
-    newErrors.customer_type = !client.customer_type;
+    newErrors.customer_type = !client.customer_type && appointment.kulturalna_szkola === 1;
     newErrors.name = !client.name;
     newErrors.address = !client.address;
     newErrors.zip = !client.zip;
@@ -127,7 +127,7 @@ const Client = () => {
     newErrors.accept_regulations = !client.accept_regulations;
     newErrors.accept_kultura_zl = !client.accept_kultura_zl && appointment.kulturalna_szkola === 1;
     newErrors.ages = !(client.age_1 || client.age_2 || client.age_3 || client.age_4 || client.age_5 || client.age_6 || client.age_7)
-
+    
     //setErrors(newErrors);
     setErrors(() => { return {...newErrors}});
 

@@ -191,6 +191,9 @@ class ServicesRepository extends Repository
 
   /* BOOKING */
 
+  /**
+   * Get prices for web and admin
+   */
   public function getServicePrices($lesson_id, $date)
   {
     $offer = [];
@@ -227,7 +230,6 @@ class ServicesRepository extends Repository
     if (date('w', strtotime($date)) == 6) {
       $offer['admission']['price'] = 0.00;
     }
-
 
     return $offer;
   }
