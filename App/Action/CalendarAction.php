@@ -106,6 +106,15 @@ class CalendarAction
 
         $row['hours'] = substr($row['start_time'], 11, 5) . ' - ' . substr($row['end_time'], 11, 5);
 
+        // nakładanie sie rezerwacji
+        if (isset($last_end_time[$d_index][$row['provider_id']]) && $last_end_time[$d_index][$row['provider_id']] > $row['offset']) {
+          $row['level'] = $last_level[$d_index][$row['provider_id']] + 1;
+        } else {
+          $row['level'] = 0;
+        }
+        $last_end_time[$d_index][$row['provider_id']] = $row['offset'] + $row['duration'];
+        $last_level[$d_index][$row['provider_id']] = $row['level'];
+
         $items[$d_index][$row['provider_id']][] = $row;
       }
 
@@ -135,7 +144,7 @@ class CalendarAction
       'providers' => $this->providers->where('state', 1)->orderBy('ord')->get(['id', 'name'])
     ];
 
-    // echo '<pre>'; print_r($payload); exit;
+    //echo '<pre>'; print_r($payload); exit;
 
     return $this->json->render($response, $payload);
   }

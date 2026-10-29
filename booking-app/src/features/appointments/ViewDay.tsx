@@ -17,6 +17,7 @@ const stateBg = {
   confirmed: { bg: 'border-l-emerald-500 bg-emerald-500/15 hover:bg-emerald-500/25', txt: 'text-emerald-600 dark:text-emerald-400' },
   cancelled: { bg: 'border-l-red-500 bg-red-500/7 hover:bg-red-700/7', txt: 'text-red-600 dark:text-red-400' }
 }
+const levelClass = ['left-0.5', 'left-4', 'left-8', 'left-12', 'left-16'];
 
 const ViewDay = ({data, date, selectedId, onEdit}: ViewWeekProps) => {
   
@@ -24,7 +25,7 @@ const ViewDay = ({data, date, selectedId, onEdit}: ViewWeekProps) => {
     if (data.items[day] && data.items[day][provider_id]) {
       const apps = data.items[day][provider_id];
 
-      return (<>{apps.map((appointment) => (<div key={appointment.appointment_id} onClick={() => onEdit(appointment.appointment_id)} className={`absolute top-0.5 left-0.5 right-0.5 z-10 cursor-pointer text-sm/3.75 ${(appointment.cut_start !== undefined) ? 'rounded-t-none' : 'rounded-t-sm' } ${(appointment.cut_end !== undefined) ? 'rounded-b-none' : 'rounded-b-sm' } border-l-3 px-1.5 py-1 ${stateBg[appointment.state].bg} ${selectedId === appointment.appointment_id ? 'bg-neutral-900 dark' : ''}`} style={{ top: appointment.offset + 'px', height: appointment.duration + 'px' }}>
+      return (<>{apps.map((appointment) => (<div key={appointment.appointment_id} onClick={() => onEdit(appointment.appointment_id)} className={`absolute top-0.5 ${levelClass[appointment.level]} right-0.5 z-10 cursor-pointer font-medium text-xs ${(appointment.cut_start !== undefined) ? 'rounded-t-none' : 'rounded-t-sm' } ${(appointment.cut_end !== undefined) ? 'rounded-b-none' : 'rounded-b-sm' } border-l-3 px-1.5 py-1 ${stateBg[appointment.state].bg} ${selectedId === appointment.appointment_id ? 'bg-neutral-900 dark' : ''}`} style={{ top: appointment.offset + 'px', height: appointment.duration + 'px' }}>
         <div className="truncate text-muted-foreground ">{appointment.hours}</div>
         <div className={`line-clamp-2 font-medium ${stateBg[appointment.state].txt}`}>{appointment.service_name}</div>
       </div>))}</>);

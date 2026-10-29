@@ -143,6 +143,8 @@ Nie. W wyniku chciałbym otrzymać dokładną listę dostępnych godzin dla dane
 
 
 
+Jesteś profesjonalnym developerem React / Typescript. Budujesz aplikację w React + Tanstack Query, która komunikuje się z zewnętrznym API PHP REST. Napisz komponent zawierający pole wyboru select, wkóty w momencie wyboru opcji, skomunikuje się z API i pobierze dane dla wybranej opcji. Komponent powinien obsługiwać loading state, error state oraz wyświetlać pobrane dane w formie listy. Użyj Tanstack Query do zarządzania stanem danych i cachowaniem wyników.
 
 
-
+wordpress
+New Relic - do badania wydajności wordpressa

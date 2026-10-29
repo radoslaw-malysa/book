@@ -11,12 +11,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AtSign, BadgePercent, Clock, ContactRound, Flag, ListChecks, Mail, MapPin, MessageCircleWarning, PersonStanding, Phone, Printer, UserRound } from "lucide-react";
+import { AtSign, Clock, ContactRound, ListChecks, Mail, MapPin, MessageCircleWarning, PersonStanding, Phone, Printer, UserRound } from "lucide-react";
 import { useEffect, useState, type ChangeEvent } from "react";
 import './appointment_edit.css';
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { getServiceProviders, type Provider } from "@/api/providers";
+import Calculation from "@/components/Calculation";
 
 interface ItemEditDialogProps {
   itemId: number | null;
@@ -163,7 +164,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
     const newState = form?.appointment_providers;
     console.log(form);
 
-    updateAppointmentProvider('lesson', 0, 'service_id', serviceId);
+    updateAppointmentProvider(serviceType, 0, 'service_id', serviceId);
     
     if (serviceId) {
       const res = await getServiceProviders(serviceId);
@@ -173,6 +174,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
           newState[serviceType][0].provider_id = res.items[0].provider_id;
           const serviceIdInt = parseInt(serviceId)
           const selectedService = form.services[serviceType].find((el) => el.id === serviceIdInt);
+          
           if (newState[serviceType][0].start_time) {
             const end = addMinutesToDateTime(newState[serviceType][0].start_time, selectedService.duration);
             if (end) {
@@ -194,6 +196,33 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
     
     setForm((current) => (current ? { ...current, appointment_providers: newState } : current));
   }
+
+  const calculation = {lesson: null, tour: null, total: 0};
+
+  if (form?.lesson == 1 && form.appointment_providers.lesson[0].service_id) {
+    const selectedLesson = form.services.lesson.find((el) => el.id === parseInt(form.appointment_providers.lesson[0].service_id));
+    if (selectedLesson) {
+      calculation.lesson = {
+        name: selectedLesson?.name,
+        price: selectedLesson?.price,
+        qty: form.pax
+      }
+      calculation.total = selectedLesson?.price * form.pax;
+    }
+  }
+  if (form?.tour == 1 && form.appointment_providers.tour[0].service_id) {
+    const selectedTour = form.services.tour.find((el) => el.id === parseInt(form.appointment_providers.tour[0].service_id));
+    if (selectedTour) {
+      calculation.tour = {
+        name: selectedTour?.name,
+        price: selectedTour?.price,
+        qty: form.pax
+      }
+      calculation.total += selectedTour?.price * form.pax;
+    }
+  }
+
+  
   
   return (
     <Sheet 
@@ -330,7 +359,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                       <div className="w-9 h-9 flex-none"></div>
                       <div className="flex-grow">
                         <Field>
-                          <NativeSelect className="w-full" value={form.appointment_providers.tour[0].service_id} onChange={(e) => updateAppointmentProvider('tour', 0, 'service_id', e.target.value)}>
+                          <NativeSelect name="tour" className="w-full" value={form.appointment_providers.tour[0].service_id} onChange={handleServiceChange}>
                             <NativeSelectOption value=""></NativeSelectOption>
                             {form.services['tour'].map((s: Service) => (<NativeSelectOption key={s.id} value={s.id}>{s.name}</NativeSelectOption>))}
                           </NativeSelect>
@@ -386,8 +415,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                         <Field>
                           <Input 
                             type="time"
-                            name="visit_time"
-                            value={form.appointment_providers.tour[0].start_time ? form.appointment_providers.tour[0].end_time.split(' ')[1] : ''}
+                            value={form.appointment_providers.tour[0].end_time ? form.appointment_providers.tour[0].end_time.split(' ')[1] : ''}
                             onChange={(e) => updateAppointmentProvider('tour', 0, 'end_time_h', e.target.value)}
                             className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                           />
@@ -754,8 +782,6 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
             <TabsContent value="prices">
               <div className="h-tab no-scrollbar overflow-y-auto">
                 
-
-
                 <div className="flex flex-col gap-2 mb-4 mt-4">
                   <div className="px-4 flex gap-3">
                     <div className="w-9 flex-none"></div>
@@ -787,7 +813,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
 
                 <div className="px-4 flex gap-3 mb-4">
                   <div className="w-9 h-9 flex-none flex justify-center items-center">
-                    <BadgePercent size="20" />
+                    
                   </div>
                   <div className="flex-grow pt-2">
                     <FieldGroup className="gap-2">
@@ -815,15 +841,11 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                   </div>
                 </div>
 
-                
+                <Separator />
+                <Calculation calculation={calculation} />
+                <Separator />
 
-                
-
-
-
-
-
-                <div className="flex flex-col gap-4 mb-4">
+                <div className="flex flex-col gap-4 my-4">
                   <div className="px-4 flex gap-3">
                     <div className="w-9 flex-none"></div>
                     <div className="flex-grow">
@@ -872,9 +894,9 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
 
                 </div>
 
-
+                <Separator />
                 
-                <div className="px-4 flex gap-3 mb-4">
+                <div className="px-4 flex gap-3 my-4">
                   <div className="w-9 h-9 flex-none flex justify-center items-center">
                     <MessageCircleWarning size="20" />
                   </div>

@@ -37,6 +37,7 @@ class AppointmentProvidersRepository extends Repository
     from " . $this->model . " a left join " . $this->tables->appointments . " ap on a.appointment_id = ap.id 
     left join {$this->tables->services} se on ap.service_id = se.id ";
     $query .= ($filters) ? ('where '. implode(' and ', $filters)) : '';
+    $query .= " order by a.provider_id, a.start_time";
     $st = $this->connection->prepare($query);
     
     $st->execute();
