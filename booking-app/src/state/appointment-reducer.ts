@@ -62,7 +62,7 @@ const appointmentReducer = (state, action) => {
     case 'UPDATE_FIELD': {
       const newValue = (typeof action.value === 'boolean') ? (action.value ? 1 : 0 ) : action.value;
 
-      if (action.field == 'pax' || action.field == 'lesson' || action.field == 'tour') {
+      if (action.field == 'pax' || action.field == 'kulturalna_szkola' || action.field == 'lesson' || action.field == 'tour') {
         return applyCalculation({
           ...state,
           [action.field]: newValue

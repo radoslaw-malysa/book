@@ -1,4 +1,4 @@
-import { getAppointment, updateAppointment, type Appointment } from "@/api/appointments";
+import { getAppointment, updateAppointment } from "@/api/appointments";
 import type { Service } from "@/api/services";
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AtSign, Clock, ContactRound, ListChecks, Mail, MapPin, MessageCircleWarning, PersonStanding, Phone, Printer, UserRound } from "lucide-react";
-import { useEffect, useMemo, useReducer, useState, type ChangeEvent } from "react";
+import { useEffect, useReducer, type ChangeEvent } from "react";
 import './appointment_edit.css';
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
@@ -48,7 +48,6 @@ const customerTypes = [
 
 const AppointmentEditRed = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) => {
   const queryClient = useQueryClient();
-  //const [form, setForm] = useState<Appointment | null>(null);
   const [form, dispatch] = useReducer(appointmentReducer, null);
 
   const itemQuery = useQuery({
@@ -79,7 +78,6 @@ const AppointmentEditRed = ({ itemId, refreshKey, onClose }: ItemEditDialogProps
         type: 'LOAD_DATA',
         data: itemQuery.data
       });
-      //setForm(itemQuery.data);
     }
   }, [itemQuery.data]);
 
@@ -134,55 +132,9 @@ const AppointmentEditRed = ({ itemId, refreshKey, onClose }: ItemEditDialogProps
       });
     }
   }
-
-  // calculation
-  const calculation = useMemo(() => {
-    const newCalculation = {lesson: null, tour: null, total_price: 0, sell_price: 0};
-
-    if (form) {
-      if (form?.lesson == 1 && form.appointment_providers.lesson[0].service_id) {
-        const selectedLesson = form.services.lesson.find((el) => el.id === parseInt(form.appointment_providers.lesson[0].service_id));
-        if (selectedLesson) {
-          newCalculation.lesson = {
-            name: selectedLesson?.name,
-            price: selectedLesson?.price,
-            qty: form.pax
-          }
-          newCalculation.total_price = selectedLesson?.price * form.pax;
-        }
-      }
-
-      if (form?.tour == 1 && form.appointment_providers.tour[0].service_id) {
-        const selectedTour = form.services.tour.find((el) => el.id === parseInt(form.appointment_providers.tour[0].service_id));
-        if (selectedTour) {
-          newCalculation.tour = {
-            name: selectedTour?.name,
-            price: selectedTour?.price,
-            qty: form.pax
-          }
-          newCalculation.total_price += selectedTour?.price * form.pax;
-        }
-      }
-    
-      newCalculation.sell_price = (form?.kulturalna_szkola == 1 && newCalculation.total_price > 0) ? (form.pax * 1) : newCalculation.total_price;
-    }
-
-    return newCalculation;
-
-  }, [form?.lesson, form?.appointment_providers.lesson[0].service_id, form?.tour, form?.appointment_providers.tour[0].service_id, form?.kulturalna_szkola, form?.pax]);
-
-  
-  /*useEffect(() => {
-    if (form) {
-      const newData= {total_price: calculation.total_price, sell_price: calculation.sell_price }
-      console.log(newData)
-      setForm((prev) => ({ ...prev, ...newData }));
-    }
-  }, [form?.lesson, form?.appointment_providers.lesson[0].service_id, form?.appointment_providers.tour[0].service_id, form?.kulturalna_szkola, form?.pax])
-  */
   
   console.log('RENDER');
-  
+
   return (
     <Sheet 
       open={itemId !== null}
@@ -841,8 +793,6 @@ const AppointmentEditRed = ({ itemId, refreshKey, onClose }: ItemEditDialogProps
                   </div>
                 </div>
               </div>
-              
-
               
             </TabsContent>
           </Tabs>
