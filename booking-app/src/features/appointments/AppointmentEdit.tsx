@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AtSign, Clock, ContactRound, ListChecks, Mail, MapPin, MessageCircleWarning, PersonStanding, Phone, Printer, UserRound } from "lucide-react";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import './appointment_edit.css';
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
@@ -94,13 +94,13 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
     setForm((current) => (current ? { ...current, [field]: value } : current));
   };
 
-  const updateProvider = (index: number, field: string, value: number | string) => {
+  /*const updateProvider = (index: number, field: string, value: number | string) => {
     const newState = form?.appointment_providers;
     if (newState) {
       newState[index][field] = value;
       setForm((current) => (current ? { ...current, appointment_providers: newState } : current));
     }
-  };
+  };*/
 
   const updateCustomer = (field: string, value: number | string) => {
     const newState = form?.customer;
@@ -197,31 +197,50 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
     setForm((current) => (current ? { ...current, appointment_providers: newState } : current));
   }
 
-  const calculation = {lesson: null, tour: null, total: 0};
+  // calculation
+  const calculation = useMemo(() => {
+    const newCalculation = {lesson: null, tour: null, total_price: 0, sell_price: 0};
 
-  if (form?.lesson == 1 && form.appointment_providers.lesson[0].service_id) {
-    const selectedLesson = form.services.lesson.find((el) => el.id === parseInt(form.appointment_providers.lesson[0].service_id));
-    if (selectedLesson) {
-      calculation.lesson = {
-        name: selectedLesson?.name,
-        price: selectedLesson?.price,
-        qty: form.pax
+    if (form) {
+      if (form?.lesson == 1 && form.appointment_providers.lesson[0].service_id) {
+        const selectedLesson = form.services.lesson.find((el) => el.id === parseInt(form.appointment_providers.lesson[0].service_id));
+        if (selectedLesson) {
+          newCalculation.lesson = {
+            name: selectedLesson?.name,
+            price: selectedLesson?.price,
+            qty: form.pax
+          }
+          newCalculation.total_price = selectedLesson?.price * form.pax;
+        }
       }
-      calculation.total = selectedLesson?.price * form.pax;
-    }
-  }
-  if (form?.tour == 1 && form.appointment_providers.tour[0].service_id) {
-    const selectedTour = form.services.tour.find((el) => el.id === parseInt(form.appointment_providers.tour[0].service_id));
-    if (selectedTour) {
-      calculation.tour = {
-        name: selectedTour?.name,
-        price: selectedTour?.price,
-        qty: form.pax
-      }
-      calculation.total += selectedTour?.price * form.pax;
-    }
-  }
 
+      if (form?.tour == 1 && form.appointment_providers.tour[0].service_id) {
+        const selectedTour = form.services.tour.find((el) => el.id === parseInt(form.appointment_providers.tour[0].service_id));
+        if (selectedTour) {
+          newCalculation.tour = {
+            name: selectedTour?.name,
+            price: selectedTour?.price,
+            qty: form.pax
+          }
+          newCalculation.total_price += selectedTour?.price * form.pax;
+        }
+      }
+    
+      newCalculation.sell_price = (form?.kulturalna_szkola == 1 && newCalculation.total_price > 0) ? (form.pax * 1) : newCalculation.total_price;
+    }
+
+    return newCalculation;
+
+  }, [form?.lesson, form?.appointment_providers.lesson[0].service_id, form?.appointment_providers.tour[0].service_id, form?.kulturalna_szkola, form?.pax]);
+
+  
+  useEffect(() => {
+    if (form) {
+      const newData= {total_price: calculation.total_price, sell_price: calculation.sell_price }
+      console.log(newData)
+      setForm((prev) => ({ ...prev, ...newData }));
+    }
+  }, [form?.lesson, form?.appointment_providers.lesson[0].service_id, form?.appointment_providers.tour[0].service_id, form?.kulturalna_szkola, form?.pax])
   
   
   return (
@@ -851,7 +870,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                     <div className="flex-grow">
                       <FieldGroup className="gap-3">
                         <Field className="gap-2">
-                          <FieldLabel htmlFor="pax">Cena z cennika</FieldLabel>
+                          <FieldLabel htmlFor="total_price">Cena z cennika {form.total_price}</FieldLabel>
                           <InputGroup>
                               <InputGroupInput 
                                 type="number"
@@ -866,7 +885,7 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                             </InputGroup>
                         </Field>
                         <Field className="gap-2">
-                          <FieldLabel htmlFor="pax">Cena sprzedaży</FieldLabel>
+                          <FieldLabel htmlFor="sell_price">Cena sprzedaży</FieldLabel>
                           <InputGroup>
                               <InputGroupInput 
                                 type="number"

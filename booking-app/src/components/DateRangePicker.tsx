@@ -26,7 +26,7 @@ export function DateRangePicker({range, setRange}: DateRangeProps) {
   return (
     <Field className="mx-auto w-60">
       <Popover>
-        <PopoverTrigger render={<div className="relative"><Button variant="secondary" id="date-picker-range" className="justify-start pl-2.5 pr-10 font-normal bg-input/50"><CalendarIcon color="gray" data-icon="inline-start" />{range?.from ? (
+        <PopoverTrigger nativeButton={false} render={<div className="relative"><Button variant="secondary" id="date-picker-range" className="justify-start pl-2.5 pr-10 font-normal bg-input/50"><CalendarIcon color="gray" data-icon="inline-start" />{range?.from ? (
             range.to ? (
               <>
                 {format(range.from, "dd.MM.y")} -{" "}

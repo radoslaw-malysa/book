@@ -167,7 +167,7 @@ const Appointments = () => {
               <TableHead>Data wizyty</TableHead>
               <TableHead>Klient</TableHead>
               <TableHead>Warsztaty</TableHead>
-              <TableHead title="Kultura za zł">ZŁ</TableHead>
+              <TableHead title="Kultura za zł">KS</TableHead>
               <TableHead title="Cena z cennika">Cennik</TableHead>
               <TableHead title="Cena sprzedaży">Sprzedaż</TableHead>
               <TableHead>Utworzono</TableHead>

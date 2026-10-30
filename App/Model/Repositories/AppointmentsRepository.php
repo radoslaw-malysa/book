@@ -30,7 +30,7 @@ class AppointmentsRepository extends Repository
   public function getRows($params = []) 
   {
     $filters = [];
-    $per_page = 5; //pagination
+    $per_page = 50; //pagination
 
     if (isset($params['q']) && $params['q']) {
       $filters[] = "(cu.name like :name) ";

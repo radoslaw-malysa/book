@@ -15,6 +15,7 @@ import '@/features/appointments/calendar.css';
 import ViewWeek from "@/features/appointments/ViewWeek";
 import ViewDay from "@/features/appointments/ViewDay";
 import AppointmentEdit from "@/features/appointments/AppointmentEdit";
+import AppointmentEditRed from "@/features/appointments/AppointmentEditRed";
 
 
 export const calendarQuery = (filters: CalendarFilters = {}) =>
@@ -143,7 +144,8 @@ const Calendary = () => {
         {view === 'day' && <ViewDay data={data} selectedId={selectedId} date={filters.date} onEdit={setSelectedId} />}
       </CardContent>
     </Card>
-    <AppointmentEdit itemId={selectedId} refreshKey="calendar" onClose={() => setSelectedId(null)} />
+    {/*<AppointmentEdit itemId={selectedId} refreshKey="calendar" onClose={() => setSelectedId(null)} />*/}
+    <AppointmentEditRed itemId={selectedId} refreshKey="calendar" onClose={() => setSelectedId(null)} />
   </div>
 }
 
