@@ -7,13 +7,13 @@
   background-color: var(--muted);
 }
 .c-height {
-  height: calc(100svh - 250px);
+  height: calc(100svh - 210px);
 }
 .c-prov {
   writing-mode: vertical-lr;
 }
 .c-height-d {
-  height: calc(100svh - 340px);
+  height: calc(100svh - 260px);
 }
 
 .h-head {

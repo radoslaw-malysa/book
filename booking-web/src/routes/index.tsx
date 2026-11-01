@@ -6,10 +6,6 @@ import Visit, { loader as visitLoader } from "./Visit";
 
 export const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Navigate to='/rezerwacja' replace />
-  },
-  {
     path: "rezerwacja",
     Component: BookingLayout,
     children: [
@@ -30,6 +26,11 @@ export const router = createBrowserRouter([
     ]
   }
 ]);
+
+/*  {
+    path: '/',
+    element: <Navigate to='/rezerwacja' replace />
+  },*/
 
 // https://www.shadcn.io/blocks/calendar-meeting-scheduler
 // https://www.shadcn.io/blocks/calendar-weekly-planner

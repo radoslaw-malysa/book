@@ -1,14 +1,12 @@
-import Calculation from "@/components/Calculation";
 import { useLoaderData, useNavigate, useSearchParams, type LoaderFunctionArgs } from "react-router";
 import { getBeforeVisit, getCancelBooking, getConfirmBooking, getConfirmEmail, getNewAppEmail, type BookingResponse } from "@/services/booking"; 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Check, FileText, Printer, Trash, Trash2Icon } from "lucide-react";
 import { toast } from "@/components/ui/toast";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useEffect, useState } from "react";
 import { API_URL } from "@/services/api";
-import CalculationRead from "@/components/CalculationRead";
 import CalculationVisit from "@/components/CalculationVisit";
 
 export async function loader({ params }: LoaderFunctionArgs) {

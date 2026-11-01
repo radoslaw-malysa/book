@@ -1,3 +1,12 @@
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview"
+  },
+  
+
+
 ## db
 Propose a database structure (MySQL) for an appointment booking system for a service salon: hairdressing, beauty salon, etc. The salon employs several employees, and each employee can perform different services. I'd like the system to be relatively universal and usable across multiple industries.
 

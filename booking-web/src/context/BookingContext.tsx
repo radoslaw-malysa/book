@@ -12,6 +12,7 @@ export interface Appointment {
   kulturalna_szkola: number;
   pax: number;
   zip_valid: string;
+  state: string;
 }
 
 export interface Client {
@@ -63,7 +64,8 @@ const initialAppointment: Appointment = {
   guide: null,
   kulturalna_szkola: 0,
   pax: 5,
-  zip_valid: ''
+  zip_valid: '',
+  state: 'pending'
 };
 
 const initialClient: Client = {

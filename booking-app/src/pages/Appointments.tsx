@@ -182,9 +182,9 @@ const Appointments = () => {
                 onClick={() => setSelectedId(item.id)}
               >
                 <TableCell>{item.id}</TableCell>
-                <TableCell className="font-medium">{item.visit_time?.substring(0, 16)}</TableCell>
-                <TableCell>{item.customer_name}</TableCell>
-                <TableCell>{item.service_name}{item.service_description && <div className="text-muted-foreground text-xs">{item.service_description}</div>}</TableCell>
+                <TableCell>{item.visit_time?.substring(0, 16)}</TableCell>
+                <TableCell><p className="max-w-64 truncate">{item.customer_name}</p></TableCell>
+                <TableCell><p className="max-w-64 truncate">{item.service_name}</p></TableCell>
                 <TableCell>{item.kulturalna_szkola}</TableCell>
                 <TableCell>{item.total_price}</TableCell>
                 <TableCell>{item.sell_price}</TableCell>

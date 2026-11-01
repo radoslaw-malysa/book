@@ -2,19 +2,14 @@ import { queryOptions, useSuspenseQuery, type QueryClient } from "@tanstack/reac
 import { useLoaderData, useNavigate, useSearchParams, type LoaderFunctionArgs } from "react-router";
 import { getCalendarWeek, type CalendarFilters } from "@/api/calendar";
 import { Button } from "@/components/ui/button";
-import { Calendar1, CalendarDays, ChevronDownIcon, Plus, SearchIcon, XIcon } from "lucide-react";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar1, CalendarDays, FlagTriangleRight } from "lucide-react";
+import { Card, CardContent, CardHeader} from "@/components/ui/card";
 import { ButtonGroup } from "@/components/ui/button-group";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { Calendar } from "@/components/ui/calendar";
 import { useEffect, useState } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
-import { Checkbox } from "@/components/ui/checkbox";
 import '@/features/appointments/calendar.css';
 import ViewWeek from "@/features/appointments/ViewWeek";
 import ViewDay from "@/features/appointments/ViewDay";
-import AppointmentEdit from "@/features/appointments/AppointmentEdit";
 import AppointmentEditRed from "@/features/appointments/AppointmentEditRed";
 
 
@@ -89,8 +84,17 @@ const Calendary = () => {
   return <div className="flex gap-6 h-full">
     <div>
       <div className="flex flex-col gap-4">
+        <div>
+          <Button onClick={() => setDateHandler(new Date())} variant="outline" className="w-full xbg-transparent"><FlagTriangleRight data-icon="inline-start" />Dzisiaj</Button>
+        </div>
         <Calendar mode="single" selected={filters.date} onSelect={setDateHandler} weekStartsOn={1} required captionLayout="dropdown" className="bg-muted p-0" />
-        <Collapsible open={true}>
+        <div>
+          <ButtonGroup className="w-full">
+            <Button className="cursor-pointer w-1/2" variant={view === 'week' ? "default" : "outline"}  onClick={() => setView('week')}><CalendarDays data-icon="inline-start" />Tydzień</Button>
+            <Button className="cursor-pointer w-1/2" variant={view === 'day' ? "default" : "outline"} onClick={() => setView('day')}><Calendar1 data-icon="inline-start" />Dzień</Button>
+          </ButtonGroup>
+        </div>
+        {/*<Collapsible open={true}>
           <CollapsibleTrigger render={<Button variant="ghost" className="w-full">Sale<ChevronDownIcon className="ml-auto group-data-panel-open/button:rotate-180" /></Button>} />
           <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0">
             <FieldSet className="w-full pt-2">
@@ -102,11 +106,11 @@ const Calendary = () => {
               </FieldGroup>
             </FieldSet>
           </CollapsibleContent>
-        </Collapsible>
+        </Collapsible>*/}
       </div>
     </div>
-    <Card className="w-full h-full shadow-none ring-0 gap-4">
-      <CardHeader>
+    <Card className="w-full h-full shadow-none ring-0 gap-0 py-4">
+      {/*<CardHeader>
         <CardTitle>
           <ButtonGroup>
             <Button className="cursor-pointer" variant={view === 'week' ? "default" : "secondary"}  onClick={() => setView('week')}><CalendarDays />Tydzień</Button>
@@ -127,19 +131,21 @@ const Calendary = () => {
             <Button onClick={() => setSelectedId(0)}><Plus /> Utwórz rezerwację</Button>
           </div>
         </CardAction>
-      </CardHeader>
-      <CardContent>
+      </CardHeader>*/}
+      <CardHeader>
         <div className="flex flex-wrap border-b">
           <div className="border-r w-12"></div>
           <div className="flex-grow flex">
           {data.days.map((item) => (
-            <button onClick={() => changeDayHandler(item.date)} type="button" key={item.week_day} className="cursor-pointer basis-xl not-last:border-r flex gap-0.5 flex-col items-center py-1.5 text-center transition-colors hover:bg-muted/50 ">
-              <div className="text-muted-foreground text-xs">{item.week_day}</div>
-              <div className={`flex size-8 items-center justify-center rounded-full font-medium text-lg transition-colors ${view==='day' && dateString == item.date ? 'bg-foreground text-background' : ''}`}>{parseInt(item.date?.substring(8))}</div>
+            <button onClick={() => changeDayHandler(item.date)} type="button" key={item.week_day} className="cursor-pointer basis-xl not-last:border-r flex gap-0.5 flex-col items-center pt-1.5 pb-3 text-center transition-colors hover:bg-muted/50 ">
+              <div className="text-muted-foreground text-xs uppercase">{item.week_day}</div>
+              <div className={`flex size-10 items-center justify-center rounded-full text-2xl transition-colors ${view==='day' && dateString == item.date ? 'bg-foreground text-background' : ''}`}>{parseInt(item.date?.substring(8))}</div>
             </button>
           ))}
           </div>
         </div>
+      </CardHeader>
+      <CardContent>
         {view === 'week' && <ViewWeek data={data} selectedId={selectedId} onEdit={setSelectedId} />}
         {view === 'day' && <ViewDay data={data} selectedId={selectedId} date={filters.date} onEdit={setSelectedId} />}
       </CardContent>

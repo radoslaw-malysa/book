@@ -132,7 +132,9 @@ class AppointmentsRepository extends Repository
   }
 
   
-
+  /**
+   * Admin save
+   */
   public function postRow($params=[])
   {    
     if ($params['lesson'] == 1) { 
@@ -251,9 +253,23 @@ class AppointmentsRepository extends Repository
       }
 
       $this->appointment_providers->updateAppointment($id, $appointment_providers);
+
+      // update visit_time
+      $this->syncVisitTime($id);
     }
 
     return $data;
+  }
+
+  /**
+   * Update visit time after appointment changes
+   */
+  private function syncVisitTime($appointment_id)
+  {
+    $query = "update {$this->model} set visit_time = (select MIN(start_time) from {$this->tables->appointment_providers} where appointment_id='{$appointment_id}' and start_time IS NOT NULL) 
+    where id = '{$appointment_id}'";
+    $st = $this->connection->prepare($query);
+    $st->execute();
   }
 
   public function getNew()
@@ -327,7 +343,6 @@ class AppointmentsRepository extends Repository
         'contact_phone' => $customer['contact_phone'] ?? '',
         'contact_email' => $customer['contact_email'] ?? '',
         'pax_care' => $customer['pax_care'] ?? 0,
-        'notes' => $customer['notes'] ?? '',
         'accept_processing' => $customer['accept_processing'] ?? 0,
         'accept_regulations' => $customer['accept_regulations'] ?? 0,
         'accept_kultura_zl' => $customer['accept_kultura_zl'] ?? 0
@@ -352,8 +367,7 @@ class AppointmentsRepository extends Repository
     $appointment_data = [
       'service_id' => $service_id ?? 0,
       'customer_id' => $customer_id ?? 0,
-      'visit_date' => (isset($appointment['visit_date']) && $appointment['visit_date']) ? $appointment['visit_date'] : NULL,
-      'visit_time' => (isset($appointment['visit_time']) && $appointment['visit_time']) ? $appointment['visit_time'] : NULL,
+      'visit_time' => (isset($appointment['visit_date']) && isset($appointment['visit_time'])) ? ($appointment['visit_date'] . ' ' . $appointment['visit_time']) : NULL,
       'lesson' => (isset($lesson['id'])) ? 1 : 0,
       'tour' => (isset($guide)) ? 1 : 0,
       'cinema' => 0,

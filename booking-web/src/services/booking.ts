@@ -4,6 +4,7 @@ import type { Appointment, Client } from "@/context/BookingContext";
 export interface Service {
   id: number;
   name: string;
+  lesson: {};
 }
 
 export interface BookingResponse {

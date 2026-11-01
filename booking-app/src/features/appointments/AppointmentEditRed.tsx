@@ -710,9 +710,9 @@ const AppointmentEditRed = ({ itemId, refreshKey, onClose }: ItemEditDialogProps
                   </div>
                 </div>
 
-                <Separator />
+                
                 <Calculation calculation={form.calculation} />
-                <Separator />
+                
 
                 <div className="flex flex-col gap-4 my-4">
                   <div className="px-4 flex gap-3">
@@ -720,7 +720,7 @@ const AppointmentEditRed = ({ itemId, refreshKey, onClose }: ItemEditDialogProps
                     <div className="flex-grow">
                       <FieldGroup className="gap-3">
                         <Field className="gap-2">
-                          <FieldLabel htmlFor="total_price">Cena z cennika {form.total_price}</FieldLabel>
+                          <FieldLabel htmlFor="total_price">Cena z cennika</FieldLabel>
                           <InputGroup>
                               <InputGroupInput 
                                 type="number"

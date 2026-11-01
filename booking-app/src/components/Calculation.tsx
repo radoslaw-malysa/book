@@ -3,8 +3,8 @@ import { Calculator } from "lucide-react";
 import { Table, TableBody, TableCell, TableFooter, TableRow } from "./ui/table";
 
 const Calculation = ({calculation}) => {
-  return (<div className="flex flex-col gap-2 py-2 bg-amber-100 text-amber-800">
-    <div className="px-4 flex gap-3">
+  return (<div className="flex flex-col gap-2 py-2 bg-cyan-100 text-cyan-600 mx-2 rounded-2xl border border-cyan-300">
+    <div className="px-2 flex gap-3">
       <div className="w-9 h-9 flex-none flex justify-center items-center">
         <Calculator size="20" />
       </div>

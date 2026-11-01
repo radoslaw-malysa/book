@@ -188,7 +188,7 @@ class AppointmentProvidersRepository extends Repository
     $lesson = $stmtLesson->fetch(PDO::FETCH_ASSOC);
 
     if (!$lesson) {
-      throw new RuntimeException("Nie znaleziono lekcji o ID: {$lessonId}");
+      throw new \RuntimeException("Nie znaleziono lekcji o ID: {$lessonId}");
     }
     $durationMinutes = (int) $lesson['duration'];
 

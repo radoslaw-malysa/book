@@ -225,24 +225,6 @@ const ServiceEditDialog = ({ itemId, onClose }: ItemEditDialogProps) => {
                     <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />
                   </Field>
 
-                  <Field orientation="horizontal">
-                    <FieldContent>
-                      <FieldLabel htmlFor="online" className="cursor-pointer">
-                        Można łączyć z kinem
-                      </FieldLabel>
-                    </FieldContent>
-                    <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />
-                  </Field>
-
-                  <Field orientation="horizontal">
-                    <FieldContent>
-                      <FieldLabel htmlFor="online" className="cursor-pointer">
-                        Można łączyć ze zwiedzaniem
-                      </FieldLabel>
-                    </FieldContent>
-                    <Switch id="online" value="1" className="cursor-pointer" checked={form.online === 1} onCheckedChange={(v) => updateField('online', v ? 1 : 0)} />
-                  </Field>
-
                   <Field className="gap-2">
                     <FieldLabel htmlFor="description">Uwagi</FieldLabel>
                     <Input 

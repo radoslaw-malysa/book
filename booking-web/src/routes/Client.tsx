@@ -1,4 +1,3 @@
-import Calculation from "@/components/Calculation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTitle } from "@/components/ui/field"
@@ -12,6 +11,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router"
 import { postBooking } from "@/services/booking";
 import CalculationRead from "@/components/CalculationRead"
+import type { Client } from "@/context/BookingContext"
 
 const AgeGroups = [
   { id: 'age_1', title: 'przedszkole' },
@@ -41,7 +41,7 @@ const initialErrors = {
   ages: false
 }
 
-const validateEmail = (email) => {
+const validateEmail = (email: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
@@ -73,7 +73,7 @@ const Client = () => {
     }
   };
 
-  const handleClientCheck = (name: String, checked: Boolean) => {
+  const handleClientCheck = (name: string, checked: boolean) => {
     const value = checked ? 1 : 0;
     updateClient({ [name]: value } as Partial<Client>);
 
@@ -85,7 +85,7 @@ const Client = () => {
     }
   }
 
-  const handleAgeCheck = (name: String, checked: Boolean) => {
+  const handleAgeCheck = (name: string, checked: boolean) => {
     const value = checked ? 1 : 0;
     updateClient({ [name]: value } as Partial<Client>);
 
@@ -98,7 +98,7 @@ const Client = () => {
     }
   }
 
-  const handleClientRadio = (name: String, value: Boolean) => {
+  const handleClientRadio = (name: string, value: boolean) => {
     updateClient({ [name]: value } as Partial<Client>);
 
     // validacja

@@ -3,12 +3,11 @@ import { Button } from "./ui/button"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card"
 import { Checkbox } from "./ui/checkbox"
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTitle } from "./ui/field"
-import { ArrowLeft, ArrowRight, Clock, Minus, MoveRight, MoveUpRight, Plus, RefreshCcw, RotateCcw, X } from "lucide-react"
+import { ArrowLeft, ArrowRight, Clock, Minus, Plus, RotateCcw, Users } from "lucide-react"
 import { useBooking, type Appointment, type Client } from "@/context/BookingContext"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { Separator } from "./ui/separator"
-// import OtpInput from "./OtpInput"
 import { toast } from "./ui/toast"
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "./ui/input-otp"
 import { Item, ItemContent, ItemMedia, ItemTitle } from "./ui/item"
@@ -103,7 +102,7 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
   return (<Card className="sticky lg:top-24 xshadow-lg">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">Twoja rezerwacja</CardTitle>
-        {appointment.visit_date && <CardDescription className="inline-flex gap-1.5 items-center"><Clock size="16" /><span> {appointment.visit_date}</span> {appointment.visit_time && <span>{appointment.visit_time}</span>}</CardDescription>}
+        {appointment.visit_date && <CardDescription className="inline-flex gap-2 items-center"><Clock size="18" /><span> {appointment.visit_date}</span> {appointment.visit_time && <span>{appointment.visit_time}</span>}</CardDescription>}
         {false && <CardAction>
           <Button size="lg" variant="secondary" onClick={() => navigate(-1)}><ArrowLeft data-icon="inline-start" /> Zmień</Button>
         </CardAction>}
@@ -152,34 +151,39 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
                 id="kulturalna_szkola"
                 name="kulturalna_szkola"
                 checked={appointment.kulturalna_szkola === 1} onCheckedChange={(checked) => updateAppointment({ kulturalna_szkola: checked ? 1 : null }) }
+                className="cursor-pointer"
               />
             </ItemMedia>
             <ItemContent className="gap-2">
-              <ItemTitle><label htmlFor="kulturalna_szkola" className="cursor-pointer">Chcę skorzystać z programu “Kulturalna Szkoła na Mazowszu”</label></ItemTitle>
-              {appointment.kulturalna_szkola === 1 && <Field className="mt-2">
-                <FieldLabel htmlFor="otp-verification" className="text-muted-foreground">
-                  Podaj kod pocztowy szkoły:
-                </FieldLabel>
-                <div className="flex gap-1 items-center">
-                  <InputOTP maxLength={5} id="otp-verification" value={zip} onChange={setZip} onComplete={handleZipComplete}>
-                    <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl">
-                      <InputOTPSlot index={0} aria-invalid={zipInvalid} />
-                      <InputOTPSlot index={1} aria-invalid={zipInvalid} />
-                    </InputOTPGroup>
-                    <InputOTPSeparator className="mx-2" />
-                    <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl">
-                      <InputOTPSlot index={2} aria-invalid={zipInvalid} />
-                      <InputOTPSlot index={3} aria-invalid={zipInvalid} />
-                      <InputOTPSlot index={4} aria-invalid={zipInvalid} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                  <Button variant="ghost" size="icon-lg" aria-label="Wyczyść kod pocztowy" title="Wyczyść kod pocztowy" onClick={handleZipReset}><RefreshCcw /></Button>
+              <ItemTitle><label htmlFor="kulturalna_szkola" className="cursor-pointer hover:opacity-60">Chcę skorzystać z programu “Kulturalna Szkoła na Mazowszu”</label></ItemTitle>
+              {appointment.kulturalna_szkola === 1 && <Field className="py-3 flex justify-center">
+                
+                <div className="inline-flex flex-col gap-2">
+                  <FieldLabel htmlFor="otp-verification" className="text-muted-foreground">
+                    Podaj kod pocztowy szkoły:
+                  </FieldLabel>
+                  <div className="inline-flex gap-1 items-center">
+                    <InputOTP maxLength={5} id="otp-verification" value={zip} onChange={setZip} onComplete={handleZipComplete}>
+                      <InputOTPGroup className={`*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl ${appointment.zip_valid ? 'ring-3 ring-green-500/40' : ''}`}>
+                        <InputOTPSlot index={0} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                        <InputOTPSlot index={1} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                      </InputOTPGroup>
+                      <InputOTPSeparator className="mx-2" />
+                      <InputOTPGroup className={`*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl ${appointment.zip_valid ? 'ring-3 ring-green-500/40' : ''}`}>
+                        <InputOTPSlot index={2} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                        <InputOTPSlot index={3} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                        <InputOTPSlot index={4} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                      </InputOTPGroup>
+                    </InputOTP>
+                    <Button variant="ghost" size="icon-lg" aria-label="Wyczyść kod pocztowy" title="Wyczyść kod pocztowy" onClick={handleZipReset}><RotateCcw /></Button>
+                  </div>
+                  <div className="h-5">
+                  {loading && <p>Sprawdzam...</p>}
+                    {zipInvalid && <p className="text-destructive">Nie znaleziono kodu w mazowieckim</p>}
+                    {appointment.zip_valid && <p className="text-green-600">Kod prawidłowy</p>}
+                  </div>
                 </div>
-                <div className="text-xs">
-                  {loading && <div>Sprawdzam...</div>}
-                  {zipInvalid && <div className="text-destructive">Nie znaleziono kodu w woj. mazowieckim</div>}
-                  {appointment.zip_valid && <div className="text-green-600">Kod prawidłowy</div>}
-                </div>
+
               </Field>}
               <a href="https://www.mcswelektrownia.pl/pl/kulturalna-szkola-na-mazowszu/14451" target="_blank" className="text-muted-foreground hover:text-foreground underline">Zasady uczestnictwa w programie</a>
             </ItemContent>
@@ -188,7 +192,7 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
         </FieldGroup>
 
         <div className="my-8 grid grid-cols-2 gap-2 lg:gap-16">
-          <Label htmlFor="pax">Liczba uczestników</Label>
+          <Label htmlFor="pax" className="inline-flex gap-2 items-center"><Users size="18" /> Liczba uczestników</Label>
           <div>
             <div className="flex gap-2">
               <Button variant="secondary" size="icon" onClick={() => updateAppointment({pax: appointment.pax > minPax ? appointment.pax - 1 : minPax})}><Minus /></Button>

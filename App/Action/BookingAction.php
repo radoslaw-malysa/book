@@ -53,6 +53,9 @@ class BookingAction
     $query_params = $request->getQueryParams();
 
     $service_id = $query_params['service_id'] ?? 0;
+
+    if (!$service_id) { return $this->json->render($response, ['error' => 1, 'message' => 'Nie wybrano warsztatów']); }
+
     $visit_date = $query_params['date'] ?? date("Y-m-d");
     $visit_time = $query_params['time'] ?? '';
 
@@ -160,16 +163,34 @@ class BookingAction
   }
 
   public function testBooking(Request $request, Response $response, $args) {
-    $appointment_date = '2026-10-19';
-    $appointment_date_end = '2026-10-28';
-    $service_id = 2;
-
-    //$slots = $this->appointment_providers->getAvailableLessonSlots($appointment_date, $service_id);
-    $slots = $this->appointment_providers->getAvailableLessonSlotsPerDay($appointment_date, $appointment_date_end, $service_id);
-    echo '<pre>'; print_r($slots);
-    print_r($this->formatSchedule($slots));
-    exit;
+    $data['json_data'] = '{"client":{"customer_type":"primary","name":"test","address":"Graniczna 17","zip":"26-600","city":"Radom","phone":"245433","email":"radek.malysa@gmail.com","contact_name":"Radek Małysa","contact_phone":"234234","contact_email":"radek.malysa@gmail.com","pax_care":"1","notes":"","accept_processing":1,"accept_regulations":1,"accept_kultura_zl":1,"age_1":0,"age_2":1,"age_3":0,"age_4":0,"age_5":0,"age_6":0,"age_7":0},"appointment":{"visit_date":"2026-11-04","visit_time":"09:00","group_pax":0,"service_id":"2","lesson":{"id":2,"name":"Spacer po wystawie i warsztaty plastyczne","price":"25.00","duration":60,"pax_min":10,"pax_max":25},"admission":null,"guide":{"id":12,"service_type":"tour","name":"Oprowadzanie po wystawach","description":"","price":"10.00","duration":60,"online":0,"pax_min":5,"pax_max":25,"state":1,"create_time":"2026-09-24 12:31:05","create_ip":"","update_time":"2026-09-24 12:31:05","update_ip":"127.0.0.1"},"kulturalna_szkola":1,"pax":25,"zip_valid":"26-600"}}';
     
+    // json string in body
+    if (isset($data['json_data'])) {
+      $data = json_decode($data['json_data'], true);
+    }
+    
+    if ($data) {
+      $status = $this->appointments->postBooking($data);
+
+      if (isset($status['error'])) {
+        return $this->json->render($response, $status);
+      }
+
+      if (isset($status['id']) && $status['id']) {
+        $token = $this->appointments->getToken($status['id']);
+
+        $payload = ['token' => $token];
+      } else {
+        $payload = ['error' => 2, 'message' => 'Nie udało się zapisać rezerwacji.'];
+      }
+
+      
+    } else {
+      $payload = ['error' => 1, 'message' => 'Nie udało się zapisać rezerwacji. Brak danych rezerwacji.'];
+    }
+    
+    return $this->json->render($response, $payload);
   }
 
   /**

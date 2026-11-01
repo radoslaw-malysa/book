@@ -3,7 +3,7 @@ import Calculation from "@/components/Calculation";
 import Steps from "@/components/Steps";
 import { useLoaderData, useNavigate, useSearchParams, type LoaderFunctionArgs } from "react-router";
 import { getBooking, type BookingResponse, type BookingFilters } from "@/services/booking"; 
-import { useBooking, type Appointment, type Client } from "@/context/BookingContext";
+import { useBooking, type Appointment } from "@/context/BookingContext";
 import { useEffect } from "react";
 import DateSlider from "@/components/DateSlider";
 
@@ -25,7 +25,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 const Booking = () => {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { service, service_id, visit_date, schedule, kulturalna_szkola, is_trip_available } = useLoaderData() as BookingResponse;
+  const { service, service_id, schedule, kulturalna_szkola, is_trip_available } = useLoaderData() as BookingResponse;
   const { appointment, updateAppointment } = useBooking();
 
   // set service_id (lesson) from link
@@ -48,7 +48,7 @@ const Booking = () => {
     }
   }
 
-  const handleDateChange = (value: string) => {
+  /*const handleDateChange = (value: string) => {
     updateAppointment({ visit_date: value, visit_time: '' } as Partial<Appointment>);
 
     const nextSearchParams = new URLSearchParams();
@@ -64,7 +64,7 @@ const Booking = () => {
 
   const handleAppointmentChange = (name: String, value: string | number) => {
     updateAppointment({ [name]: value } as Partial<Appointment>);
-  }
+  }*/
   
 
   const nextHandler = () => {
