@@ -17,11 +17,12 @@ import { getZipValidation } from "@/services/booking"
 interface CalculationProps {
   service: {};
   kulturalna_szkola: number;
+  kultura_za_zl: number;
   nextHandler: () => void;
   is_trip_available: boolean;
 }
 
-const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available}: CalculationProps) => {
+const Calculation = ({service, kulturalna_szkola, kultura_za_zl, nextHandler, is_trip_available}: CalculationProps) => {
   const { appointment, updateAppointment, updateClient } = useBooking();
   const navigate = useNavigate();
   const [zip, setZip] = useState(appointment.zip_valid.replace(/\D/g, ''));
@@ -66,7 +67,10 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
   }
 
   // min pax
-  const minPax = 5;
+  const minList = [];
+  if (appointment.lesson && appointment.lesson.pax_min > 0) { minList.push(appointment.lesson.pax_min) }
+  if (appointment.guide && appointment.guide.pax_min > 0) { minList.push(appointment.guide.pax_min) }
+  const minPax = Math.max(...minList);
 
   // max pax
   const maxList = [50];
@@ -84,7 +88,7 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
   if (appointment.guide) {
     totalPrice += appointment.pax * appointment.guide.price
   }
-  if (appointment.kulturalna_szkola === 1 && appointment.zip_valid) {
+  if ((appointment.kulturalna_szkola === 1 || appointment.kultura_za_zl === 1) && appointment.zip_valid) {
     sellPrice = appointment.pax * 1;
   } else {
     sellPrice = totalPrice;
@@ -117,7 +121,7 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
               <FieldContent>
                 <FieldTitle className="normal-case text-sm">{service.lesson.name}</FieldTitle>
                 <FieldDescription>
-                  {service.lesson.duration && <span>{service.lesson.duration} min., </span>} {service.lesson.pax_max && <span>max {service.lesson.pax_max} osób</span>}
+                  {service.lesson.duration && <span>{service.lesson.duration} min., </span>} {service.lesson.pax_max && <span>{service.lesson.pax_min}-{service.lesson.pax_max} osób</span>}
                 </FieldDescription>
               </FieldContent>
               {service.lesson.price > 0 && <div className="normal-case text-sm">{service.lesson.price * 1} zł/os.</div>}
@@ -139,7 +143,10 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
               <Checkbox id="guide" name="guide" checked={appointment.guide !== null} onCheckedChange={(checked) => updateAppointment({ guide: checked ? service.guide : null })} disabled={!is_trip_available} />
               <FieldContent>
                 <FieldTitle className="normal-case text-sm">{service.guide.name}</FieldTitle>
-                {!is_trip_available && <FieldDescription className="leading-[1.25]">Wystawy niedostępne w wybranej godzinie.</FieldDescription>}
+                {is_trip_available && <FieldDescription>
+                  {service.guide.duration && <span>{service.guide.duration} min., </span>} {service.guide.pax_max && <span>{service.guide.pax_min}-{service.guide.pax_max} osób</span>}
+                </FieldDescription>}
+                {!is_trip_available && <FieldDescription className="leading-[1.25] text-destructive">Wystawy niedostępne w wybranej godzinie.</FieldDescription>}
               </FieldContent>
               {service.guide.price > 0 && <div className="normal-case text-sm">{service.guide.price * 1} zł/os.</div>}
             </Field>
@@ -150,42 +157,84 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
               <Checkbox
                 id="kulturalna_szkola"
                 name="kulturalna_szkola"
-                checked={appointment.kulturalna_szkola === 1} onCheckedChange={(checked) => updateAppointment({ kulturalna_szkola: checked ? 1 : null }) }
+                checked={appointment.kulturalna_szkola === 1} onCheckedChange={(checked) => updateAppointment({ kulturalna_szkola: checked ? 1 : 0, kultura_za_zl: 0 }) }
                 className="cursor-pointer"
               />
             </ItemMedia>
             <ItemContent className="gap-2">
               <ItemTitle><label htmlFor="kulturalna_szkola" className="cursor-pointer hover:opacity-60">Chcę skorzystać z programu “Kulturalna Szkoła na Mazowszu”</label></ItemTitle>
-              {appointment.kulturalna_szkola === 1 && <Field className="py-3 flex justify-center">
-                
-                <div className="inline-flex flex-col gap-2">
+              {appointment.kulturalna_szkola === 1 && <Field className="py-2 flex justify-center">
+                <div className="inline-flex flex-col gap-3">
                   <FieldLabel htmlFor="otp-verification" className="text-muted-foreground">
                     Podaj kod pocztowy szkoły:
                   </FieldLabel>
-                  <div className="inline-flex gap-1 items-center">
-                    <InputOTP maxLength={5} id="otp-verification" value={zip} onChange={setZip} onComplete={handleZipComplete}>
-                      <InputOTPGroup className={`*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl ${appointment.zip_valid ? 'ring-3 ring-green-500/40' : ''}`}>
-                        <InputOTPSlot index={0} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
-                        <InputOTPSlot index={1} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
-                      </InputOTPGroup>
-                      <InputOTPSeparator className="mx-2" />
-                      <InputOTPGroup className={`*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl ${appointment.zip_valid ? 'ring-3 ring-green-500/40' : ''}`}>
-                        <InputOTPSlot index={2} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
-                        <InputOTPSlot index={3} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
-                        <InputOTPSlot index={4} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
-                      </InputOTPGroup>
-                    </InputOTP>
-                    <Button variant="ghost" size="icon-lg" aria-label="Wyczyść kod pocztowy" title="Wyczyść kod pocztowy" onClick={handleZipReset}><RotateCcw /></Button>
-                  </div>
-                  <div className="h-5">
-                  {loading && <p>Sprawdzam...</p>}
-                    {zipInvalid && <p className="text-destructive">Nie znaleziono kodu w mazowieckim</p>}
-                    {appointment.zip_valid && <p className="text-green-600">Kod prawidłowy</p>}
-                  </div>
-                </div>
+                  <div className="flex flex-col lg:flex-row gap-2 lg:gap-0 lg:items-center">
+                    <div className="inline-flex gap-1 items-center">
+                      <InputOTP maxLength={5} id="otp-verification" value={zip} onChange={setZip} onComplete={handleZipComplete}>
+                        <InputOTPGroup className={`*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl ${appointment.zip_valid ? 'ring-3 ring-green-500/40' : ''}`}>
+                          <InputOTPSlot index={0} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                          <InputOTPSlot index={1} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                        </InputOTPGroup>
+                        <InputOTPSeparator className="mx-2" />
+                        <InputOTPGroup className={`*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl ${appointment.zip_valid ? 'ring-3 ring-green-500/40' : ''}`}>
+                          <InputOTPSlot index={2} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                          <InputOTPSlot index={3} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                          <InputOTPSlot index={4} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                        </InputOTPGroup>
+                      </InputOTP>
+                      <Button variant="ghost" size="icon-lg" aria-label="Wyczyść kod pocztowy" title="Wyczyść kod pocztowy" onClick={handleZipReset}><RotateCcw /></Button>
+                    </div>
 
+                    {loading && <div className="text-muted-foreground flex-grow lg:text-center">Sprawdzam...</div>}
+                    {zipInvalid && <div className="text-destructive flex-grow lg:text-center">Nie znaleziono kodu w mazowieckim</div>}
+                    {appointment.zip_valid && <div className="text-green-600 flex-grow lg:text-center">Kod prawidłowy</div>}
+                  </div>
+                  <a href="https://www.mcswelektrownia.pl/pl/kulturalna-szkola-na-mazowszu/14451" target="_blank" className="text-muted-foreground hover:text-foreground underline mt-1.5">Zasady uczestnictwa w programie</a>
+                </div>
               </Field>}
-              <a href="https://www.mcswelektrownia.pl/pl/kulturalna-szkola-na-mazowszu/14451" target="_blank" className="text-muted-foreground hover:text-foreground underline">Zasady uczestnictwa w programie</a>
+            </ItemContent>
+          </Item>}
+
+          {kultura_za_zl === 1 && <Item variant="outline" className="has-data-checked:bg-input/30 items-start">
+            <ItemMedia>
+              <Checkbox
+                id="kultura_za_zl"
+                name="kultura_za_zl"
+                checked={appointment.kultura_za_zl === 1} onCheckedChange={(checked) => updateAppointment({ kultura_za_zl: checked ? 1 : 0, kulturalna_szkola: 0 }) }
+                className="cursor-pointer"
+              />
+            </ItemMedia>
+            <ItemContent className="gap-2">
+              <ItemTitle><label htmlFor="kultura_za_zl" className="cursor-pointer hover:opacity-60">Chcę skorzystać z programu “Kultura za 1 zł” <br />wsparcie osób z niepełnosprawnościami na Mazowszu</label></ItemTitle>
+              {appointment.kultura_za_zl === 1 && <Field className="py-2">
+                <div className="inline-flex flex-col gap-3">
+                  <FieldLabel htmlFor="otp-verification" className="text-muted-foreground">
+                    Podaj kod pocztowy szkoły:
+                  </FieldLabel>
+                  <div className="flex flex-col lg:flex-row gap-2 lg:gap-0 lg:items-center">
+                    <div className="inline-flex gap-1 items-center">
+                      <InputOTP maxLength={5} id="otp-verification" value={zip} onChange={setZip} onComplete={handleZipComplete}>
+                        <InputOTPGroup className={`*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl ${appointment.zip_valid ? 'ring-3 ring-green-500/40' : ''}`}>
+                          <InputOTPSlot index={0} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                          <InputOTPSlot index={1} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                        </InputOTPGroup>
+                        <InputOTPSeparator className="mx-2" />
+                        <InputOTPGroup className={`*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl ${appointment.zip_valid ? 'ring-3 ring-green-500/40' : ''}`}>
+                          <InputOTPSlot index={2} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                          <InputOTPSlot index={3} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                          <InputOTPSlot index={4} aria-invalid={zipInvalid} className="bg-white border-neutral-400" />
+                        </InputOTPGroup>
+                      </InputOTP>
+                      <Button variant="ghost" size="icon-lg" aria-label="Wyczyść kod pocztowy" title="Wyczyść kod pocztowy" onClick={handleZipReset}><RotateCcw /></Button>
+                    </div>
+
+                    {loading && <div className="text-muted-foreground flex-grow lg:text-center">Sprawdzam...</div>}
+                    {zipInvalid && <div className="text-destructive flex-grow lg:text-center">Nie znaleziono kodu w mazowieckim</div>}
+                    {appointment.zip_valid && <div className="text-green-600 flex-grow lg:text-center">Kod prawidłowy</div>}
+                  </div>
+                  <a href="https://www.mcswelektrownia.pl/pl/kultura-za-zlotowke-dla-osob-z-niepelnosprawnosciami/14452" target="_blank" className="text-muted-foreground hover:text-foreground underline mt-1.5">Zasady uczestnictwa w programie</a>
+                </div>
+              </Field>}
             </ItemContent>
           </Item>}
 
@@ -207,11 +256,11 @@ const Calculation = ({service, kulturalna_szkola, nextHandler, is_trip_available
 
         <div className="flex items-center justify-between text-lg font-semibold">
           <div className="uppercase">Razem</div>
-          {(appointment.kulturalna_szkola === 1 && appointment.zip_valid) && <div className="flex gap-4">
+          {(totalPrice !== sellPrice) && <div className="flex gap-4">
             <div className="line-through text-muted-foreground">{totalPrice} zł</div>
             <div>{sellPrice} zł</div>
           </div>}
-          {(appointment.kulturalna_szkola !== 1 || !appointment.zip_valid) && <div className="flex gap-4">
+          {(totalPrice === sellPrice) && <div className="flex gap-4">
             <div>{totalPrice} zł</div>
           </div>}
         </div>

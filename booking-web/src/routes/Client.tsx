@@ -37,7 +37,7 @@ const initialErrors = {
   pax_care: false,
   accept_processing: false,
   accept_regulations: false,
-  accept_kultura_zl: false,
+  accept_kulturalna_szkola: false,
   ages: false
 }
 
@@ -125,7 +125,8 @@ const Client = () => {
     newErrors.pax_care = !client.pax_care && client.pax_care != 0 && appointment.kulturalna_szkola === 1;
     newErrors.accept_processing = !client.accept_processing;
     newErrors.accept_regulations = !client.accept_regulations;
-    newErrors.accept_kultura_zl = !client.accept_kultura_zl && appointment.kulturalna_szkola === 1;
+    newErrors.accept_kulturalna_szkola = !client.accept_kulturalna_szkola && (appointment.kulturalna_szkola === 1 || appointment.kultura_za_zl === 1);
+    //newErrors.accept_kultura_za_zl = !client.accept_kultura_za_zl && appointment.kultura_za_zl === 1;
     newErrors.ages = !(client.age_1 || client.age_2 || client.age_3 || client.age_4 || client.age_5 || client.age_6 || client.age_7)
     
     //setErrors(newErrors);
@@ -386,25 +387,41 @@ const Client = () => {
                 <FieldLabel
                   htmlFor="accept_regulations"
                 >
-                  <span>Zapoznałam(em) się z treścią i akceptuję zasady <a href="https://www.mcswelektrownia.pl/pl/regulamin-warsztatow-edukacyjnych/14450" target="_blank" className="font-semibold underline">Regulaminu warsztatów edukacyjnych</a></span>
+                  <span>Zapoznałam(em) się z treścią i akceptuję zasady <a href="https://www.mcswelektrownia.pl/pl/regulamin-warsztatow-edukacyjnych/14450" target="_blank" className="font-semibold underline">Regulaminu</a> warsztatów edukacyjnych</span>
                 </FieldLabel>
               </Field>
 
-              {appointment.kulturalna_szkola === 1 && <Field orientation="horizontal" className="items-start" data-invalid={errors.accept_kultura_zl}>
+              {appointment.kulturalna_szkola === 1 && <Field orientation="horizontal" className="items-start" data-invalid={errors.accept_kulturalna_szkola}>
                 <Checkbox
-                  id="accept_kultura_zl"
-                  name="accept_kultura_zl"
-                  checked={client.accept_kultura_zl === 1}
-                  onCheckedChange={(checked) => handleClientCheck('accept_kultura_zl', checked)}
-                  aria-invalid={errors.accept_kultura_zl}
+                  id="accept_kulturalna_szkola"
+                  name="accept_kulturalna_szkola"
+                  checked={client.accept_kulturalna_szkola === 1}
+                  onCheckedChange={(checked) => handleClientCheck('accept_kulturalna_szkola', checked)}
+                  aria-invalid={errors.accept_kulturalna_szkola}
                 />
                 <FieldLabel
-                  htmlFor="accept_kultura_zl"
+                  htmlFor="accept_kulturalna_szkola"
                 >
-                  <span>Zapoznałam(em) się z treścią i akceptuję <a href="https://www.mcswelektrownia.pl/pl/kulturalna-szkola-na-mazowszu/14451" target="_blank" className="font-semibold underline">Zasady uczestnictwa w programie "Kulturalna Szkoła na Mazowszu"</a></span>
+                  <span>Zapoznałam(em) się z treścią i akceptuję <a href="https://www.mcswelektrownia.pl/pl/kulturalna-szkola-na-mazowszu/14451" target="_blank" className="font-semibold underline">Zasady uczestnictwa</a> w programie "Kulturalna Szkoła na Mazowszu"</span>
                 </FieldLabel>
               </Field>}
-              {(errors.accept_processing || errors.accept_regulations || errors.accept_kultura_zl) && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Potrzebujemy Twojej zgody</FieldDescription>}
+
+              {appointment.kultura_za_zl === 1 && <Field orientation="horizontal" className="items-start" data-invalid={errors.accept_kulturalna_szkola}>
+                <Checkbox
+                  id="accept_kulturalna_szkola"
+                  name="accept_kulturalna_szkola"
+                  checked={client.accept_kulturalna_szkola === 1}
+                  onCheckedChange={(checked) => handleClientCheck('accept_kulturalna_szkola', checked)}
+                  aria-invalid={errors.accept_kulturalna_szkola}
+                />
+                <FieldLabel
+                  htmlFor="accept_kulturalna_szkola"
+                >
+                  <span>Zapoznałam(em) się z treścią i akceptuję <a href="https://www.mcswelektrownia.pl/pl/kultura-za-zlotowke-dla-osob-z-niepelnosprawnosciami/14452" target="_blank" className="font-semibold underline">Zasady uczestnictwa</a> w programie "Kultura za 1 zł" wsparcie osób z niepelnosprawnosciami</span>
+                </FieldLabel>
+              </Field>}
+              {(errors.accept_processing || errors.accept_regulations || errors.accept_kulturalna_szkola) && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Potrzebujemy Twojej zgody</FieldDescription>}
+
             </FieldGroup>
 
             

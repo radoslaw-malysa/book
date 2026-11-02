@@ -24,7 +24,7 @@ const CalculationRead = ({nextHandler}: CalculationReadProps) => {
   if (appointment.guide) {
     totalPrice += appointment.pax * appointment.guide.price
   }
-  if (appointment.kulturalna_szkola === 1) {
+  if ((appointment.kulturalna_szkola === 1 || appointment.kultura_za_zl === 1) && appointment.zip_valid) {
     sellPrice = appointment.pax * 1;
   } else {
     sellPrice = totalPrice;
@@ -57,16 +57,21 @@ const CalculationRead = ({nextHandler}: CalculationReadProps) => {
             <div className="text-sm leading-snug font-medium">Uczestniczę w programie “Kulturalna Szkoła na Mazowszu”</div>
           </div>}
 
+          {(appointment.kultura_za_zl === 1 && appointment.zip_valid) && <Separator />}
+          {(appointment.kultura_za_zl === 1 && appointment.zip_valid) && <div className="flex w-full items-center gap-3 justify-between py-3">
+            <div className="text-sm leading-snug font-medium">Uczestniczę w programie “Kultura za 1 zł” wsparcie osób z niepełnosprawnościami na Mazowszu</div>
+          </div>}
+
           <Separator />
 
           <div className="flex w-full items-center gap-3 justify-between py-3 text-base">
           <div className="leading-snug font-semibold">Razem</div>
 
-          {(appointment.kulturalna_szkola === 1 && appointment.zip_valid) && <div className="flex gap-4">
+          {(totalPrice !== sellPrice) && <div className="flex gap-4">
             <div className="line-through text-muted-foreground">{totalPrice} zł</div>
             <div className="font-semibold">{sellPrice} zł&#42;</div>
           </div>}
-          {(appointment.kulturalna_szkola !== 1 || appointment.zip_valid === '') && <div className="flex gap-4">
+          {(totalPrice === sellPrice) && <div className="flex gap-4">
             <div>{totalPrice} zł</div>
           </div>}
         </div>
@@ -74,14 +79,9 @@ const CalculationRead = ({nextHandler}: CalculationReadProps) => {
         </ItemContent>
       </Item>
 
-
       <div className="flex flex-col gap-4">
-        
-
-        
-
         {appointment.kulturalna_szkola === 1 && <div className="text-xs text-muted-foreground mt-2">&#42; Preferencyjna cena dla beneficjentów programu "Kulturalna Szkoła na Mazowszu"</div>}
-
+        {appointment.kultura_za_zl === 1 && <div className="text-xs text-muted-foreground mt-2">&#42; Preferencyjna cena dla beneficjentów programu "Kultura za 1 zł" wsparcie osób z niepelnosprawnościami na Mazowszu</div>}
       </div>
     </CardContent>
     <CardFooter>

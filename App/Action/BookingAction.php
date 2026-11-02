@@ -64,6 +64,7 @@ class BookingAction
 
     // preferential programs
     $kulturalna_szkola = 1;
+    $kultura_za_zl = 1;
 
     // free rooms
     $date_start = date("Y-m-d");
@@ -90,6 +91,7 @@ class BookingAction
       'visit_date' => $visit_date,
       'schedule' => $schedule,
       'kulturalna_szkola' => $kulturalna_szkola,
+      'kultura_za_zl' => $kultura_za_zl,
       'is_trip_available' => $is_trip_available
     ];
     

@@ -10,6 +10,7 @@ export interface Appointment {
   admission: object | null;
   guide: object | null;
   kulturalna_szkola: number;
+  kultura_za_zl: number;
   pax: number;
   zip_valid: string;
   state: string;
@@ -30,7 +31,7 @@ export interface Client {
   notes: string;
   accept_processing: number;
   accept_regulations: number;
-  accept_kultura_zl: number;
+  accept_kulturalna_szkola: number;
   age_1: number;
   age_2: number;
   age_3: number;
@@ -63,6 +64,7 @@ const initialAppointment: Appointment = {
   admission: null,
   guide: null,
   kulturalna_szkola: 0,
+  kultura_za_zl: 0,
   pax: 5,
   zip_valid: '',
   state: 'pending'
@@ -83,7 +85,7 @@ const initialClient: Client = {
   notes: '',
   accept_processing: 0,
   accept_regulations: 0,
-  accept_kultura_zl: 0,
+  accept_kulturalna_szkola: 0,
   age_1: 0,
   age_2: 0,
   age_3: 0,

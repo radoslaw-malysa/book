@@ -15,6 +15,7 @@ export interface BookingResponse {
   token?: string;
   schedule: [];
   kulturalna_szkola: number;
+  kultura_za_zl: number;
   is_trip_available: boolean;
   client: Client;
   appointment: Appointment;

@@ -1,6 +1,5 @@
 import Calculation from "@/components/Calculation";
 //import DateCalendar from "@/components/DateCalendar";
-import Steps from "@/components/Steps";
 import { useLoaderData, useNavigate, useSearchParams, type LoaderFunctionArgs } from "react-router";
 import { getBooking, type BookingResponse, type BookingFilters } from "@/services/booking"; 
 import { useBooking, type Appointment } from "@/context/BookingContext";
@@ -25,12 +24,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 const Booking = () => {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { service, service_id, schedule, kulturalna_szkola, is_trip_available } = useLoaderData() as BookingResponse;
+  const { service, service_id, schedule, kulturalna_szkola, kultura_za_zl, is_trip_available } = useLoaderData() as BookingResponse;
   const { appointment, updateAppointment } = useBooking();
 
   // set service_id (lesson) from link
   useEffect(() => {
-    updateAppointment({ service_id: service_id, lesson: service.lesson } as Partial<Appointment>);
+    const paxMin = (service.lesson && service.lesson.pax_min > 0) ? service.lesson.pax_min : 5; // lesson min pax
+    updateAppointment({ service_id: service_id, lesson: service.lesson, pax: paxMin } as Partial<Appointment>);
   }, [service_id]);
 
   const handleDateTimeChange = (date: string, time: string) => {
@@ -73,20 +73,17 @@ const Booking = () => {
 
   //console.log(appointment)
 
-  return (<>
-    {false && <Steps step={1} />}
-    <section>
-      <div className="w-9/10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div>
-          {/*<DateCalendar visitDate={appointment.visit_date} setVisitDate={handleDateChange} visitTime={appointment.visit_time} setVisitTime={(val) => handleAppointmentChange('visit_time', val)} schedule={schedule} />*/}
-          <DateSlider visitDate={appointment.visit_date} setVisitDateTime={handleDateTimeChange} visitTime={appointment.visit_time} schedule={schedule} />
-        </div>
-        <div>
-          <Calculation service={service} kulturalna_szkola={kulturalna_szkola} nextHandler={nextHandler} is_trip_available={is_trip_available} />
-        </div>
+  return (<section>
+    <div className="w-full md:w-9/10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div>
+        {/*<DateCalendar visitDate={appointment.visit_date} setVisitDate={handleDateChange} visitTime={appointment.visit_time} setVisitTime={(val) => handleAppointmentChange('visit_time', val)} schedule={schedule} />*/}
+        <DateSlider visitDate={appointment.visit_date} setVisitDateTime={handleDateTimeChange} visitTime={appointment.visit_time} schedule={schedule} />
       </div>
-    </section>
-  </>)
+      <div>
+        <Calculation service={service} kulturalna_szkola={kulturalna_szkola} kultura_za_zl={kultura_za_zl} nextHandler={nextHandler} is_trip_available={is_trip_available} />
+      </div>
+    </div>
+  </section>)
 }
 
 export default Booking
