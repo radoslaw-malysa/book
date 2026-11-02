@@ -31,13 +31,13 @@ return static function(string $appEnv) {
             'log_errors' => true,
             'view_path' => __DIR__ . '/../App/View',
             'db_driver' => 'mysql',
-            'db_host' => 'mysql8',
-            'db_username' => '40484962_auctions', 
-            'db_database' => '40484962_auctions', 
-            'db_password' => '2_KdmbfH', 
+            'db_host' => 'localhost',
+            'db_username' => 'mcswelektrownia_26', 
+            'db_database' => 'mcswelektrownia_26', 
+            'db_password' => 'ZI2dE-3vEq%dai-U', 
             'db_charset' => 'utf8mb4',
             'db_collation' => 'utf8mb4_polish_ci',
-            'db_prefix' => 'rt_',
+            'db_prefix' => 'book_',
             'upl' => 'img/',
             'thumbs' => 'thumbs/'
         ];

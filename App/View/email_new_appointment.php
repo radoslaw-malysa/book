@@ -7,7 +7,7 @@
 
   <div style="font-family:Verdana, Arial, Helvetica, sans-serif;">
     <p><strong>Nr rezerwacji:</strong> <?php echo $appointment['id'] ?></p>
-    <p><strong>Termin wizyty:</strong> <?php echo $appointment['visit_date'] ?> godz. <?php echo substr($appintment['visit_time'], 0 , -3) ?></p>
+    <p><strong>Termin wizyty:</strong> <?php echo substr($appintment['visit_time'], 0 , -3) ?></p>
     <p><strong>Warsztaty:</strong> <?php echo $service['name'] ?? '' ?></p>
     <p><a href="<?php echo $appointment_url ?>" target="_blank">Szczegóły rezerwacji</a></p>
   </div>

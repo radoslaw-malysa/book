@@ -61,20 +61,20 @@ class EmailAction
     $appointment = $this->appointments->getByToken($token);
 
     if (isset($appointment['id']) || true) {
-      $customer = $this->customers->where('id', $appointment['customer_id'])->first(['name']);
+      $customer = $this->customers->where('id', $appointment['customer_id'])->first(['name','contact_email']);
       
       if ($this->mailer->send([
-        'address' => MailerConfig::NOTIFICATION_EMAIL,
+        'address' => $customer['contact_email'],
         'address_name' => null,
         'reply_email' => null,
         'subject' => 'Twoja rezerwacja nr ' . $appointment['id'] ?? '',
         'body' => $this->view->fetch('email_new_appointment.php', [
           'appointment' => $appointment,
           'service' => $this->services->where('id', $appointment['service_id'])->first(['name']),
-          'appointment_url' => 'xxx',
-          'confirm_url' => 'xxx',
-          'cancel_url' => 'xxx',
-          'zgloszenie_url' => '',
+          'appointment_url' => 'https://www.mcswelektrownia.pl/rezerwacja/przed-wizyta/' . $token,
+          'confirm_url' => 'https://www.mcswelektrownia.pl/rezerwacja/przed-wizyta/' . $token,
+          'cancel_url' => 'https://www.mcswelektrownia.pl/rezerwacja/przed-wizyta/' . $token,
+          'zgloszenie_url' => 'https://www.mcswelektrownia.pl/booking-api/booking/zgloszenie-pdf/' . $token,
           'reservation_phone' => '884 320 030',
           'reservation_email' => MailerConfig::NOTIFICATION_EMAIL
         ]),
@@ -108,7 +108,7 @@ class EmailAction
           'appointment' => $appointment,
           'service' => $this->services->where('id', $appointment['service_id'])->first(['name']),
           'customer' => $this->customers->where('id', $appointment['customer_id'])->first(['name']),
-          'appointment_url' => 'xxx'
+          'appointment_url' => 'https://www.mcswelektrownia.pl/rezerwacja/przed-wizyta/' . $token
         ]),
         'alt_body' => ''
       ])) {
