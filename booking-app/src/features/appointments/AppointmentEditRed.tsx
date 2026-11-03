@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AtSign, Clock, ContactRound, ListChecks, Mail, MapPin, MessageCircleWarning, PersonStanding, Phone, Printer, UserRound } from "lucide-react";
+import { AtSign, Clock, ContactRound, GraduationCap, ListChecks, Mail, MapPin, MessageCircleWarning, Phone, Printer, UserRound, Users } from "lucide-react";
 import { useEffect, useReducer, type ChangeEvent } from "react";
 import './appointment_edit.css';
 import { Separator } from "@/components/ui/separator";
@@ -44,6 +44,16 @@ const customerTypes = [
   { value: 'individual', label: 'Indywidualny' },
   { value: 'organized_group', label: 'Grupa' },
   { value: 'other', label: 'Inny' }
+];
+
+const AgeGroups = [
+  { id: 'age_1', title: 'przedszkole' },
+  { id: 'age_2', title: 'klasa 0-I' },
+  { id: 'age_3', title: 'klasa II-III' },
+  { id: 'age_4', title: 'klasa IV-VI' },
+  { id: 'age_5', title: 'klasa VII-VIII' },
+  { id: 'age_6', title: 'ponadpodstawowa' },
+  { id: 'age_7', title: 'dorośli' },
 ];
 
 const AppointmentEditRed = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) => {
@@ -598,6 +608,27 @@ const AppointmentEditRed = ({ itemId, refreshKey, onClose }: ItemEditDialogProps
 
                   <div className="px-4 flex gap-3">
                     <div className="w-9 h-9 flex-none flex justify-center items-center">
+                      <GraduationCap size="20" />
+                    </div>
+                    <div className="flex-grow pt-2">
+                      <FieldGroup className="gap-2">
+                        {AgeGroups.map((age) => <Field key={age.id} orientation="horizontal">
+                          <Checkbox 
+                            id={age.id}
+                            value={age.id}  
+                            checked={form.customer[age.id] == 1}
+                            onCheckedChange={(val) => updateCustomer(age.id, (val) ? 1 : 0)}
+                          />
+                          <FieldLabel htmlFor={age.id}>{age.title}</FieldLabel>
+                        </Field>)}
+                      </FieldGroup>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="px-4 flex gap-3">
+                    <div className="w-9 h-9 flex-none flex justify-center items-center">
                       <ListChecks size="20" />
                     </div>
                     <div className="flex-grow pt-2">
@@ -660,7 +691,7 @@ const AppointmentEditRed = ({ itemId, refreshKey, onClose }: ItemEditDialogProps
                   </div>
                   <div className="px-4 flex gap-3">
                     <div className="w-9 h-9 flex-none flex justify-center items-center">
-                      <PersonStanding size="20" />
+                      <Users size="20" />
                     </div>
                     <div className="flex-grow">
                       <InputGroup>

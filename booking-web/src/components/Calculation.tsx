@@ -3,7 +3,7 @@ import { Button } from "./ui/button"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card"
 import { Checkbox } from "./ui/checkbox"
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTitle } from "./ui/field"
-import { ArrowLeft, ArrowRight, Clock, Minus, Plus, RotateCcw, Users } from "lucide-react"
+import { ArrowLeft, ArrowRight, Clock, Minus, Plus, RotateCcw, ThumbsUp, Users } from "lucide-react"
 import { useBooking, type Appointment, type Client } from "@/context/BookingContext"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
@@ -187,7 +187,7 @@ const Calculation = ({service, kulturalna_szkola, kultura_za_zl, nextHandler, is
 
                     {loading && <div className="text-muted-foreground flex-grow lg:text-center">Sprawdzam...</div>}
                     {zipInvalid && <div className="text-destructive flex-grow lg:text-center">Nie znaleziono kodu w mazowieckim</div>}
-                    {appointment.zip_valid && <div className="text-green-600 flex-grow lg:text-center">Kod prawidłowy</div>}
+                    {appointment.zip_valid && <div className="text-green-600 flex-grow flex gap-2 items-center lg:justify-center"><ThumbsUp size="18" /> Kod prawidłowy</div>}
                   </div>
                   <a href="https://www.mcswelektrownia.pl/pl/kulturalna-szkola-na-mazowszu/14451" target="_blank" className="text-muted-foreground hover:text-foreground underline mt-1.5">Zasady uczestnictwa w programie</a>
                 </div>
@@ -230,7 +230,7 @@ const Calculation = ({service, kulturalna_szkola, kultura_za_zl, nextHandler, is
 
                     {loading && <div className="text-muted-foreground flex-grow lg:text-center">Sprawdzam...</div>}
                     {zipInvalid && <div className="text-destructive flex-grow lg:text-center">Nie znaleziono kodu w mazowieckim</div>}
-                    {appointment.zip_valid && <div className="text-green-600 flex-grow lg:text-center">Kod prawidłowy</div>}
+                    {appointment.zip_valid && <div className="text-green-600 flex-grow flex gap-2 items-center lg:justify-center"><ThumbsUp size="18" /> Kod prawidłowy</div>}
                   </div>
                   <a href="https://www.mcswelektrownia.pl/pl/kultura-za-zlotowke-dla-osob-z-niepelnosprawnosciami/14452" target="_blank" className="text-muted-foreground hover:text-foreground underline mt-1.5">Zasady uczestnictwa w programie</a>
                 </div>

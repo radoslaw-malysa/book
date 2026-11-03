@@ -16,9 +16,9 @@ import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "
 import { useDebounce } from "@/hooks/useDebounce";
 import { Paginate } from "@/components/Paginate";
 import { getAppointments, type AppointmentFilters } from "@/api/appointments";
-import AppointmentEdit from "@/features/appointments/AppointmentEdit";
 import { Input } from "@/components/ui/input";
 import DateRangePicker from "@/components/DateRangePicker";
+import AppointmentEditRed from "@/features/appointments/AppointmentEditRed";
 
 export const appointmentsQuery = (filters: AppointmentFilters = {}) =>
   queryOptions({
@@ -200,7 +200,7 @@ const Appointments = () => {
         <Paginate page={filters.page} totalPages={data.total_pages} onChange={pageChangeHandler} />
       </CardFooter>}
     </Card>
-    <AppointmentEdit itemId={selectedId} refreshKey="appointments" onClose={() => setSelectedId(null)} />
+    <AppointmentEditRed itemId={selectedId} refreshKey="appointments" onClose={() => setSelectedId(null)} />
   </>);
 };
 

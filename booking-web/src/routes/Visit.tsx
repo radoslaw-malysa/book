@@ -78,13 +78,12 @@ const Visit = () => {
     setCancelOpen(false);
   }
   
-
   const nextHandler = () => {
     navigate("/rezerwacja/dane");
   }
 
   return (<section>
-    <div className="w-9/10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <div className="w-full md:w-9/10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
       <div className="flex flex-col gap-12">
         {firstVisit && <Card className="shadow-none">
           <CardHeader>
@@ -109,7 +108,7 @@ const Visit = () => {
 
         {appointment.state !== 'cancelled' && appointment.kulturalna_szkola === 1 && <Card className="shadow-none bg-muted">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Zgłoszenie szkoły do Programu "Kulturalna Szkoła na Mazowszu"</CardTitle>
+            <CardTitle className="text-lg font-semibold">Zgłoszenie szkoły do programu "Kulturalna Szkoła na Mazowszu"</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 text-left leading-[1.5] text-base">
@@ -121,6 +120,23 @@ const Visit = () => {
           <CardFooter className="flex-col gap-3">
             <a href={`${API_URL}/booking/zgloszenie-pdf/${token}`} target="_blank" className={`${buttonVariants({ size: "lg" })} w-full`}><Printer data-icon="inline-start" /> Drukuj zgłoszenie</a>
             <a href="https://www.mcswelektrownia.pl/pl/kulturalna-szkola-na-mazowszu/14451" target="_blank" className={buttonVariants({ variant: "link", size: "lg" })}><FileText data-icon="inline-start" /> Zasady uczestnictwa w programie</a>
+          </CardFooter>
+        </Card>}
+
+        {appointment.state !== 'cancelled' && appointment.kultura_za_zl === 1 && <Card className="shadow-none bg-muted">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Zgłoszenie szkoły do programu "Kultura za 1 zł" wsparcie osób z niepełnosprawnościami</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc pl-6 text-left leading-[1.5] text-base">
+              <li>Wydrukuj zgłoszenie.</li>
+              <li>Najpóźniej <strong>7 dni</strong> przed planowaną wizytą prześlij skan zgłoszenia z pieczątką szkoły i podpisem dyrektora (lub wicedyr.) na adres edukacja@mcswelektrownia.pl. Oryginał wniosku przekaż w kasie w dniu wizyty.</li>
+              <li>Bez dostarczonego w terminie wniosku, obowiązują <strong>ceny regularne</strong>.</li>
+            </ul>
+          </CardContent>
+          <CardFooter className="flex-col gap-3">
+            <a href={`${API_URL}/booking/zgloszenie-pdf-zl/${token}`} target="_blank" className={`${buttonVariants({ size: "lg" })} w-full`}><Printer data-icon="inline-start" /> Drukuj zgłoszenie</a>
+            <a href="https://www.mcswelektrownia.pl/pl/kultura-za-zlotowke-dla-osob-z-niepelnosprawnosciami/14452" target="_blank" className={buttonVariants({ variant: "link", size: "lg" })}><FileText data-icon="inline-start" /> Zasady uczestnictwa w programie</a>
           </CardFooter>
         </Card>}
 

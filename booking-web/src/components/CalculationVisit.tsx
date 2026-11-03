@@ -40,7 +40,10 @@ const CalculationVisit = ({appointment, calculation, nextHandler}: CalculationRe
           {appointment.kulturalna_szkola === 1 && <div className="flex w-full items-center gap-3 justify-between py-3">
             <div className="text-sm leading-snug font-medium">Uczestniczę w programie “Kulturalna Szkoła na Mazowszu”</div>
           </div>}
-          {appointment.kulturalna_szkola === 1 && <Separator />}
+          {appointment.kultura_za_zl === 1 && <div className="flex w-full items-center gap-3 justify-between py-3">
+            <div className="text-sm leading-snug font-medium">Uczestniczę w programie “Kultura za 1 zł” wsparcie osób z niepełnosprawnościami</div>
+          </div>}
+          {(appointment.kulturalna_szkola === 1 || appointment.kultura_za_zl === 1) && <Separator />}
 
           <div className="flex w-full items-center gap-3 justify-between py-3 text-base font-semibold">
             <div className="leading-snug">Razem</div>
@@ -52,13 +55,8 @@ const CalculationVisit = ({appointment, calculation, nextHandler}: CalculationRe
         </ItemContent>
       </Item>
       <div className="flex flex-col gap-4">
-
-
-
-        
-
         {appointment.kulturalna_szkola === 1 && <div className="text-xs text-muted-foreground mt-2">&#42; Preferencyjna cena dla beneficjentów programu "Kulturalna Szkoła na Mazowszu"</div>}
-        
+        {appointment.kultura_za_zl === 1 && <div className="text-xs text-muted-foreground mt-2">&#42; Preferencyjna cena dla beneficjentów programu "Kultura za 1 zł" wsparcie osób z niepelnosprawnościami na Mazowszu</div>}
       </div>
     </CardContent>
   </Card>)

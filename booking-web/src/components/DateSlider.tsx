@@ -23,7 +23,7 @@ interface DateSliderProps {
 }
 
 const DateSlider = ({visitDate, setVisitDateTime, visitTime, schedule}: DateSliderProps) => {
-  return <Card className="ring-0 shadow-none">
+  return <Card className="sticky lg:top-24 ring-0 shadow-none">
     <CardHeader>
       <CardTitle className="text-center text-xl font-semibold">Wybierz dzień i godzinę</CardTitle>
     </CardHeader>
@@ -46,7 +46,7 @@ const DateSlider = ({visitDate, setVisitDateTime, visitTime, schedule}: DateSlid
                     <div className="text-muted-foreground">{item.monthName}</div>
                   </div>
                   <div className="flex flex-col gap-2 lg:gap-3">
-                    {item.slots.map((slot) => <Button key={slot.time} onClick={() => setVisitDateTime(item.date, slot.time)} variant={(slot.isAvailable) ? ((visitDate === item.date && visitTime == slot.time) ? 'default' : 'secondary') : 'ghost'} className="xl:h-11" disabled={!slot.isAvailable}>{slot.time}</Button>)}
+                    {item.slots.map((slot) => <Button key={slot.time} onClick={() => setVisitDateTime(item.date, slot.time)} variant={(slot.isAvailable) ? ((visitDate === item.date && visitTime == slot.time) ? 'default' : 'secondary') : 'ghost'} className="h-11" disabled={!slot.isAvailable}>{slot.time}</Button>)}
                   </div>
                 </div>
               </CarouselItem>
@@ -55,8 +55,6 @@ const DateSlider = ({visitDate, setVisitDateTime, visitTime, schedule}: DateSlid
           <CarouselPrevious />
           <CarouselNext />
         </Carousel>
-
-      
 
     </CardContent>
   </Card>

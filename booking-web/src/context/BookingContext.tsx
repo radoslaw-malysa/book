@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, type ReactNode, useCallback
 
 // 1. Define the types for your state objects
 export interface Appointment {
+  id: number;
   visit_date: string;
   visit_time: string;
   group_pax: number;
@@ -56,6 +57,7 @@ const [d,m,y] = datePl.split('.');
 const initialVisitDate = `${y}-${m}-${d}`;
 
 const initialAppointment: Appointment = {
+  id: 0,
   visit_date: initialVisitDate,
   visit_time: '',
   group_pax: 0,

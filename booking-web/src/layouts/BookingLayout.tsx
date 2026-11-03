@@ -33,7 +33,7 @@ const BookingLayout = () => {
       </div>
     </section>
     <Outlet />
-    <footer className="lg:h-22 flex items-center w-full sticky bottom-0">
+    <footer className="lg:h-22 flex items-center w-full xsticky xbottom-0 pointer-events-none">
       <div className="w-9/10 max-w-8xl mx-auto flex items-center gap-2 text-muted-foreground text-sm">
         
       </div>

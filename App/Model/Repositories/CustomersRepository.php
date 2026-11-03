@@ -36,7 +36,14 @@ class CustomersRepository extends Repository
       'pax_care' => $customer['pax_care'] ?? 0,
       'accept_processing' => $customer['accept_processing'] ?? 0,
       'accept_regulations' => $customer['accept_regulations'] ?? 0,
-      'accept_kultura_zl' => $customer['accept_kultura_zl'] ?? 0
+      'accept_kultura_zl' => $customer['accept_kultura_zl'] ?? 0,
+      'age_1' => $customer['age_1'] ?? 0,
+      'age_2' => $customer['age_2'] ?? 0,
+      'age_3' => $customer['age_3'] ?? 0,
+      'age_4' => $customer['age_4'] ?? 0,
+      'age_5' => $customer['age_5'] ?? 0,
+      'age_6' => $customer['age_6'] ?? 0,
+      'age_7' => $customer['age_7'] ?? 0
     ];
 
     if (isset($customer['id']) && $customer['id'] != 0) {
@@ -65,7 +72,14 @@ class CustomersRepository extends Repository
       'pax_care' => 0,
       'accept_processing' => 0,
       'accept_regulations' => 0,
-      'accept_kultura_zl' => 0
+      'accept_kultura_zl' => 0,
+      'age_1' => 0,
+      'age_2' => 0,
+      'age_3' => 0,
+      'age_4' => 0,
+      'age_5' => 0,
+      'age_6' => 0,
+      'age_7' => 0
     ];
   }
 }

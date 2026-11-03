@@ -166,7 +166,7 @@ const Client = () => {
   }
 
   return (<section>
-    <div className="w-9/10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <div className="w-full md:w-9/10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
       <div>
         <Card className="ring-0 shadow-none">
           <CardHeader>
@@ -423,9 +423,6 @@ const Client = () => {
               {(errors.accept_processing || errors.accept_regulations || errors.accept_kulturalna_szkola) && <FieldDescription className="text-destructive inline-flex items-center gap-1.5"><OctagonAlert size="16" />Potrzebujemy Twojej zgody</FieldDescription>}
 
             </FieldGroup>
-
-            
-
 
           </CardContent>
         </Card>

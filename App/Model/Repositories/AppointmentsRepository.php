@@ -345,7 +345,14 @@ class AppointmentsRepository extends Repository
         'pax_care' => $customer['pax_care'] ?? 0,
         'accept_processing' => $customer['accept_processing'] ?? 0,
         'accept_regulations' => $customer['accept_regulations'] ?? 0,
-        'accept_kultura_zl' => $customer['accept_kultura_zl'] ?? 0
+        'accept_kultura_zl' => $customer['accept_kultura_zl'] ?? 0,
+        'age_1' => $customer['age_1'] ?? 0,
+        'age_2' => $customer['age_2'] ?? 0,
+        'age_3' => $customer['age_3'] ?? 0,
+        'age_4' => $customer['age_4'] ?? 0,
+        'age_5' => $customer['age_5'] ?? 0,
+        'age_6' => $customer['age_6'] ?? 0,
+        'age_7' => $customer['age_7'] ?? 0
       ]);
     } catch(Exception $e) {
       $message = $e->getMessage();
@@ -369,7 +376,7 @@ class AppointmentsRepository extends Repository
       'customer_id' => $customer_id ?? 0,
       'visit_time' => (isset($appointment['visit_date']) && isset($appointment['visit_time'])) ? ($appointment['visit_date'] . ' ' . $appointment['visit_time']) : NULL,
       'lesson' => (isset($lesson['id'])) ? 1 : 0,
-      'tour' => (isset($guide)) ? 1 : 0,
+      'tour' => (isset($guide['id'])) ? 1 : 0,
       'cinema' => 0,
       'blockade' => 0,
       'kulturalna_szkola' => (isset($appointment['kulturalna_szkola']) && $appointment['kulturalna_szkola']) ? 1 : 0,
@@ -453,7 +460,8 @@ class AppointmentsRepository extends Repository
     ]);
 
     $total_price = array_sum(array_column($calculation, 'value'));
-    $sell_price = (isset($appointment_data['kulturalna_szkola']) && $appointment_data['kulturalna_szkola'] == 1) ? ($appointment_data['pax'] * 1) : $total_price;
+    $sell_price = ((isset($appointment_data['kulturalna_szkola']) && $appointment_data['kulturalna_szkola'] == 1) || (isset($appointment_data['kultura_za_zl']) && $appointment_data['kultura_za_zl'] == 1)) 
+    ? ($appointment_data['pax'] * 1) : $total_price;
 
     $this->where('id', $id_appointment)->update([
       'total_price' => $total_price,

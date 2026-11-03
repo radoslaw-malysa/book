@@ -7,6 +7,6 @@ import { Toaster } from './components/ui/toast.tsx'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
-    <Toaster data-position="top" />
+    <Toaster data-position="top-center" />
   </StrictMode>,
 )

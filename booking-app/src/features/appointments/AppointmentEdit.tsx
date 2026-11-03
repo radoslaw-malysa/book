@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AtSign, Clock, ContactRound, ListChecks, Mail, MapPin, MessageCircleWarning, PersonStanding, Phone, Printer, UserRound } from "lucide-react";
+import { AtSign, Clock, ContactRound, GraduationCap, ListChecks, Mail, MapPin, MessageCircleWarning, PersonStanding, Phone, Printer, UserRound } from "lucide-react";
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import './appointment_edit.css';
 import { Separator } from "@/components/ui/separator";
@@ -745,6 +745,9 @@ const AppointmentEdit = ({ itemId, refreshKey, onClose }: ItemEditDialogProps) =
                       />
                     </div>
                   </div>
+
+                  
+
 
                   <div className="px-4 flex gap-3">
                     <div className="w-9 h-9 flex-none flex justify-center items-center">
